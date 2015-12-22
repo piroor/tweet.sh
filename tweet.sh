@@ -164,7 +164,7 @@ help() {
       ;;
     watch-mentions )
       echo 'Usage:'
-      echo "  ./tweet.sh watch-mentions -r \"echo 'REPLY'; cat\" -t \"echo 'RT'; cat\" -q \"echo 'QT'; cat\""
+      echo "  ./tweet.sh watch-mentions -m \"echo 'MENTION'; cat\" -r \"echo 'RT'; cat\" -q \"echo 'QT'; cat\""
       ;;
   esac
 }
@@ -224,18 +224,18 @@ handle_mentions() {
   local user_screen_name=$1
   shift
 
-  local reply_handler=''
+  local mention_handler=''
   local retweet_handler=''
   local quoted_handler=''
 
   OPTIND=1
-  while getopts r:t:q: OPT
+  while getopts m:r:q: OPT
   do
     case $OPT in
-      r )
-        reply_handler="$OPTARG"
+      m )
+        mention_handler="$OPTARG"
         ;;
-      t )
+      r )
         retweet_handler="$OPTARG"
         ;;
       q )
@@ -244,12 +244,12 @@ handle_mentions() {
     esac
   done
 
-  local replies_filter="\"text\":\"[^\"]*@$user_screen_name"
+  local mentions_filter="\"text\":\"[^\"]*@$user_screen_name"
   local retweets_filter="\"text\":\"RT @$user_screen_name:"
   local quoteds_filter="\"quoted_status\":\{[^{]\*\"user\":\{[^{}]\*\"screen_name\":\"$user_screen_name\""
 
   local filters=''
-  [ "$reply_handler" != '' ] && filters="$filters|$replies_filter"
+  [ "$mention_handler" != '' ] && filters="$filters|$mentions_filter"
   [ "$retweet_handler" != '' ] && filters="$filters|$retweets_filter"
   [ "$quoted_handler" != '' ] && filters="$filters|$quoteds_filter"
   filters="$(echo "$filters" | sed 's/^|//')"
@@ -277,20 +277,23 @@ handle_mentions() {
     fi
 
     # Detect quotation at first, because quotation can be
-    # deteted as retweet or a simple reply unexpectedly.
+    # deteted as retweet or a simple mention unexpectedly.
     if [ "$(echo "$filtered" | egrep "$quoteds_filter")" != '' ]
     then
+      log "QUOTATION"
       echo "$filtered" |
         (cd "$work_dir"; eval "$quoted_handler")
     # Detect retweet before reqply, because "RT: @(screenname)"
-    # can be deteted as a simple reply unexpectedly.
+    # can be deteted as a simple mention unexpectedly.
     elif [ "$(echo "$filtered" | egrep "$retweet_filter")" != '' ]
     then
+      log "RETWEET"
       echo "$filtered" |
         (cd "$work_dir"; eval "$retweet_handler")
     else
+      log "MENTION"
       echo "$filtered" |
-        (cd "$work_dir"; eval "$reply_handler")
+        (cd "$work_dir"; eval "$mention_handler")
     fi
   done
 }

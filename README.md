@@ -72,8 +72,8 @@ $ ./tweet.sh watch-mentions -r "echo 'REPLY'; cat" \
 
 Available options:
 
- * `-r`: command line to run for each reply or mention.
- * `-t`: command line to run for each retweet.
+ * `-m`: command line to run for each reply or mention.
+ * `-r`: command line to run for each retweet.
  * `-q`: command line to run for each quotation.
 
 Handler command lines will receive mention via the standard input.
