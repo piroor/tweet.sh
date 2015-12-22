@@ -111,6 +111,12 @@ ensure_available() {
     fatal_error=1
   fi
 
+  if ! exist_command openssl
+  then
+    echo 'FATAL ERROR: A required command "openssl" is missing.' 1>&2
+    fatal_error=1
+  fi
+
   [ $fatal_error = 1 ] && exit 1
 }
 
