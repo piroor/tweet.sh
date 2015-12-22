@@ -205,35 +205,35 @@ watch_mentions() {
   ensure_available
 
   local credentials="$(call_api GET https://api.twitter.com/1.1/account/verify_credentials.json)"
-  local user_screen_name="$(echo "$credentials" | jq -r .screen_name)"
+  local user_screen_name="$(echo "$credentials" | jq -r .screen_name | tr -d '\n')"
   echo "Tracking mentions for $user_screen_name..." 1>&2
 
-  cat << FIN | call_api GET https://userstream.twitter.com/1.1/user.json | filter_mentions "$user_screen_name" $*
+  cat << FIN | call_api GET https://userstream.twitter.com/1.1/user.json | handle_mentions "$user_screen_name" "$@"
 replies all
 track $user_screen_name
 FIN
 }
 
-filter_mentions() {
+handle_mentions() {
   local user_screen_name=$1
   shift
 
-  local include_replies=0
-  local include_retweets=0
-  local include_quoteds=0
+  local reply_handler=''
+  local retweet_handler=''
+  local quoted_handler=''
 
   OPTIND=1
-  while getopts rtq OPT
+  while getopts r:t:q: OPT
   do
     case $OPT in
       r )
-        include_replies=1
+        reply_handler="$OPTARG"
         ;;
       t )
-        include_retweets=1
+        retweet_handler="$OPTARG"
         ;;
       q )
-        include_quoteds=1
+        quoted_handler="$OPTARG"
         ;;
     esac
   done
@@ -244,20 +244,36 @@ filter_mentions() {
   local self_tweet_filter="\"user\":\{[^{}]\*\"screen_name\":\"$user_screen_name\""
 
   local filters=''
-  [ $include_replies = 1 ] && filters="$filters|$replies_filter"
-  [ $include_retweets = 1 ] && filters="$filters|$retweets_filter"
-  [ $include_quoteds = 1 ] && filters="$filters|$quoteds_filter"
+  [ "$reply_handler" != '' ] && filters="$filters|$replies_filter"
+  [ "$retweet_handler" != '' ] && filters="$filters|$retweets_filter"
+  [ "$quoted_handler" != '' ] && filters="$filters|$quoteds_filter"
   filters="$(echo "$filters" | sed 's/^|//')"
 
   log "FILTERS $filters"
   if [ "$filters" = '' ]
   then
-    echo "ERROR: No filter is supplied." 1>&2
+    echo "ERROR: No handler is supplied." 1>&2
     exit 1
   fi
 
-  egrep "($filters)" |
-    egrep -v "$self_tweet_filter"
+  local filtered
+  while read line
+  do
+    filtered="$(echo "$line" |
+                  egrep "($filters)" |
+                  egrep -v "$self_tweet_filter")"
+    [ "$filtered" = '' ] && continue
+
+    if [ "$(echo "$filtered" | egrep "$replies_filter")" != '' ]
+    then
+      echo "$filtered" | (eval "$reply_handler")
+    elif [ "$(echo "$filtered" | egrep "$retweet_filter")" != '' ]
+    then
+      echo "$filtered" | (eval "$retweet_handler")
+    else
+      echo "$filtered" | (eval "$quoted_handler")
+    fi
+  done
 }
 
 
@@ -449,15 +465,15 @@ shift
 
 case "$command" in
   post )
-    post $*
+    post "$@"
     ;;
   search )
-    search $*
+    search "$@"
     ;;
   watch-mentions )
-    watch_mentions $*
+    watch_mentions "$@"
     ;;
   help|* )
-    help $*
+    help "$@"
     ;;
 esac
