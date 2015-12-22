@@ -159,6 +159,7 @@ help() {
       echo '  search         : searches tweets.'
       echo '  watch-mentions : watches mentions as a stream.'
       echo '  favorite(fav)  : marks a tweet as a favorite.'
+      echo '  retweet(rt)    : retweets a tweet.'
       echo ''
       echo 'For more details, see also: "./tweet.sh help [command]"'
       ;;

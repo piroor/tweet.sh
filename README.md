@@ -28,6 +28,7 @@ Available commands are:
  * `search`: searches tweets.
  * `watch-mentions`: watches mentions and executes handlers for each mention.
  * `favorite` (`fav`): marks a tweet as a favorite.
+ * `retweet` (`rt`): retweets a tweet.
 
 If you hope to see detailed logs, run the script with an environment variable `DEBUG`, like:
 
@@ -116,3 +117,5 @@ $ ./tweet.sh rt 0123456789
 $ ./tweet.sh rt https://twitter.com/username/status/0123456789
 ~~~
 
+Note, you cannot add extra comment for the RT.
+Instead you simply post a tweet including the URL of the original tweet.
