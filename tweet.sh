@@ -162,6 +162,7 @@ help() {
       echo '  favorite(fav)  : marks a tweet as a favorite.'
       echo '  retweet(rt)    : retweets a tweet.'
       echo '  body           : extracts the body of a tweet.'
+      echo '  owner          : extracts the owner of a tweet.'
       echo ''
       echo 'For more details, see also: "./tweet.sh help [command]"'
       ;;
@@ -205,6 +206,12 @@ help() {
       echo '  ./tweet.sh body 012345'
       echo '  ./tweet.sh body https://twitter.com/username/status/012345'
       echo '  echo "$tweet_json" | ./tweet.sh body'
+      ;;
+    owner )
+      echo 'Usage:'
+      echo '  ./tweet.sh owner 012345'
+      echo '  ./tweet.sh owner https://twitter.com/username/status/012345'
+      echo '  echo "$tweet_json" | ./tweet.sh owner'
       ;;
   esac
 }
@@ -409,6 +416,19 @@ FIN
   else
     jq -r .text |
       unicode_unescape
+  fi
+}
+
+owner_screen_name() {
+  local target="$1"
+  if [ "$target" != '' ]
+  then
+    local id="$(echo "$target" | extract_tweet_id)"
+    cat << FIN | call_api GET https://api.twitter.com/1.1/statuses/show.json | echo "@$(extract_owner)"
+id $id
+FIN
+  else
+    echo "@$(extract_owner)"
   fi
 }
 
@@ -634,6 +654,9 @@ case "$command" in
     ;;
   body )
     body "$@"
+    ;;
+  owner )
+    owner_screen_name "$@"
     ;;
   help|* )
     help "$@"
