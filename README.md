@@ -60,6 +60,21 @@ Available options:
  * `-l`: language.
  * `-c`: count of tweets to be responded. 10 by default.
 
+## How to watch search results with a handler?
+
+For example:
+
+~~~
+$ ./tweet.sh search -q "queries" -h "cat"
+~~~
+
+Available options:
+
+ * `-q`: queries.
+ * `-h`: command line to run for each search result.
+
+Handler command line will receive result via the standard input.
+
 ## How to watch mentions?
 
 For example:
