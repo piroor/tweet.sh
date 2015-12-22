@@ -160,6 +160,7 @@ help() {
       echo '  watch-mentions : watches mentions as a stream.'
       echo '  favorite(fav)  : marks a tweet as a favorite.'
       echo '  retweet(rt)    : retweets a tweet.'
+      echo '  body           : extracts the body of the tweet.'
       echo ''
       echo 'For more details, see also: "./tweet.sh help [command]"'
       ;;
@@ -192,6 +193,12 @@ help() {
       echo '  ./tweet.sh retweet 012345'
       echo '  ./tweet.sh retweet https://twitter.com/username/status/012345'
       #echo '  ./tweet.sh retweet https://twitter.com/username/status/012345 Your comment'
+      ;;
+    body )
+      echo 'Usage:'
+      echo '  ./tweet.sh body 012345'
+      echo '  ./tweet.sh body https://twitter.com/username/status/012345'
+      echo '  echo "$tweet_json" | ./tweet.sh body'
       ;;
   esac
 }
@@ -372,6 +379,19 @@ retweet() {
 #  echo "status $*" | call_api POST "https://api.twitter.com/1.1/statuses/retweet/$id.json"
 }
 
+body() {
+  local target="$1"
+  if [ "$target" != '' ]
+  then
+    local id="$(echo "$target" | extract_tweet_id)"
+    cat << FIN | call_api GET https://api.twitter.com/1.1/statuses/show.json | body
+id $id
+FIN
+  else
+    jq -r .text |
+      unicode_unescape
+  fi
+}
 
 
 
@@ -423,6 +443,11 @@ extract_tweet_id() {
 
 extract_owner() {
   jq -r .user.screen_name
+}
+
+unicode_unescape() {
+  sed 's/\\u\(....\)/\&#x\1;/g' |
+    nkf --numchar-input
 }
 
 
@@ -584,6 +609,9 @@ case "$command" in
     ;;
   rt|retweet )
     retweet "$@"
+    ;;
+  body )
+    body "$@"
     ;;
   help|* )
     help "$@"
