@@ -24,8 +24,8 @@ $ ./tweet.sh [command] [...arguments]'
 
 Available commands are:
 
- * `post`: posts a new tweet.'
- * `search`: searches tweets.'
+ * `post`: posts a new tweet.
+ * `search`: searches tweets.
 
 ## How to post a tweet?
 
