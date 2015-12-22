@@ -27,6 +27,12 @@ Available commands are:
  * `post`: posts a new tweet.
  * `search`: searches tweets.
 
+If you hope to see detailed logs, run the script with an environment variable `DEBUG`, like:
+
+~~~
+$ env DEBUG=1 ./tweet.sh search -q "Bash"
+~~~
+
 ## How to post a tweet?
 
 For example:
