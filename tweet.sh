@@ -261,6 +261,7 @@ handle_mentions() {
     exit 1
   fi
 
+  local event_filter="^\{\"event\":"
   local self_tweet_filter="^\{[^{]*\"user\":\{[^{}]*\"screen_name\":\"$user_screen_name\""
   local filtered
   local owner
@@ -268,7 +269,7 @@ handle_mentions() {
   do
     filtered="$(echo "$line" |
                   egrep "($filters)" |
-                  egrep -v "$self_tweet_filter")"
+                  egrep -v "($event_filter|$self_tweet_filter)")"
     [ "$filtered" = '' ] && continue
 
     # Detect quotation at first, because quotation can be
