@@ -77,6 +77,15 @@ then
   source "$tools_dir/tweet.client.key"
 fi
 
+case $(uname) in
+  Darwin|*BSD|CYGWIN*)
+    esed="sed -E"
+    ;;
+  *)
+    esed="sed -r"
+    ;;
+esac
+
 
 ensure_available() {
   local fatal_error=0
@@ -171,7 +180,9 @@ help() {
     fav|favorite )
       echo 'Usage:'
       echo '  ./tweet.sh fav 012345'
+      echo '  ./tweet.sh fav https://twitter.com/username/status/012345'
       echo '  ./tweet.sh favorite 012345'
+      echo '  ./tweet.sh favorite https://twitter.com/username/status/012345'
       ;;
   esac
 }
@@ -339,7 +350,8 @@ handle_mentions() {
 favorite() {
   ensure_available
 
-  local id="$1"
+  local target="$1"
+  local id="$(echo "$target" | extract_tweet_id)"
 
   cat << FIN | call_api POST https://api.twitter.com/1.1/favorites/create.json
 id $id
@@ -387,6 +399,11 @@ to_encoded_list() {
 
   echo -n "$transformed"
   log "TRANSFORMED $transformed"
+}
+
+extract_tweet_id() {
+  $esed -e 's;https://[^/]+/[^/]+/status/;;' \
+        -e 's;^([0-9]+)[^0-9].*$;\1;'
 }
 
 

@@ -96,9 +96,11 @@ Handler command lines will receive mention via the standard input.
 
 ## How to mark a tweet as a favorite?
 
-You must give the ID of the tweet.
+You must give the ID or the URL of the tweet.
 
 ~~~
 $ ./tweet.sh favorite 0123456789
+$ ./tweet.sh favorite https://twitter.com/username/status/0123456789
 $ ./tweet.sh fav 0123456789
+$ ./tweet.sh fav https://twitter.com/username/status/0123456789
 ~~~
