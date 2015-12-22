@@ -55,22 +55,28 @@ exist_command() {
   type "$1" > /dev/null 2>&1
 }
 
-if [ "${CONSUMER_KEY-undefined}" = 'undefined' ]
+
+if [ "$CONSUMER_KEY" = '' -a \
+     -f "$work_dir/tweet.client.key" ]
 then
-  if [ -f "$work_dir/tweet.client.key" ]
-  then
-    log 'Using client key at the current directory.'
-    source "$work_dir/tweet.client.key"
-  elif [ -f ~/.tweet.client.key ]
-  then
-    log 'Using client key at the home directory.'
-    source ~/.tweet.client.key
-  elif [ -f "$tools_dir/tweet.client.key" ]
-  then
-    log 'Using client key at the tools directory.'
-    source "$tools_dir/tweet.client.key"
-  fi
+  log 'Using client key at the current directory.'
+  source "$work_dir/tweet.client.key"
 fi
+
+if [ "$CONSUMER_KEY" = '' -a \
+     -f ~/.tweet.client.key ]
+then
+  log 'Using client key at the home directory.'
+  source ~/.tweet.client.key
+fi
+
+if [ "$CONSUMER_KEY" = '' -a \
+     -f "$tools_dir/tweet.client.key" ]
+then
+  log 'Using client key at the tools directory.'
+  source "$tools_dir/tweet.client.key"
+fi
+
 
 ensure_available() {
   local fatal_error=0
