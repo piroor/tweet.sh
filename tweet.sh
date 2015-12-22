@@ -66,47 +66,116 @@ then
   fi
 fi
 
+ensure_available() {
+  local fatal_error=0
 
-fatal_error=0
+  if [ "$CONSUMER_KEY" = '' ]
+  then
+    echo 'FATAL ERROR: You need to specify a consumer key via an environment variable "CONSUMER_KEY".' 1>&2
+    fatal_error=1
+  fi
 
-if [ "$CONSUMER_KEY" = '' ]
-then
-  echo 'FATAL ERROR: You need to specify a consumer key via an environment variable "CONSUMER_KEY".' 1>&2
-  fatal_error=1
-fi
+  if [ "$CONSUMER_SECRET" = '' ]
+  then
+    echo 'FATAL ERROR: You need to specify a consumer secret via an environment variable "CONSUMER_SECRET".' 1>&2
+    fatal_error=1
+  fi
 
-if [ "$CONSUMER_SECRET" = '' ]
-then
-  echo 'FATAL ERROR: You need to specify a consumer secret via an environment variable "CONSUMER_SECRET".' 1>&2
-  fatal_error=1
-fi
+  if [ "$ACCESS_TOKEN" = '' ]
+  then
+    echo 'FATAL ERROR: You need to specify an access token via an environment variable "ACCESS_TOKEN".' 1>&2
+    fatal_error=1
+  fi
 
-if [ "$ACCESS_TOKEN" = '' ]
-then
-  echo 'FATAL ERROR: You need to specify an access token via an environment variable "ACCESS_TOKEN".' 1>&2
-  fatal_error=1
-fi
+  if [ "$ACCESS_TOKEN_SECRET" = '' ]
+  then
+    echo 'FATAL ERROR: You need to specify an access token secret via an environment variable "ACCESS_TOKEN_SECRET".' 1>&2
+    fatal_error=1
+  fi
 
-if [ "$ACCESS_TOKEN_SECRET" = '' ]
-then
-  echo 'FATAL ERROR: You need to specify an access token secret via an environment variable "ACCESS_TOKEN_SECRET".' 1>&2
-  fatal_error=1
-fi
+  if ! exist_command nkf
+  then
+    echo 'FATAL ERROR: A required command "nkf" is missing.' 1>&2
+    fatal_error=1
+  fi
 
-if ! exist_command nkf
-then
-  echo 'FATAL ERROR: A required command "nkf" is missing.' 1>&2
-  fatal_error=1
-fi
+  if ! exist_command curl
+  then
+    echo 'FATAL ERROR: A required command "curl" is missing.' 1>&2
+    fatal_error=1
+  fi
 
-if ! exist_command curl
-then
-  echo 'FATAL ERROR: A required command "curl" is missing.' 1>&2
-  fatal_error=1
-fi
+  [ $fatal_error = 1 ] && exit 1
+}
 
 
-[ $fatal_error = 1 ] && exit 1
+#================================================================
+# sub commands
+
+help() {
+  local command="$1"
+  shift
+
+  case "$command" in
+    '' )
+      echo 'Usage:'
+      echo '  ./tweet.sh [command] [...arguments]'
+      echo ''
+      echo 'Available commands:'
+      echo '  post   : posts a new tweet.'
+      echo '  search : searches tweets.'
+      echo ''
+      echo 'For more details, see also: "./tweet.sh help [command]"'
+      ;;
+    post )
+      echo 'Usage:'
+      echo '  ./tweet.sh post A tweet from command line'
+      echo '  ./tweet.sh post 何らかのつぶやき'
+      ;;
+    search )
+      echo 'Usage:'
+      echo '  ./tweet.sh search -q "queries" -l "ja" -c 10'
+      echo '  ./tweet.sh search -q "Bash OR Shell Script"'
+      ;;
+  esac
+}
+
+post() {
+  ensure_available
+  echo "status $*" | call_api POST https://api.twitter.com/1.1/statuses/update.json
+}
+
+search() {
+  ensure_available
+  local lang='en'
+  local locale='en'
+  local count=10
+
+  while getopts q:l:c: OPT
+  do
+    case $OPT in
+      "q" )
+        query="$OPTARG"
+        ;;
+      "l" )
+        lang="$OPTARG"
+        ;;
+      "c" )
+        count="$OPTARG"
+        ;;
+    esac
+  done
+
+  [ "$lang" = 'ja' ] && locale='ja'
+
+  cat << FIN | call_api GET https://api.twitter.com/1.1/search/tweets.json
+q $query
+lang $lang
+locale $locale
+result_type recent
+count $count
+FIN
+}
 
 
 
@@ -282,3 +351,21 @@ oauth_token $ACCESS_TOKEN
 oauth_version 1.0
 FIN
 }
+
+
+#================================================================
+
+command="$1"
+shift
+
+case "$command" in
+  post )
+    post "$*"
+    ;;
+  search )
+    search "$*"
+    ;;
+  help )
+    help "$*"
+    ;;
+esac
