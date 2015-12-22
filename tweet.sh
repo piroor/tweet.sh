@@ -270,17 +270,17 @@ handle_mentions() {
                   egrep -v "$self_tweet_filter")"
     [ "$filtered" = '' ] && continue
 
-    if [ "$(echo "$filtered" | egrep "$replies_filter")" != '' ]
+    if [ "$(echo "$filtered" | egrep "$quoteds_filter")" != '' ]
     then
       echo "$filtered" |
-        (cd "$work_dir"; eval "$reply_handler")
+        (cd "$work_dir"; eval "$quoted_handler")
     elif [ "$(echo "$filtered" | egrep "$retweet_filter")" != '' ]
     then
       echo "$filtered" |
         (cd "$work_dir"; eval "$retweet_handler")
     else
       echo "$filtered" |
-        (cd "$work_dir"; eval "$quoted_handler")
+        (cd "$work_dir"; eval "$reply_handler")
     fi
   done
 }
