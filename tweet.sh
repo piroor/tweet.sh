@@ -280,7 +280,7 @@ handle_mentions() {
         (cd "$work_dir"; eval "$quoted_handler")
     # Detect retweet before reqply, because "RT: @(screenname)"
     # can be deteted as a simple mention unexpectedly.
-    elif [ "$(echo "$filtered" | egrep "$retweet_filter")" != '' ]
+    elif [ "$(echo "$filtered" | egrep "$retweets_filter")" != '' ]
     then
       log "RETWEET"
       echo "$filtered" |
