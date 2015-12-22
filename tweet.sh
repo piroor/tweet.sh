@@ -250,16 +250,15 @@ FIN
 handle_search_results() {
   local user_screen_name="$1"
   local handler="$2"
-  local self_tweet_filter="^\{[^{]*\"user\":\{[^{}]*\"screen_name\":\"$user_screen_name\""
 
-  local filtered
+  local owner
   while read -r line
   do
-    filtered="$(echo "$line" |
-                  egrep -v "$self_tweet_filter")"
-    [ "$filtered" = '' ] && continue
+    # Ignore self tweet
+    owner="$(echo "$line" | extract_owner)"
+    [ "$owner" = "$user_screen_name" ] && continue
 
-    echo "$filtered" |
+    echo "$line" |
       (cd "$work_dir"; eval "$handler")
   done
 }
@@ -323,14 +322,19 @@ handle_mentions() {
     exit 1
   fi
 
-  local event_filter="^\{\"event\":"
-  local self_tweet_filter="^\{[^{]*\"user\":\{[^{}]*\"screen_name\":\"$user_screen_name\""
   local filtered
+  local owner
   while read -r line
   do
+    # Ignore self tweet
+    owner="$(echo "$line" | extract_owner)"
+    [ "$owner" = "$user_screen_name" ] && continue
+
+    # Ignore non-tweet entry
+    if [ "$(echo "$line" | jq -r .event)" != 'null' ] && continue
+
     filtered="$(echo "$line" |
-                  egrep "($filters)" |
-                  egrep -v "($event_filter|$self_tweet_filter)")"
+                  egrep "($filters)")"
     [ "$filtered" = '' ] && continue
 
     # Detect quotation at first, because quotation can be
@@ -426,6 +430,10 @@ to_encoded_list() {
 extract_tweet_id() {
   $esed -e 's;https://[^/]+/[^/]+/status/;;' \
         -e 's;^([0-9]+)[^0-9].*$;\1;'
+}
+
+extract_owner() {
+  jq -r .user.screen_name
 }
 
 
