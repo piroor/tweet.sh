@@ -246,7 +246,7 @@ handle_mentions() {
 
   local mentions_filter="\"text\":\"[^\"]*@$user_screen_name"
   local retweets_filter="\"text\":\"RT @$user_screen_name:"
-  local quoteds_filter="\"quoted_status\":\{[^{]\*\"user\":\{[^{}]\*\"screen_name\":\"$user_screen_name\""
+  local quoteds_filter="\"quoted_status\":\{[^{]*\"user\":\{[^{}]*\"screen_name\":\"$user_screen_name\""
 
   local filters=''
   [ "$mention_handler" != '' ] && filters="$filters|$mentions_filter"
@@ -261,7 +261,7 @@ handle_mentions() {
     exit 1
   fi
 
-  local self_tweet_filter="^\{[^{]\*\"user\":\{[^{}]\*\"screen_name\":\"$user_screen_name\""
+  local self_tweet_filter="^\{[^{]*\"user\":\{[^{}]*\"screen_name\":\"$user_screen_name\""
   local filtered
   local owner
   while read line
