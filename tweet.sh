@@ -253,7 +253,7 @@ handle_search_results() {
   local self_tweet_filter="^\{[^{]*\"user\":\{[^{}]*\"screen_name\":\"$user_screen_name\""
 
   local filtered
-  while read line
+  while read -r line
   do
     filtered="$(echo "$line" |
                   egrep -v "$self_tweet_filter")"
@@ -326,7 +326,7 @@ handle_mentions() {
   local event_filter="^\{\"event\":"
   local self_tweet_filter="^\{[^{]*\"user\":\{[^{}]*\"screen_name\":\"$user_screen_name\""
   local filtered
-  while read line
+  while read -r line
   do
     filtered="$(echo "$line" |
                   egrep "($filters)" |
