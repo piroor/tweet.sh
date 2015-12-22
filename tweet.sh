@@ -380,7 +380,7 @@ case "$command" in
   search )
     search $*
     ;;
-  help )
+  help|* )
     help $*
     ;;
 esac
