@@ -224,6 +224,7 @@ to_encoded_list() {
   local delimiter="$1"
   [ "$delimiter" = '' ] && delimiter='\&'
   transformed=$(sort -k 1 -t ' ' |
+    sed '/^$/d' |
     while read param
     do
       echo "$param" |
