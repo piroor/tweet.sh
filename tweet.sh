@@ -270,10 +270,14 @@ handle_mentions() {
                   egrep -v "$self_tweet_filter")"
     [ "$filtered" = '' ] && continue
 
+    # Detect quotation at first, because quotation can be
+    # deteted as retweet or a simple reply unexpectedly.
     if [ "$(echo "$filtered" | egrep "$quoteds_filter")" != '' ]
     then
       echo "$filtered" |
         (cd "$work_dir"; eval "$quoted_handler")
+    # Detect retweet before reqply, because "RT: @(screenname)"
+    # can be deteted as a simple reply unexpectedly.
     elif [ "$(echo "$filtered" | egrep "$retweet_filter")" != '' ]
     then
       echo "$filtered" |
