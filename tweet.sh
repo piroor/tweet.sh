@@ -204,18 +204,28 @@ FIN
 watch_mentions() {
   ensure_available
 
-  local user_screen_name=''
+  local credentials="$(call_api GET https://api.twitter.com/1.1/account/verify_credentials.json)"
+  local user_screen_name="$(echo "$credentials" | jq -r .screen_name)"
+  echo "Tracking mentions for $user_screen_name..." 1>&2
+
+  cat << FIN | call_api GET https://userstream.twitter.com/1.1/user.json | filter_mentions "$user_screen_name" $*
+replies all
+track $user_screen_name
+FIN
+}
+
+filter_mentions() {
+  local user_screen_name=$1
+  shift
+
   local include_replies=0
   local include_retweets=0
   local include_quoteds=0
 
   OPTIND=1
-  while getopts n:rtq OPT
+  while getopts rtq OPT
   do
     case $OPT in
-      n )
-        user_screen_name="$OPTARG"
-        ;;
       r )
         include_replies=1
         ;;
@@ -227,9 +237,6 @@ watch_mentions() {
         ;;
     esac
   done
-
-  local track_param=''
-  [ "$user_screen_name" != '' ] && track_param="track $user_screen_name"
 
   local replies_filter="\"text\":\"[^\"]*@$user_screen_name"
   local retweets_filter="\"text\":\"RT @$user_screen_name:"
@@ -249,12 +256,8 @@ watch_mentions() {
     exit 1
   fi
 
-  cat << FIN | call_api GET https://userstream.twitter.com/1.1/user.json | \
-                 egrep "($filters)" | \
-                 egrep -v "$self_tweet_filter"
-replies all
-$track_param
-FIN
+  egrep "($filters)" |
+    egrep -v "$self_tweet_filter"
 }
 
 
@@ -312,10 +315,13 @@ call_api() {
 
   # prepare list of all parameters
   local params_file="$(prepare_tempfile params)"
-  while read param
-  do
-    echo "$param" >> "$params_file"
-  done
+  if [ -p /dev/stdin ]
+  then
+    while read param
+    do
+      echo "$param" >> "$params_file"
+    done
+  fi
 
   local oauth="$(cat "$params_file" | generate_oauth_header "$method" "$url")"
   local headers="Authorization: OAuth $oauth"
