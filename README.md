@@ -61,6 +61,7 @@ $ ./tweet.sh reply https://twitter.com/username/status/0123456789 A silent reply
 ~~~
 
 All rest arguments are posted as a tweet.
+Note, you have to include the user's screen name manually if it is needed.
 
 ## How to search tweets?
 
