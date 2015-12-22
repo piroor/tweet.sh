@@ -164,7 +164,7 @@ help() {
       ;;
     watch-mentions )
       echo 'Usage:'
-      echo '  ./tweet.sh watch-mentions -n "my_screen_name" -r -t -q'
+      echo "  ./tweet.sh watch-mentions -r \"echo 'REPLY'; cat\" -t \"echo 'RT'; cat\" -q \"echo 'QT'; cat\""
       ;;
   esac
 }

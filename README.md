@@ -26,6 +26,7 @@ Available commands are:
 
  * `post`: posts a new tweet.
  * `search`: searches tweets.
+ * `watch-mentions`: watches mentions and executes handlers for each mention.
 
 If you hope to see detailed logs, run the script with an environment variable `DEBUG`, like:
 
@@ -59,3 +60,20 @@ Available options:
  * `-l`: language.
  * `-c`: count of tweets to be responded. 10 by default.
 
+## How to watch mentions?
+
+For example:
+
+~~~
+$ ./tweet.sh watch-mentions -r "echo 'REPLY'; cat" \
+                            -t "echo 'RT'; cat" \
+                            -q "echo 'QT'; cat"
+~~~
+
+Available options:
+
+ * `-r`: command line to run for each reply or mention.
+ * `-t`: command line to run for each retweet.
+ * `-q`: command line to run for each quotation.
+
+Handler command lines will receive mention via the standard input.
