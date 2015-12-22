@@ -264,7 +264,6 @@ handle_mentions() {
   local event_filter="^\{\"event\":"
   local self_tweet_filter="^\{[^{]*\"user\":\{[^{}]*\"screen_name\":\"$user_screen_name\""
   local filtered
-  local owner
   while read line
   do
     filtered="$(echo "$line" |
