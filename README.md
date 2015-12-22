@@ -29,7 +29,7 @@ Available commands are:
  * `watch-mentions`: watches mentions and executes handlers for each mention.
  * `favorite` (`fav`): marks a tweet as a favorite.
  * `retweet` (`rt`): retweets a tweet.
- * `body`: extracts the body of the tweet.
+ * `body`: extracts the body of a tweet.
 
 If you hope to see detailed logs, run the script with an environment variable `DEBUG`, like:
 
@@ -121,7 +121,7 @@ $ ./tweet.sh rt https://twitter.com/username/status/0123456789
 Note, you cannot add extra comment for the RT.
 Instead you simply post a tweet including the URL of the original tweet.
 
-## How to get a body of a tweet?
+## How to read the body of a tweet?
 
 You must give the ID or the URL of the tweet, or a JSON via the standard input.
 
