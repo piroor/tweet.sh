@@ -256,12 +256,14 @@ call_api() {
   then
     curl --header "$headers" \
          --data "$params" \
+         --silent \
          $debug_params \
          "$url"
   else
     curl --get \
          --header "$headers" \
          --data "$params" \
+         --silent \
          $debug_params \
          "$url"
   fi
