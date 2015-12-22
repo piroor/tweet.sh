@@ -266,12 +266,15 @@ handle_mentions() {
 
     if [ "$(echo "$filtered" | egrep "$replies_filter")" != '' ]
     then
-      echo "$filtered" | (eval "$reply_handler")
+      echo "$filtered" |
+        (cd "$work_dir"; eval "$reply_handler")
     elif [ "$(echo "$filtered" | egrep "$retweet_filter")" != '' ]
     then
-      echo "$filtered" | (eval "$retweet_handler")
+      echo "$filtered" |
+        (cd "$work_dir"; eval "$retweet_handler")
     else
-      echo "$filtered" | (eval "$quoted_handler")
+      echo "$filtered" |
+        (cd "$work_dir"; eval "$quoted_handler")
     fi
   done
 }
