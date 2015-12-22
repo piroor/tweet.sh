@@ -1,5 +1,21 @@
 # tweet.sh, a pure Bash script Twitter client
 
+## Setup
+
+You need to prepare API keys at first.
+Go to [the front page](https://apps.twitter.com/), create a new app, and generate a new access token.
+Then put them as a key file at `~/.tweet.client.key`, with the format:
+
+~~~
+CONSUMER_KEY=xxxxxxxxxxxxxxxxxxx
+CONSUMER_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ACCESS_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ACCESS_TOKEN_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+~~~
+
+If there is a key file named `tweet.client.key` in the current directory, `tweet.js` will load it.
+Otherwise, the file `~/.tweet.client.key` will be used as the default key file.
+
 ## Usage
 
 ~~~
