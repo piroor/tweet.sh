@@ -19,7 +19,7 @@ Otherwise, the file `~/.tweet.client.key` will be used as the default key file.
 ## Usage
 
 ~~~
-$ ./tweet.sh [command] [...arguments]'
+$ ./tweet.sh [command] [...arguments]
 ~~~
 
 Available commands are:
