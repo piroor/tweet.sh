@@ -190,7 +190,7 @@ help() {
       echo '  ./tweet.sh rt https://twitter.com/username/status/012345'
       echo '  ./tweet.sh retweet 012345'
       echo '  ./tweet.sh retweet https://twitter.com/username/status/012345'
-      echo '  ./tweet.sh retweet https://twitter.com/username/status/012345 Your comment'
+      #echo '  ./tweet.sh retweet https://twitter.com/username/status/012345 Your comment'
       ;;
   esac
 }

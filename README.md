@@ -104,3 +104,15 @@ $ ./tweet.sh favorite https://twitter.com/username/status/0123456789
 $ ./tweet.sh fav 0123456789
 $ ./tweet.sh fav https://twitter.com/username/status/0123456789
 ~~~
+
+## How to reweet a tweet?
+
+You must give the ID or the URL of the tweet.
+
+~~~
+$ ./tweet.sh retweet 0123456789
+$ ./tweet.sh retweet https://twitter.com/username/status/0123456789
+$ ./tweet.sh rt 0123456789
+$ ./tweet.sh rt https://twitter.com/username/status/0123456789
+~~~
+
