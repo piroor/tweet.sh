@@ -151,6 +151,7 @@ search() {
   local locale='en'
   local count=10
 
+  OPTIND=1
   while getopts q:l:c: OPT
   do
     case $OPT in
@@ -360,12 +361,12 @@ shift
 
 case "$command" in
   post )
-    post "$*"
+    post $*
     ;;
   search )
-    search "$*"
+    search $*
     ;;
   help )
-    help "$*"
+    help $*
     ;;
 esac
