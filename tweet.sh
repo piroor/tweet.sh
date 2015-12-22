@@ -140,8 +140,9 @@ help() {
       echo '  ./tweet.sh [command] [...arguments]'
       echo ''
       echo 'Available commands:'
-      echo '  post   : posts a new tweet.'
-      echo '  search : searches tweets.'
+      echo '  post           : posts a new tweet.'
+      echo '  search         : searches tweets.'
+      echo '  watch-mentions : watches mentions as a stream.'
       echo ''
       echo 'For more details, see also: "./tweet.sh help [command]"'
       ;;
@@ -154,6 +155,10 @@ help() {
       echo 'Usage:'
       echo '  ./tweet.sh search -q "queries" -l "ja" -c 10'
       echo '  ./tweet.sh search -q "Bash OR Shell Script"'
+      ;;
+    watch-mentions )
+      echo 'Usage:'
+      echo '  ./tweet.sh watch-mentions -n "my_screen_name" -r -t -q'
       ;;
   esac
 }
@@ -173,13 +178,13 @@ search() {
   while getopts q:l:c: OPT
   do
     case $OPT in
-      "q" )
+      q )
         query="$OPTARG"
         ;;
-      "l" )
+      l )
         lang="$OPTARG"
         ;;
-      "c" )
+      c )
         count="$OPTARG"
         ;;
     esac
@@ -193,6 +198,62 @@ lang $lang
 locale $locale
 result_type recent
 count $count
+FIN
+}
+
+watch_mentions() {
+  ensure_available
+
+  local user_screen_name=''
+  local include_replies=0
+  local include_retweets=0
+  local include_quoteds=0
+
+  OPTIND=1
+  while getopts n:rtq OPT
+  do
+    case $OPT in
+      n )
+        user_screen_name="$OPTARG"
+        ;;
+      r )
+        include_replies=1
+        ;;
+      t )
+        include_retweets=1
+        ;;
+      q )
+        include_quoteds=1
+        ;;
+    esac
+  done
+
+  local track_param=''
+  [ "$user_screen_name" != '' ] && track_param="track $user_screen_name"
+
+  local replies_filter="\"text\":\"[^\"]*@$user_screen_name"
+  local retweets_filter="\"text\":\"RT @$user_screen_name:"
+  local quoteds_filter="\"event\":\"quoted_tweet\".+\"target\":\{[^{}]\*\"screen_name\":\"$user_screen_name\""
+  local self_tweet_filter="\"user\":\{[^{}]\*\"screen_name\":\"$user_screen_name\""
+
+  local filters=''
+  [ $include_replies = 1 ] && filters="$filters|$replies_filter"
+  [ $include_retweets = 1 ] && filters="$filters|$retweets_filter"
+  [ $include_quoteds = 1 ] && filters="$filters|$quoteds_filter"
+  filters="$(echo "$filters" | sed 's/^|//')"
+
+  log "FILTERS $filters"
+  if [ "$filters" = '' ]
+  then
+    echo "ERROR: No filter is supplied." 1>&2
+    exit 1
+  fi
+
+  cat << FIN | call_api GET https://userstream.twitter.com/1.1/user.json | \
+                 egrep "($filters)" | \
+                 egrep -v "$self_tweet_filter"
+replies all
+$track_param
 FIN
 }
 
@@ -386,6 +447,9 @@ case "$command" in
     ;;
   search )
     search $*
+    ;;
+  watch-mentions )
+    watch_mentions $*
     ;;
   help|* )
     help $*
