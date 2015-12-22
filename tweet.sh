@@ -246,7 +246,7 @@ handle_mentions() {
 
   local replies_filter="\"text\":\"[^\"]*@$user_screen_name"
   local retweets_filter="\"text\":\"RT @$user_screen_name:"
-  local quoteds_filter="\"event\":\"quoted_tweet\".+\"target\":\{[^{}]\*\"screen_name\":\"$user_screen_name\""
+  local quoteds_filter="\"quoted_status\":\{[^{]\*\"user\":\{[^{}]\*\"screen_name\":\"$user_screen_name\""
   local self_tweet_filter="\"user\":\{[^{}]\*\"screen_name\":\"$user_screen_name\""
 
   local filters=''
