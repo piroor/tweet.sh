@@ -25,6 +25,7 @@ $ ./tweet.sh [command] [...arguments]
 Available commands are:
 
  * `post`: posts a new tweet.
+ * `reply`: replies to a tweet.
  * `search`: searches tweets.
  * `watch-mentions`: watches mentions and executes handlers for each mention.
  * `favorite` (`fav`): marks a tweet as a favorite.
@@ -44,6 +45,19 @@ For example:
 ~~~
 $ ./tweet.sh post A tweet from command line
 $ ./tweet.sh post 何らかのつぶやき
+~~~
+
+All rest arguments are posted as a tweet.
+
+## How to reply to a tweet?
+
+You must specify the ID or the URL of the tweet which is replied.
+
+~~~
+$ ./tweet.sh reply 0123456789 @username A regular reply
+$ ./tweet.sh reply 0123456789 A silent reply
+$ ./tweet.sh reply https://twitter.com/username/status/0123456789 @username A regular reply
+$ ./tweet.sh reply https://twitter.com/username/status/0123456789 A silent reply
 ~~~
 
 All rest arguments are posted as a tweet.

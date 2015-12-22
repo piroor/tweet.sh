@@ -156,6 +156,7 @@ help() {
       echo ''
       echo 'Available commands:'
       echo '  post           : posts a new tweet.'
+      echo '  reply          : replies to a tweet.'
       echo '  search         : searches tweets.'
       echo '  watch-mentions : watches mentions as a stream.'
       echo '  favorite(fav)  : marks a tweet as a favorite.'
@@ -168,6 +169,11 @@ help() {
       echo 'Usage:'
       echo '  ./tweet.sh post A tweet from command line'
       echo '  ./tweet.sh post 何らかのつぶやき'
+      ;;
+    reply )
+      echo 'Usage:'
+      echo '  ./tweet.sh reply 012345 a reply'
+      echo '  ./tweet.sh reply https://twitter.com/username/status/012345 a reply'
       ;;
     search )
       echo 'Usage:'
@@ -206,6 +212,20 @@ help() {
 post() {
   ensure_available
   echo "status $*" | call_api POST https://api.twitter.com/1.1/statuses/update.json
+}
+
+reply() {
+  ensure_available
+
+  local target="$1"
+  shift
+
+  local id="$(echo "$target" | extract_tweet_id)"
+
+  cat << FIN | call_api POST https://api.twitter.com/1.1/statuses/update.json
+status $*
+in_reply_to_status_id $id
+FIN
 }
 
 search() {
@@ -376,7 +396,6 @@ retweet() {
   local id="$(echo "$target" | extract_tweet_id)"
 
   call_api POST "https://api.twitter.com/1.1/statuses/retweet/$id.json"
-#  echo "status $*" | call_api POST "https://api.twitter.com/1.1/statuses/retweet/$id.json"
 }
 
 body() {
@@ -597,6 +616,9 @@ shift
 case "$command" in
   post )
     post "$@"
+    ;;
+  reply )
+    reply "$@"
     ;;
   search )
     search "$@"
