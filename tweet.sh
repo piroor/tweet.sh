@@ -331,7 +331,7 @@ handle_mentions() {
     [ "$owner" = "$user_screen_name" ] && continue
 
     # Ignore non-tweet entry
-    if [ "$(echo "$line" | jq -r .event)" != 'null' ] && continue
+    [ "$(echo "$line" | jq -r .event)" != 'null' ] && continue
 
     filtered="$(echo "$line" |
                   egrep "($filters)")"
