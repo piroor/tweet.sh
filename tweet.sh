@@ -149,6 +149,7 @@ help() {
       echo '  post           : posts a new tweet.'
       echo '  search         : searches tweets.'
       echo '  watch-mentions : watches mentions as a stream.'
+      echo '  favorite(fav)  : marks a tweet as a favorite.'
       echo ''
       echo 'For more details, see also: "./tweet.sh help [command]"'
       ;;
@@ -166,6 +167,11 @@ help() {
     watch-mentions )
       echo 'Usage:'
       echo "  ./tweet.sh watch-mentions -m \"echo 'MENTION'; cat\" -r \"echo 'RT'; cat\" -q \"echo 'QT'; cat\""
+      ;;
+    fav|favorite )
+      echo 'Usage:'
+      echo '  ./tweet.sh fav 012345'
+      echo '  ./tweet.sh favorite 012345'
       ;;
   esac
 }
@@ -327,6 +333,17 @@ handle_mentions() {
         (cd "$work_dir"; eval "$mention_handler")
     fi
   done
+}
+
+
+favorite() {
+  ensure_available
+
+  local id="$1"
+
+  cat << FIN | call_api POST https://api.twitter.com/1.1/favorites/create.json
+id $id
+FIN
 }
 
 
@@ -525,6 +542,9 @@ case "$command" in
     ;;
   watch-mentions )
     watch_mentions "$@"
+    ;;
+  fav|favorite )
+    favorite "$@"
     ;;
   help|* )
     help "$@"

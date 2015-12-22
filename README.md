@@ -27,6 +27,7 @@ Available commands are:
  * `post`: posts a new tweet.
  * `search`: searches tweets.
  * `watch-mentions`: watches mentions and executes handlers for each mention.
+ * `favorite` (`fav`): marks a tweet as a favorite.
 
 If you hope to see detailed logs, run the script with an environment variable `DEBUG`, like:
 
@@ -92,3 +93,12 @@ Available options:
  * `-q`: command line to run for each quotation.
 
 Handler command lines will receive mention via the standard input.
+
+## How to mark a tweet as a favorite?
+
+You must give the ID of the tweet.
+
+~~~
+$ ./tweet.sh favorite 0123456789
+$ ./tweet.sh fav 0123456789
+~~~
