@@ -305,23 +305,6 @@ handle_mentions() {
     esac
   done
 
-  local mentions_filter="\"text\":\"[^\"]*@$user_screen_name"
-  local retweets_filter="\"text\":\"RT @$user_screen_name:"
-  local quoteds_filter="\"quoted_status\":\{[^{]*\"user\":\{[^{}]*\"screen_name\":\"$user_screen_name\""
-
-  local filters=''
-  [ "$mention_handler" != '' ] && filters="$filters|$mentions_filter"
-  [ "$retweet_handler" != '' ] && filters="$filters|$retweets_filter"
-  [ "$quoted_handler" != '' ] && filters="$filters|$quoteds_filter"
-  filters="$(echo "$filters" | sed 's/^|//')"
-
-  log "FILTERS $filters"
-  if [ "$filters" = '' ]
-  then
-    echo "ERROR: No handler is supplied." 1>&2
-    exit 1
-  fi
-
   local filtered
   local owner
   while read -r line
@@ -339,19 +322,25 @@ handle_mentions() {
 
     # Detect quotation at first, because quotation can be
     # deteted as retweet or a simple mention unexpectedly.
-    if [ "$(echo "$filtered" | egrep "$quoteds_filter")" != '' ]
+    if [ "$(echo "$line" | \
+              jq -r .quoted_status.user.screen_name)" = "$user_screen_name" ]
     then
       log "QUOTATION"
-      echo "$filtered" |
+      echo "$line" |
         (cd "$work_dir"; eval "$quoted_handler")
     # Detect retweet before reqply, because "RT: @(screenname)"
     # can be deteted as a simple mention unexpectedly.
-    elif [ "$(echo "$filtered" | egrep "$retweets_filter")" != '' ]
+    elif echo "$line" |
+           jq -r .text |
+           grep "RT @$user_screen_name:" > /dev/null
     then
       log "RETWEET"
-      echo "$filtered" |
+      echo "$line" |
         (cd "$work_dir"; eval "$retweet_handler")
-    else
+    elif echo "$line" |
+           jq -r .text |
+           grep "@$user_screen_name" > /dev/null
+    then
       log "MENTION"
       echo "$filtered" |
         (cd "$work_dir"; eval "$mention_handler")
