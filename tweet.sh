@@ -247,7 +247,6 @@ handle_mentions() {
   local replies_filter="\"text\":\"[^\"]*@$user_screen_name"
   local retweets_filter="\"text\":\"RT @$user_screen_name:"
   local quoteds_filter="\"quoted_status\":\{[^{]\*\"user\":\{[^{}]\*\"screen_name\":\"$user_screen_name\""
-  local self_tweet_filter="\"user\":\{[^{}]\*\"screen_name\":\"$user_screen_name\""
 
   local filters=''
   [ "$reply_handler" != '' ] && filters="$filters|$replies_filter"
@@ -263,12 +262,19 @@ handle_mentions() {
   fi
 
   local filtered
+  local owner
   while read line
   do
     filtered="$(echo "$line" |
-                  egrep "($filters)" |
-                  egrep -v "$self_tweet_filter")"
+                  egrep "($filters)")"
     [ "$filtered" = '' ] && continue
+
+    owner="$(echo "$filtered" | jq -r .user.screen_name)"
+    if [ "$owner" = "$user_screen_name" ]
+    then
+      log "SELF TWEET"
+      continue
+    fi
 
     # Detect quotation at first, because quotation can be
     # deteted as retweet or a simple reply unexpectedly.
