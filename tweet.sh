@@ -184,6 +184,14 @@ help() {
       echo '  ./tweet.sh favorite 012345'
       echo '  ./tweet.sh favorite https://twitter.com/username/status/012345'
       ;;
+    rt|retweet )
+      echo 'Usage:'
+      echo '  ./tweet.sh rt 012345'
+      echo '  ./tweet.sh rt https://twitter.com/username/status/012345'
+      echo '  ./tweet.sh retweet 012345'
+      echo '  ./tweet.sh retweet https://twitter.com/username/status/012345'
+      echo '  ./tweet.sh retweet https://twitter.com/username/status/012345 Your comment'
+      ;;
   esac
 }
 
@@ -357,6 +365,19 @@ favorite() {
 id $id
 FIN
 }
+
+retweet() {
+  ensure_available
+
+  local target="$1"
+  shift
+
+  local id="$(echo "$target" | extract_tweet_id)"
+
+  call_api POST "https://api.twitter.com/1.1/statuses/retweet/$id.json"
+#  echo "status $*" | call_api POST "https://api.twitter.com/1.1/statuses/retweet/$id.json"
+}
+
 
 
 
@@ -562,6 +583,9 @@ case "$command" in
     ;;
   fav|favorite )
     favorite "$@"
+    ;;
+  rt|retweet )
+    retweet "$@"
     ;;
   help|* )
     help "$@"
