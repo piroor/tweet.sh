@@ -161,6 +161,7 @@ help() {
       echo 'Usage:'
       echo '  ./tweet.sh search -q "queries" -l "ja" -c 10'
       echo '  ./tweet.sh search -q "Bash OR Shell Script"'
+      echo '  ./tweet.sh search -q "queries" -h "cat"'
       ;;
     watch-mentions )
       echo 'Usage:'
@@ -179,9 +180,10 @@ search() {
   local lang='en'
   local locale='en'
   local count=10
+  local handler=''
 
   OPTIND=1
-  while getopts q:l:c: OPT
+  while getopts q:l:c:h: OPT
   do
     case $OPT in
       q )
@@ -193,25 +195,59 @@ search() {
       c )
         count="$OPTARG"
         ;;
+      h )
+        handler="$OPTARG"
+        ;;
     esac
   done
 
   [ "$lang" = 'ja' ] && locale='ja'
 
-  cat << FIN | call_api GET https://api.twitter.com/1.1/search/tweets.json
+  if [ "$handler" = '' ]
+  then
+    cat << FIN | call_api GET https://api.twitter.com/1.1/search/tweets.json
 q $query
 lang $lang
 locale $locale
 result_type recent
 count $count
 FIN
+  else
+    echo "Tracking tweets with the query: $query..." 1>&2
+    local user_screen_name="$(self_screen_name)"
+    cat << FIN | call_api POST https://stream.twitter.com/1.1/statuses/filter.json | handle_search_results "$user_screen_name" "$handler"
+track $query
+FIN
+  fi
+}
+
+handle_search_results() {
+  local user_screen_name="$1"
+  local handler="$2"
+  local self_tweet_filter="^\{[^{]*\"user\":\{[^{}]*\"screen_name\":\"$user_screen_name\""
+
+  local filtered
+  while read line
+  do
+    filtered="$(echo "$line" |
+                  egrep -v "$self_tweet_filter")"
+    [ "$filtered" = '' ] && continue
+
+    echo "$filtered" |
+      (cd "$work_dir"; eval "$handler")
+  done
+}
+
+self_screen_name() {
+  call_api GET https://api.twitter.com/1.1/account/verify_credentials.json |
+    jq -r .screen_name |
+    tr -d '\n'
 }
 
 watch_mentions() {
   ensure_available
 
-  local credentials="$(call_api GET https://api.twitter.com/1.1/account/verify_credentials.json)"
-  local user_screen_name="$(echo "$credentials" | jq -r .screen_name | tr -d '\n')"
+  local user_screen_name="$(self_screen_name)"
   echo "Tracking mentions for $user_screen_name..." 1>&2
 
   cat << FIN | call_api GET https://userstream.twitter.com/1.1/user.json | handle_mentions "$user_screen_name" "$@"
