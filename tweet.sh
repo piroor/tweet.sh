@@ -213,7 +213,13 @@ help() {
       echo '  ./tweet.sh rt https://twitter.com/username/status/012345'
       echo '  ./tweet.sh retweet 012345'
       echo '  ./tweet.sh retweet https://twitter.com/username/status/012345'
-      #echo '  ./tweet.sh retweet https://twitter.com/username/status/012345 Your comment'
+      ;;
+    unrt|unretweet )
+      echo 'Usage:'
+      echo '  ./tweet.sh unrt 012345'
+      echo '  ./tweet.sh unrt https://twitter.com/username/status/012345'
+      echo '  ./tweet.sh unretweet 012345'
+      echo '  ./tweet.sh unretweet https://twitter.com/username/status/012345'
       ;;
     body )
       echo 'Usage:'
@@ -439,14 +445,51 @@ retweet() {
   call_api POST "https://api.twitter.com/1.1/statuses/retweet/$id.json"
 }
 
+unretweet() {
+  ensure_available
+
+  local target="$1"
+  shift
+
+  local id="$(echo "$target" | extract_tweet_id)"
+
+  local retweet_id="$(show_with_my_retweet "$id" | jq -r .current_user_retweet.id_str)"
+  delete "$retweet_id"
+}
+
+show_with_my_retweet() {
+  ensure_available
+
+  local target="$1"
+  shift
+
+  local id="$(echo "$target" | extract_tweet_id)"
+
+  cat << FIN | call_api GET https://api.twitter.com/1.1/statuses/show.json
+id $id
+include_my_retweet true
+FIN
+}
+
+show() {
+  ensure_available
+
+  local target="$1"
+  shift
+
+  local id="$(echo "$target" | extract_tweet_id)"
+
+  cat << FIN | call_api GET https://api.twitter.com/1.1/statuses/show.json
+id $id
+FIN
+}
+
 body() {
   local target="$1"
   if [ "$target" != '' ]
   then
     local id="$(echo "$target" | extract_tweet_id)"
-    cat << FIN | call_api GET https://api.twitter.com/1.1/statuses/show.json | body
-id $id
-FIN
+    show "$id" | body
   else
     jq -r .text |
       unicode_unescape
@@ -458,9 +501,7 @@ owner_screen_name() {
   if [ "$target" != '' ]
   then
     local id="$(echo "$target" | extract_tweet_id)"
-    cat << FIN | call_api GET https://api.twitter.com/1.1/statuses/show.json | echo "@$(extract_owner)"
-id $id
-FIN
+    show | echo "@$(extract_owner)"
   else
     echo "@$(extract_owner)"
   fi
@@ -691,6 +732,9 @@ case "$command" in
     ;;
   rt|retweet )
     retweet "$@"
+    ;;
+  unrt|unretweet )
+    unretweet "$@"
     ;;
   body )
     body "$@"

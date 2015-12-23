@@ -32,6 +32,7 @@ Available commands are:
  * `favorite` (`fav`): marks a tweet as a favorite.
  * `unfavorite` (`unfav`): removes favorited flag of a tweet.
  * `retweet` (`rt`): retweets a tweet.
+ * `unretweet` (`unrt`): deletes the retweet of a tweet.
  * `body`: extracts the body of a tweet.
  * `owner`: extracts the owner of a tweet.
 
@@ -158,6 +159,15 @@ $ ./tweet.sh rt https://twitter.com/username/status/0123456789
 
 Note, you cannot add extra comment for the RT.
 Instead you simply post a tweet including the URL of the original tweet.
+
+To delete your retweet, simply use the inverted version command `unretweet` (`unrt`) as:
+
+~~~
+$ ./tweet.sh unretweet 0123456789
+$ ./tweet.sh unretweet https://twitter.com/username/status/0123456789
+$ ./tweet.sh unrt 0123456789
+$ ./tweet.sh unrt https://twitter.com/username/status/0123456789
+~~~
 
 ## How to read the body of a tweet?
 
