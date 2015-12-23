@@ -25,9 +25,9 @@ $ ./tweet.sh [command] [...arguments]
 Available commands are:
 
  * `post`: posts a new tweet.
- * `reply`: replies to a tweet.
+ * `reply`: replies to an existing tweet.
  * `delete` (`del`): deletes a tweet.
- * `search`: searches tweets.
+ * `search`: searches tweets with queries.
  * `watch-mentions`: watches mentions and executes handlers for each mention.
  * `favorite` (`fav`): marks a tweet as a favorite.
  * `unfavorite` (`unfav`): removes favorited flag of a tweet.
@@ -44,33 +44,43 @@ If you hope to see detailed logs, run the script with an environment variable `D
 $ env DEBUG=1 ./tweet.sh search -q "Bash"
 ~~~
 
-## How to post a tweet?
+## How to post a new tweet?
 
-For example:
+The `post` command posts a new tweet to your timeline.
 
 ~~~
 $ ./tweet.sh post A tweet from command line
 $ ./tweet.sh post 何らかのつぶやき
 ~~~
 
-All rest arguments are posted as a tweet.
+All rest arguments following to the command name are posted as a tweet.
 
-## How to reply to a tweet?
+## How to reply to an existing tweet?
 
-You must specify the ID or the URL of the tweet which is replied.
+If you hope to mention to another user, simply you have to `post` a tweet including his/her screen name.
 
 ~~~
-$ ./tweet.sh reply 0123456789 @username A regular reply
+$ ./tweet.sh post @friend Hi!
+~~~
+
+When you hope to reply to an existing tweet, you need to use another command `reply`.
+You must specify the ID or the URL of the replied tweet.
+
+~~~
+$ ./tweet.sh reply 0123456789 @friend A regular reply
 $ ./tweet.sh reply 0123456789 A silent reply
-$ ./tweet.sh reply https://twitter.com/username/status/0123456789 @username A regular reply
+$ ./tweet.sh reply https://twitter.com/username/status/0123456789 @friend A regular reply
 $ ./tweet.sh reply https://twitter.com/username/status/0123456789 A silent reply
 ~~~
 
-All rest arguments are posted as a tweet.
-Note, you have to include the user's screen name manually if it is needed.
+All rest arguments following to the command name and the tweet's identifier are posted as a tweet.
+
+Note that you have to include the user's screen name manually if it is needed.
+The `reply` command does not append it automatically.
 
 ## How to delete a tweet?
 
+You can delete your tweet via the `delete` (`del`) command.
 You must specify the ID or the URL of the tweet which is deleted.
 
 ~~~
@@ -82,7 +92,7 @@ $ ./tweet.sh del https://twitter.com/username/status/0123456789
 
 ## How to search tweets?
 
-For example:
+You can search tweets based on queries with the command `search`.
 
 ~~~
 $ ./tweet.sh search -q "queries" -l "ja" -c 10
@@ -95,24 +105,24 @@ Available options:
  * `-l`: language.
  * `-c`: count of tweets to be responded. 10 by default.
 
-## How to watch search results with a handler?
+Then matched tweets will be reported via the standard output.
 
-For example:
+If you hope to observe new tweets matched to the query continuously, specify a callback command line as the handler via the `-h` option.
 
 ~~~
-$ ./tweet.sh search -q "queries" -h "cat"
+$ ./tweet.sh search -q "queries" -h "echo 'FOUND'; cat"
 ~~~
 
-Available options:
+In this case, only following options are available:
 
  * `-q`: queries.
  * `-h`: command line to run for each search result.
 
-Handler command line will receive result via the standard input.
+Handler command line will receive a JSON string of a [matched tweet](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid) via the standard input.
 
-## How to watch mentions?
+## How to watch various mentions?
 
-For example:
+If you hope to observe mentions and other events around you, `watch-mentions` command will help you.
 
 ~~~
 $ ./tweet.sh watch-mentions -r "echo 'REPLY'; cat" \
@@ -128,11 +138,12 @@ Available options:
  * `-q`: command line to run for each quotation.
  * `-f`: command line to run when a user follows you.
 
-Handler command lines will receive a JSON of [the mention](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid) or [the event](https://dev.twitter.com/streaming/overview/messages-types#Events_event) via the standard input.
+Handler command lines will receive a JSON string of the [mention](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid) or the [event](https://dev.twitter.com/streaming/overview/messages-types#Events_event) via the standard input.
 
-## How to mark a tweet as a favorite?
+## How to favorite/unfavorite a tweet?
 
-You must give the ID or the URL of the tweet.
+You can mark an existing tweet as a favorited, by the `favorite` (`fav`) command.
+You must give the ID or the URL of the tweet to be favorited.
 
 ~~~
 $ ./tweet.sh favorite 0123456789
@@ -141,7 +152,7 @@ $ ./tweet.sh fav 0123456789
 $ ./tweet.sh fav https://twitter.com/username/status/0123456789
 ~~~
 
-To unfavorite, you should use the inverted version, `unfavorite` (`unfav`) as:
+To unfavorite a tweet, the inverted version command `unfavorite` (`unfav`) is also available.
 
 ~~~
 $ ./tweet.sh unfavorite 0123456789
@@ -152,7 +163,8 @@ $ ./tweet.sh unfav https://twitter.com/username/status/0123456789
 
 ## How to reweet a tweet?
 
-You must give the ID or the URL of the tweet.
+You can retweet an existing tweet to your follwoers, by the `retweet` (`rt`) command.
+You must give the ID or the URL of the tweet to be retweeted.
 
 ~~~
 $ ./tweet.sh retweet 0123456789
@@ -162,9 +174,14 @@ $ ./tweet.sh rt https://twitter.com/username/status/0123456789
 ~~~
 
 Note, you cannot add extra comment for the RT.
-Instead you simply post a tweet including the URL of the original tweet.
+Instead, if you hope to "quote" the tweet, then you just have to `post` with the URL of the original tweet.
 
-To delete your retweet, simply use the inverted version command `unretweet` (`unrt`) as:
+~~~
+$ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
+~~~
+
+To cancel your retweet, the inverted version command `unretweet` (`unrt`) is also available.
+You must give the ID or the URL of the tweet retweeted by you.
 
 ~~~
 $ ./tweet.sh unretweet 0123456789
@@ -175,6 +192,7 @@ $ ./tweet.sh unrt https://twitter.com/username/status/0123456789
 
 ## How to follow/unfollow my friend?
 
+There is a command `follow` to follow another user.
 You must give the name of the user (sceen name). The "@" can be trimmed.
 
 ~~~
@@ -182,7 +200,7 @@ $ ./tweet.sh follow @username
 $ ./tweet.sh follow username
 ~~~
 
-To unfollow him/her, simply use the inverted command `unfollow` as:
+To unfollow him/her, simply use the inverted command `unfollow`.
 
 ~~~
 $ ./tweet.sh unfollow @username
@@ -191,7 +209,7 @@ $ ./tweet.sh unfollow username
 
 ## How to read the body of a tweet?
 
-You must give the ID or the URL of the tweet, or a JSON via the standard input.
+You must give the ID or the URL of the tweet, or a JSON string via the standard input.
 
 ~~~
 $ ./tweet.sh body 0123456789
@@ -201,7 +219,7 @@ $ echo "$tweet_json" | ./tweet.sh body
 
 ## How to get the owner of a tweet?
 
-You must give the ID or the URL of the tweet, or a JSON via the standard input.
+You must give the ID or the URL of the tweet, or a JSON string via the standard input.
 
 ~~~
 $ ./tweet.sh owner 0123456789
