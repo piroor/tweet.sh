@@ -30,6 +30,7 @@ Available commands are:
  * `search`: searches tweets.
  * `watch-mentions`: watches mentions and executes handlers for each mention.
  * `favorite` (`fav`): marks a tweet as a favorite.
+ * `unfavorite` (`unfav`): removes favorited flag of a tweet.
  * `retweet` (`rt`): retweets a tweet.
  * `body`: extracts the body of a tweet.
  * `owner`: extracts the owner of a tweet.
@@ -133,6 +134,15 @@ $ ./tweet.sh favorite 0123456789
 $ ./tweet.sh favorite https://twitter.com/username/status/0123456789
 $ ./tweet.sh fav 0123456789
 $ ./tweet.sh fav https://twitter.com/username/status/0123456789
+~~~
+
+To unfavorite, you should use the inverted version, `unfavorite` (`unfav`) as:
+
+~~~
+$ ./tweet.sh unfavorite 0123456789
+$ ./tweet.sh unfavorite https://twitter.com/username/status/0123456789
+$ ./tweet.sh unfav 0123456789
+$ ./tweet.sh unfav https://twitter.com/username/status/0123456789
 ~~~
 
 ## How to reweet a tweet?

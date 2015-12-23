@@ -200,6 +200,13 @@ help() {
       echo '  ./tweet.sh favorite 012345'
       echo '  ./tweet.sh favorite https://twitter.com/username/status/012345'
       ;;
+    unfav|unfavorite )
+      echo 'Usage:'
+      echo '  ./tweet.sh unfav 012345'
+      echo '  ./tweet.sh unfav https://twitter.com/username/status/012345'
+      echo '  ./tweet.sh unfavorite 012345'
+      echo '  ./tweet.sh unfavorite https://twitter.com/username/status/012345'
+      ;;
     rt|retweet )
       echo 'Usage:'
       echo '  ./tweet.sh rt 012345'
@@ -406,6 +413,17 @@ favorite() {
   local id="$(echo "$target" | extract_tweet_id)"
 
   cat << FIN | call_api POST https://api.twitter.com/1.1/favorites/create.json
+id $id
+FIN
+}
+
+unfavorite() {
+  ensure_available
+
+  local target="$1"
+  local id="$(echo "$target" | extract_tweet_id)"
+
+  cat << FIN | call_api POST https://api.twitter.com/1.1/favorites/destroy.json
 id $id
 FIN
 }
@@ -667,6 +685,9 @@ case "$command" in
     ;;
   fav|favorite )
     favorite "$@"
+    ;;
+  unfav|unfavorite )
+    unfavorite "$@"
     ;;
   rt|retweet )
     retweet "$@"
