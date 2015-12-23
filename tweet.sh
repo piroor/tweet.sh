@@ -221,6 +221,16 @@ help() {
       echo '  ./tweet.sh unretweet 012345'
       echo '  ./tweet.sh unretweet https://twitter.com/username/status/012345'
       ;;
+    follow )
+      echo 'Usage:'
+      echo '  ./tweet.sh follow username'
+      echo '  ./tweet.sh follow @username'
+      ;;
+    unfollow )
+      echo 'Usage:'
+      echo '  ./tweet.sh unfollow username'
+      echo '  ./tweet.sh unfollow @username'
+      ;;
     body )
       echo 'Usage:'
       echo '  ./tweet.sh body 012345'
@@ -484,6 +494,29 @@ id $id
 FIN
 }
 
+follow() {
+  ensure_available
+
+  local target="$1"
+  local screen_name="$(echo "$target" | sed 's/^@//')"
+
+  cat << FIN | call_api POST https://api.twitter.com/1.1/friendships/create.json
+screen_name $screen_name
+follow true
+FIN
+}
+
+unfollow() {
+  ensure_available
+
+  local target="$1"
+  local screen_name="$(echo "$target" | sed 's/^@//')"
+
+  cat << FIN | call_api POST https://api.twitter.com/1.1/friendships/destroy.json
+screen_name $screen_name
+FIN
+}
+
 body() {
   local target="$1"
   if [ "$target" != '' ]
@@ -735,6 +768,12 @@ case "$command" in
     ;;
   unrt|unretweet )
     unretweet "$@"
+    ;;
+  follow )
+    follow "$@"
+    ;;
+  unfollow )
+    unfollow "$@"
     ;;
   body )
     body "$@"
