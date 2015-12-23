@@ -133,6 +133,9 @@ In this case, only following options are available:
 
 Handler command line will receive a JSON string of a [matched tweet](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid) via the standard input.
 
+In this case this script stays running.
+To stop the process, you need to send the `SIGINT` signal via Ctrl-C or something.
+
 ## How to watch various mentions?
 
 If you hope to observe mentions and other events around you, `watch-mentions` command will help you.
@@ -152,6 +155,9 @@ Available options:
  * `-f`: command line to run when a user follows you.
 
 Handler command lines will receive a JSON string of the [mention](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid) or the [event](https://dev.twitter.com/streaming/overview/messages-types#Events_event) via the standard input.
+
+In this case this script stays running.
+To stop the process, you need to send the `SIGINT` signal via Ctrl-C or something.
 
 ## How to favorite/unfavorite a tweet?
 
