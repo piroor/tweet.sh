@@ -117,7 +117,8 @@ For example:
 ~~~
 $ ./tweet.sh watch-mentions -r "echo 'REPLY'; cat" \
                             -t "echo 'RT'; cat" \
-                            -q "echo 'QT'; cat"
+                            -q "echo 'QT'; cat" \
+                            -f "echo 'FOLLOWED'; cat"
 ~~~
 
 Available options:
@@ -125,8 +126,9 @@ Available options:
  * `-m`: command line to run for each reply or mention.
  * `-r`: command line to run for each retweet.
  * `-q`: command line to run for each quotation.
+ * `-f`: command line to run when a user follows you.
 
-Handler command lines will receive mention via the standard input.
+Handler command lines will receive a JSON of [the mention](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid) or [the event](https://dev.twitter.com/streaming/overview/messages-types#Events_event) via the standard input.
 
 ## How to mark a tweet as a favorite?
 
