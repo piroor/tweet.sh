@@ -16,6 +16,18 @@ ACCESS_TOKEN_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 If there is a key file named `tweet.client.key` in the current directory, `tweet.sh` will load it.
 Otherwise, the file `~/.tweet.client.key` will be used as the default key file.
 
+Moreover, you can give those information via environment variables without a key file.
+
+~~~
+$ export CONSUMER_KEY=xxxxxxxxxxxxxxxxxxx
+$ export CONSUMER_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+$ export ACCESS_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+$ export ACCESS_TOKEN_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+$ ./tweet.sh post "Hello!"
+~~~
+
+This form will be useful to implement a bot program.
+
 ## Usage
 
 ~~~
