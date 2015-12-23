@@ -36,6 +36,7 @@ $ ./tweet.sh [command] [...arguments]
 
 Available commands are:
 
+ * `help`: shows usage of the `tweet.sh` itself.
  * `post`: posts a new tweet.
  * `reply`: replies to an existing tweet.
  * `delete` (`del`): deletes a tweet.
