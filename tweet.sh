@@ -176,6 +176,13 @@ help() {
       echo '  ./tweet.sh reply 012345 a reply'
       echo '  ./tweet.sh reply https://twitter.com/username/status/012345 a reply'
       ;;
+    del|delete )
+      echo 'Usage:'
+      echo '  ./tweet.sh del 012345'
+      echo '  ./tweet.sh del https://twitter.com/username/status/012345'
+      echo '  ./tweet.sh delete 012345'
+      echo '  ./tweet.sh delete https://twitter.com/username/status/012345'
+      ;;
     search )
       echo 'Usage:'
       echo '  ./tweet.sh search -q "queries" -l "ja" -c 10'
@@ -233,6 +240,15 @@ reply() {
 status $*
 in_reply_to_status_id $id
 FIN
+}
+
+delete() {
+  local target="$1"
+  shift
+
+  local id="$(echo "$target" | extract_tweet_id)"
+
+  call_api POST "https://api.twitter.com/1.1/statuses/destroy/$id.json"
 }
 
 search() {
@@ -639,6 +655,9 @@ case "$command" in
     ;;
   reply )
     reply "$@"
+    ;;
+  del|delete )
+    delete "$@"
     ;;
   search )
     search "$@"

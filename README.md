@@ -26,6 +26,7 @@ Available commands are:
 
  * `post`: posts a new tweet.
  * `reply`: replies to a tweet.
+ * `delete` (`del`): deletes a tweet.
  * `search`: searches tweets.
  * `watch-mentions`: watches mentions and executes handlers for each mention.
  * `favorite` (`fav`): marks a tweet as a favorite.
@@ -63,6 +64,17 @@ $ ./tweet.sh reply https://twitter.com/username/status/0123456789 A silent reply
 
 All rest arguments are posted as a tweet.
 Note, you have to include the user's screen name manually if it is needed.
+
+## How to delete a tweet?
+
+You must specify the ID or the URL of the tweet which is deleted.
+
+~~~
+$ ./tweet.sh delete 0123456789
+$ ./tweet.sh delete https://twitter.com/username/status/0123456789
+$ ./tweet.sh del 0123456789
+$ ./tweet.sh del https://twitter.com/username/status/0123456789
+~~~
 
 ## How to search tweets?
 
