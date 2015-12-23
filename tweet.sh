@@ -197,7 +197,7 @@ help() {
       ;;
     watch-mentions )
       echo 'Usage:'
-      echo "  ./tweet.sh watch-mentions -m \"echo 'MENTION'; cat\" -r \"echo 'RT'; cat\" -q \"echo 'QT'; cat\""
+      echo "  ./tweet.sh watch-mentions -m \"echo 'MENTION'; cat\" -r \"echo 'RT'; cat\" -q \"echo 'QT'; cat\" -f \"echo 'FOLLOWED'; cat\""
       ;;
     fav|favorite )
       echo 'Usage:'
@@ -367,9 +367,10 @@ handle_mentions() {
   local mention_handler=''
   local retweet_handler=''
   local quoted_handler=''
+  local followed_handler=''
 
   OPTIND=1
-  while getopts m:r:q: OPT
+  while getopts m:r:q:f: OPT
   do
     case $OPT in
       m )
@@ -381,23 +382,35 @@ handle_mentions() {
       q )
         quoted_handler="$OPTARG"
         ;;
+      f )
+        followed_handler="$OPTARG"
+        ;;
     esac
   done
 
-  local filtered
   local owner
   while read -r line
   do
+    # Non-tweet event
+    case "$(echo "$line" | jq -r .event)" in
+      null )
+        : # do nothing for tweets at here
+        ;;
+      follow )
+        log "FOLLOWED"
+        [ "$followed_handler" = '' ] && continue
+        echo "$line" |
+          (cd "$work_dir"; eval "$followed_handler")
+        continue
+        ;;
+      * ) # ignore other unknown events
+        continue
+        ;;
+    esac
+
     # Ignore self tweet
     owner="$(echo "$line" | extract_owner)"
     [ "$owner" = "$user_screen_name" ] && continue
-
-    # Ignore non-tweet entry
-    [ "$(echo "$line" | jq -r .event)" != 'null' ] && continue
-
-    filtered="$(echo "$line" |
-                  egrep "($filters)")"
-    [ "$filtered" = '' ] && continue
 
     # Detect quotation at first, because quotation can be
     # deteted as retweet or a simple mention unexpectedly.
@@ -405,6 +418,7 @@ handle_mentions() {
               jq -r .quoted_status.user.screen_name)" = "$user_screen_name" ]
     then
       log "QUOTATION"
+      [ "$quoted_handler" = '' ] && continue
       echo "$line" |
         (cd "$work_dir"; eval "$quoted_handler")
     # Detect retweet before reqply, because "RT: @(screenname)"
@@ -414,6 +428,7 @@ handle_mentions() {
            grep "RT @$user_screen_name:" > /dev/null
     then
       log "RETWEET"
+      [ "$retweet_handler" = '' ] && continue
       echo "$line" |
         (cd "$work_dir"; eval "$retweet_handler")
     elif echo "$line" |
@@ -421,7 +436,8 @@ handle_mentions() {
            grep "@$user_screen_name" > /dev/null
     then
       log "MENTION"
-      echo "$filtered" |
+      [ "$mention_handler" = '' ] && continue
+      echo "$line" |
         (cd "$work_dir"; eval "$mention_handler")
     fi
   done
