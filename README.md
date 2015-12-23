@@ -33,6 +33,8 @@ Available commands are:
  * `unfavorite` (`unfav`): removes favorited flag of a tweet.
  * `retweet` (`rt`): retweets a tweet.
  * `unretweet` (`unrt`): deletes the retweet of a tweet.
+ * `follow`: follows a user.
+ * `unfollow`: unfollows a user.
  * `body`: extracts the body of a tweet.
  * `owner`: extracts the owner of a tweet.
 
@@ -167,6 +169,22 @@ $ ./tweet.sh unretweet 0123456789
 $ ./tweet.sh unretweet https://twitter.com/username/status/0123456789
 $ ./tweet.sh unrt 0123456789
 $ ./tweet.sh unrt https://twitter.com/username/status/0123456789
+~~~
+
+## How to follow/unfollow my friend?
+
+You must give the name of the user (sceen name). The "@" can be trimmed.
+
+~~~
+$ ./tweet.sh follow @username
+$ ./tweet.sh follow username
+~~~
+
+To unfollow him/her, simply use the inverted command `unfollow` as:
+
+~~~
+$ ./tweet.sh unfollow @username
+$ ./tweet.sh unfollow username
 ~~~
 
 ## How to read the body of a tweet?
