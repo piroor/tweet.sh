@@ -1,4 +1,4 @@
-# tweet.sh, a Twitter client written in Bash script
+# tweet.sh, a Twitter client written in simple Bash script
 
 ## Setup
 
@@ -65,6 +65,10 @@ If you hope to see detailed logs, run the script with an environment variable `D
 ~~~
 $ env DEBUG=1 ./tweet.sh search -q "Bash"
 ~~~
+
+This script is mainly designed to be a client library to implement Twitter bot program, instead for daily human use.
+For most cases this script reports response JSONs of Twitter's APIs via the standard output.
+See descriptions of each JSON: [a tweet](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid), [an event](https://dev.twitter.com/streaming/overview/messages-types#Events_event), and other responses also.
 
 ## How to post a new tweet?
 
