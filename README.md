@@ -1,4 +1,4 @@
-# tweet.sh, a pure Bash script Twitter client
+# tweet.sh, a Twitter client written in Bash script
 
 ## Setup
 
@@ -27,6 +27,15 @@ $ ./tweet.sh post "Hello!"
 ~~~
 
 This form will be useful to implement a bot program.
+
+And, this script uses some external commands.
+You need to install them via package system on your environment: `apt`, `yum` or something.
+Required commands are:
+
+ * `curl`
+ * `jq`
+ * `nkf`
+ * `openssl`
 
 ## Usage
 
