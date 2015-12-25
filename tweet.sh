@@ -56,26 +56,26 @@ exist_command() {
 }
 
 load_keys() {
-if [ "$CONSUMER_KEY" = '' -a \
-     -f "$work_dir/tweet.client.key" ]
-then
-  log 'Using client key at the current directory.'
-  source "$work_dir/tweet.client.key"
-fi
+  if [ "$CONSUMER_KEY" = '' -a \
+       -f "$work_dir/tweet.client.key" ]
+  then
+    log 'Using client key at the current directory.'
+    source "$work_dir/tweet.client.key"
+  fi
 
-if [ "$CONSUMER_KEY" = '' -a \
-     -f ~/.tweet.client.key ]
-then
-  log 'Using client key at the home directory.'
-  source ~/.tweet.client.key
-fi
+  if [ "$CONSUMER_KEY" = '' -a \
+       -f ~/.tweet.client.key ]
+  then
+    log 'Using client key at the home directory.'
+    source ~/.tweet.client.key
+  fi
 
-if [ "$CONSUMER_KEY" = '' -a \
-     -f "$tools_dir/tweet.client.key" ]
-then
-  log 'Using client key at the tools directory.'
-  source "$tools_dir/tweet.client.key"
-fi
+  if [ "$CONSUMER_KEY" = '' -a \
+       -f "$tools_dir/tweet.client.key" ]
+  then
+    log 'Using client key at the tools directory.'
+    source "$tools_dir/tweet.client.key"
+  fi
 }
 
 case $(uname) in
