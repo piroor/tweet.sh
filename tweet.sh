@@ -336,6 +336,7 @@ watch_search_results() {
   local handler="$2"
   echo "Tracking tweets with the query: $query..." 1>&2
   local user_screen_name="$(self_screen_name)"
+  trap 'kill $(jobs -p)' EXIT
   cat << FIN | call_api POST https://stream.twitter.com/1.1/statuses/filter.json | handle_search_results "$user_screen_name" "$handler"
 track $query
 FIN
@@ -369,6 +370,7 @@ watch_mentions() {
   local user_screen_name="$(self_screen_name)"
   echo "Tracking mentions for $user_screen_name..." 1>&2
 
+  trap 'kill $(jobs -p)' EXIT
   cat << FIN | call_api GET https://userstream.twitter.com/1.1/user.json | handle_mentions "$user_screen_name" "$@"
 replies all
 track $user_screen_name
