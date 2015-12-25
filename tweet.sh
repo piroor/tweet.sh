@@ -412,8 +412,10 @@ handle_mentions() {
         : # do nothing for tweets at here
         ;;
       follow )
-        log "FOLLOWED"
         [ "$followed_handler" = '' ] && continue
+        local screen_name="$(echo "$line" | jq -r .source.screen_name)"
+        [ "$screen_name" = "$user_screen_name" ] && continue
+        log "FOLLOWED"
         echo "$line" |
           (cd "$work_dir"; eval "$followed_handler")
         continue
