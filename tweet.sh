@@ -348,6 +348,12 @@ handle_search_results() {
   local owner
   while read -r line
   do
+    if [ "$line" = 'Exceeded connection limit for user' ]
+    then
+      echo "$line" 1>&2
+      exit 1
+    fi
+
     # Ignore self tweet
     owner="$(echo "$line" | extract_owner)"
     [ "$owner" = "$user_screen_name" ] && continue
@@ -406,6 +412,12 @@ handle_mentions() {
   local owner
   while read -r line
   do
+    if [ "$line" = 'Exceeded connection limit for user' ]
+    then
+      echo "$line" 1>&2
+      exit 1
+    fi
+
     # Non-tweet event
     case "$(echo "$line" | jq -r .event)" in
       null )
