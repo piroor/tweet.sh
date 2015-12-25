@@ -383,7 +383,8 @@ watch_mentions() {
     esac
   done
 
-  local tracking_keywords="$(self_screen_name)"
+  local user_screen_name="$(self_screen_name)"
+  local tracking_keywords="$user_screen_name"
   [ "$extra_keywords" != '' ] && tracking_keywords="$tracking_keywords,$extra_keywords"
 
   echo "Tracking mentions for $tracking_keywords..." 1>&2
