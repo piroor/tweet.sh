@@ -55,7 +55,7 @@ exist_command() {
   type "$1" > /dev/null 2>&1
 }
 
-
+load_keys() {
 if [ "$CONSUMER_KEY" = '' -a \
      -f "$work_dir/tweet.client.key" ]
 then
@@ -76,6 +76,7 @@ then
   log 'Using client key at the tools directory.'
   source "$tools_dir/tweet.client.key"
 fi
+}
 
 case $(uname) in
   Darwin|*BSD|CYGWIN*)
@@ -89,6 +90,8 @@ esac
 
 ensure_available() {
   local fatal_error=0
+
+  load_keys
 
   if [ "$CONSUMER_KEY" = '' ]
   then
