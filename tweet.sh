@@ -404,7 +404,7 @@ handle_mentions() {
   local followed_handler=''
 
   OPTIND=1
-  while getopts m:r:q:f: OPT
+  while getopts k:m:r:q:f: OPT
   do
     case $OPT in
       m )
