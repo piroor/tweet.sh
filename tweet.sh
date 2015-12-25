@@ -413,7 +413,9 @@ handle_mentions() {
         ;;
       follow )
         [ "$followed_handler" = '' ] && continue
-        local screen_name="$(echo "$line" | jq -r .source.screen_name)"
+        local screen_name="$(echo "$line" | \
+                               jq -r .source.screen_name | \
+                               tr -d '\n')"
         [ "$screen_name" = "$user_screen_name" ] && continue
         log "FOLLOWED"
         echo "$line" |
@@ -432,7 +434,8 @@ handle_mentions() {
     # Detect quotation at first, because quotation can be
     # deteted as retweet or a simple mention unexpectedly.
     if [ "$(echo "$line" | \
-              jq -r .quoted_status.user.screen_name)" = "$user_screen_name" ]
+              jq -r .quoted_status.user.screen_name | \
+              tr -d '\n')" = "$user_screen_name" ]
     then
       log "QUOTATION"
       [ "$quoted_handler" = '' ] && continue
