@@ -206,7 +206,7 @@ help() {
       ;;
     watch-mentions )
       echo 'Usage:'
-      echo "  ./tweet.sh watch-mentions -k keyword1,keyword2 -m \"echo 'MENTION'; cat\" -r \"echo 'RT'; cat\" -q \"echo 'QT'; cat\" -f \"echo 'FOLLOWED'; cat\""
+      echo "  ./tweet.sh watch-mentions -k keyword1,keyword2 -m \"echo 'MENTION'; cat\" -r \"echo 'RT'; cat\" -q \"echo 'QT'; cat\" -f \"echo 'FOLLOWED'; cat\" -s \"echo 'SEARCH-RESULT'; cat\""
       ;;
     fav|favorite )
       echo 'Usage:'
@@ -374,7 +374,7 @@ watch_mentions() {
 
   local extra_keywords=''
   OPTIND=1
-  while getopts k: OPT
+  while getopts k:m:r:q:f:s: OPT
   do
     case $OPT in
       k )
@@ -402,9 +402,10 @@ handle_mentions() {
   local retweet_handler=''
   local quoted_handler=''
   local followed_handler=''
+  local search_handler=''
 
   OPTIND=1
-  while getopts k:m:r:q:f: OPT
+  while getopts k:m:r:q:f:s: OPT
   do
     case $OPT in
       m )
@@ -418,6 +419,9 @@ handle_mentions() {
         ;;
       f )
         followed_handler="$OPTARG"
+        ;;
+      s )
+        search_handler="$OPTARG"
         ;;
     esac
   done
@@ -484,6 +488,11 @@ handle_mentions() {
       [ "$mention_handler" = '' ] && continue
       echo "$line" |
         (cd "$work_dir"; eval "$mention_handler")
+    else
+      log "SEARCH RESULT"
+      [ "$search_handler" = '' ] && continue
+      echo "$line" |
+        (cd "$work_dir"; eval "$search_handler")
     fi
   done
 }

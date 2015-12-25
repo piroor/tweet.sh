@@ -151,7 +151,7 @@ In this case this script stays running.
 To stop the process, you need to send the `SIGINT` signal via Ctrl-C or something.
 
 *Important note: you cannot use this feature together with `watch-mentions` command. Only one streaming API is allowed for you at once.*
-*If you hope to watch search results with mentions, use the `-k` option of the `watch-mentions` command.*
+*If you hope to watch search results with mentions, use the `-k` and `-s` options of the `watch-mentions` command.*
 
 ## How to watch various mentions?
 
@@ -162,7 +162,8 @@ $ ./tweet.sh watch-mentions -k "keyword1,keyword2,..." \
                             -r "echo 'REPLY'; cat" \
                             -t "echo 'RT'; cat" \
                             -q "echo 'QT'; cat" \
-                            -f "echo 'FOLLOWED'; cat"
+                            -f "echo 'FOLLOWED'; cat" \
+                            -s "echo 'SEARCH-RESUT'; cat"
 ~~~
 
 Available options:
@@ -172,6 +173,7 @@ Available options:
  * `-r`: command line to run for each retweet.
  * `-q`: command line to run for each quotation.
  * `-f`: command line to run when a user follows you.
+ * `-s`: command line to run for each search result, matched to the keywords given via the `-k` option.
 
 Handler command lines will receive a JSON string of the [mention](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid) or the [event](https://dev.twitter.com/streaming/overview/messages-types#Events_event) via the standard input.
 
@@ -179,7 +181,7 @@ In this case this script stays running.
 To stop the process, you need to send the `SIGINT` signal via Ctrl-C or something.
 
 *Important note: you cannot use this feature together with `search` command with a handler. Only one streaming API is allowed for you at once.*
-*If you hope to watch search results with mentions, use the `-k` option instead of the `search` command.*
+*If you hope to watch search results with mentions, use the `-k` and `-s` options instead of the `search` command.*
 
 ## How to favorite/unfavorite a tweet?
 
