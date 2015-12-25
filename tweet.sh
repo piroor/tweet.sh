@@ -206,7 +206,7 @@ help() {
       ;;
     watch-mentions )
       echo 'Usage:'
-      echo "  ./tweet.sh watch-mentions -m \"echo 'MENTION'; cat\" -r \"echo 'RT'; cat\" -q \"echo 'QT'; cat\" -f \"echo 'FOLLOWED'; cat\""
+      echo "  ./tweet.sh watch-mentions -k keyword1,keyword2 -m \"echo 'MENTION'; cat\" -r \"echo 'RT'; cat\" -q \"echo 'QT'; cat\" -f \"echo 'FOLLOWED'; cat\""
       ;;
     fav|favorite )
       echo 'Usage:'
@@ -372,12 +372,25 @@ self_screen_name() {
 watch_mentions() {
   ensure_available
 
-  local user_screen_name="$(self_screen_name)"
-  echo "Tracking mentions for $user_screen_name..." 1>&2
+  local extra_keywords=''
+  OPTIND=1
+  while getopts k: OPT
+  do
+    case $OPT in
+      k )
+        extra_keywords="$OPTARG"
+        ;;
+    esac
+  done
+
+  local tracking_keywords="$(self_screen_name)"
+  [ "$extra_keywords" != '' ] && tracking_keywords="$tracking_keywords,$extra_keywords"
+
+  echo "Tracking mentions for $tracking_keywords..." 1>&2
 
   cat << FIN | call_api GET https://userstream.twitter.com/1.1/user.json | handle_mentions "$user_screen_name" "$@"
 replies all
-track $user_screen_name
+track $tracking_keywords
 FIN
 }
 

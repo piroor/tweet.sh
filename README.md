@@ -150,12 +150,16 @@ Handler command line will receive a JSON string of a [matched tweet](https://dev
 In this case this script stays running.
 To stop the process, you need to send the `SIGINT` signal via Ctrl-C or something.
 
+*Important note: you cannot use this feature together with `watch-mentions` command. Only one streaming API is allowed for you at once.*
+*If you hope to watch search results with mentions, use the `-k` option of the `watch-mentions` command.*
+
 ## How to watch various mentions?
 
-If you hope to observe mentions and other events around you, `watch-mentions` command will help you.
+If you hope to observe mentions and other events around you or any keyword, `watch-mentions` command will help you.
 
 ~~~
-$ ./tweet.sh watch-mentions -r "echo 'REPLY'; cat" \
+$ ./tweet.sh watch-mentions -k "keyword1,keyword2,..." \
+                            -r "echo 'REPLY'; cat" \
                             -t "echo 'RT'; cat" \
                             -q "echo 'QT'; cat" \
                             -f "echo 'FOLLOWED'; cat"
@@ -163,6 +167,7 @@ $ ./tweet.sh watch-mentions -r "echo 'REPLY'; cat" \
 
 Available options:
 
+ * `-k`: comma-separated list of tracking keywords.
  * `-m`: command line to run for each reply or mention.
  * `-r`: command line to run for each retweet.
  * `-q`: command line to run for each quotation.
@@ -172,6 +177,9 @@ Handler command lines will receive a JSON string of the [mention](https://dev.tw
 
 In this case this script stays running.
 To stop the process, you need to send the `SIGINT` signal via Ctrl-C or something.
+
+*Important note: you cannot use this feature together with `search` command with a handler. Only one streaming API is allowed for you at once.*
+*If you hope to watch search results with mentions, use the `-k` option instead of the `search` command.*
 
 ## How to favorite/unfavorite a tweet?
 
