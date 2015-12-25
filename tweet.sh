@@ -177,7 +177,7 @@ help() {
       echo '  unfollow       : unfollows a user.'
       echo '  body           : extracts the body of a tweet.'
       echo '  owner          : extracts the owner of a tweet.'
-      echo '  whoami         : reports the screen name of myself.'
+      echo '  whoami         : reports the screen name of yourself.'
       echo ''
       echo 'For more details, see also: "./tweet.sh help [command]"'
       ;;
