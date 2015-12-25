@@ -76,6 +76,11 @@ load_keys() {
     log 'Using client key at the tools directory.'
     source "$tools_dir/tweet.client.key"
   fi
+
+  export CONSUMER_KEY
+  export CONSUMER_SECRET
+  export ACCESS_TOKEN
+  export ACCESS_TOKEN_SECRET
 }
 
 case $(uname) in
