@@ -435,7 +435,7 @@ handle_mentions() {
       exit 1
     fi
 
-    # Non-tweet event
+    # Events
     case "$(echo "$line" | jq -r .event)" in
       null )
         : # do nothing for tweets at here
@@ -456,9 +456,9 @@ handle_mentions() {
         ;;
     esac
 
-    # Ignore self tweet
+    # Ignore self tweet or non-tweet object
     owner="$(echo "$line" | extract_owner)"
-    [ "$owner" = "$user_screen_name" ] && continue
+    [ "$owner" = "$user_screen_name" -o "$owner" = 'null' ] && continue
 
     # Detect quotation at first, because quotation can be
     # deteted as retweet or a simple mention unexpectedly.
