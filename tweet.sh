@@ -771,51 +771,51 @@ FIN
 
 if [ "$0" = "tweet.sh" ]
 then
-command="$1"
-shift
+  command="$1"
+  shift
 
-case "$command" in
-  post )
-    post "$@"
-    ;;
-  reply )
-    reply "$@"
-    ;;
-  del|delete )
-    delete "$@"
-    ;;
-  search )
-    search "$@"
-    ;;
-  watch-mentions )
-    watch_mentions "$@"
-    ;;
-  fav|favorite )
-    favorite "$@"
-    ;;
-  unfav|unfavorite )
-    unfavorite "$@"
-    ;;
-  rt|retweet )
-    retweet "$@"
-    ;;
-  unrt|unretweet )
-    unretweet "$@"
-    ;;
-  follow )
-    follow "$@"
-    ;;
-  unfollow )
-    unfollow "$@"
-    ;;
-  body )
-    body "$@"
-    ;;
-  owner )
-    owner_screen_name "$@"
-    ;;
-  help|* )
-    help "$@"
-    ;;
-esac
+  case "$command" in
+    post )
+      post "$@"
+      ;;
+    reply )
+      reply "$@"
+      ;;
+    del|delete )
+      delete "$@"
+      ;;
+    search )
+      search "$@"
+      ;;
+    watch-mentions )
+      watch_mentions "$@"
+      ;;
+    fav|favorite )
+      favorite "$@"
+      ;;
+    unfav|unfavorite )
+      unfavorite "$@"
+      ;;
+    rt|retweet )
+      retweet "$@"
+      ;;
+    unrt|unretweet )
+      unretweet "$@"
+      ;;
+    follow )
+      follow "$@"
+      ;;
+    unfollow )
+      unfollow "$@"
+      ;;
+    body )
+      body "$@"
+      ;;
+    owner )
+      owner_screen_name "$@"
+      ;;
+    help|* )
+      help "$@"
+      ;;
+  esac
 fi
