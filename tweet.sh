@@ -623,15 +623,20 @@ owner_screen_name() {
 # utilities to operate text
 
 url_encode() {
-  nkf -wMQx | \
-    sed 's/=$//' | \
-    tr '=' '%' | \
-    tr -d '\n' |
+ url_encode_each_line |
+    tr -d '\n'
+}
+
+url_encode_each_line() {
+  nkf -wMQx |
+    sed 's/=$//' |
+    tr '=' '%' |
     sed -e 's/%7E/~/g' \
         -e 's/%5F/_/g' \
         -e 's/%2D/-/g' \
         -e 's/%2E/./g'
 }
+
 
 # usage:
 #   $ cat params
@@ -644,17 +649,19 @@ url_encode() {
 to_encoded_list() {
   local delimiter="$1"
   [ "$delimiter" = '' ] && delimiter='\&'
-  transformed=$(sort -k 1 -t ' ' |
-    sed '/^$/d' |
-    while read param
-    do
-      echo "$param" |
-        url_encode |
-        sed -e 's/%20/=/' \
-            -e "s/\$/${delimiter}/"
-    done |
-    tr -d '\n' |
-    sed "s/${delimiter}\$//")
+  transformed=$( \
+    # sort params by their name
+    sort -k 1 -t ' ' |
+    # remove blank lines
+    grep -v '^\s*$' |
+    # "name a b c" => "name%20a%20b%20c"
+    url_encode_each_line |
+    # "name%20a%20b%20c" => "name=a%20b%20c"
+    sed 's/%20/=/' |
+    # connect lines with the delimiter
+    paste -s -d "$delimiter" |
+    # remove last line break
+    tr -d '\n')
 
   echo -n "$transformed"
   log "TRANSFORMED $transformed"
