@@ -364,6 +364,8 @@ handle_search_results() {
   local user_screen_name="$1"
   local handler="$2"
 
+  local separator='--------------------------------------------------------------'
+
   local owner
   while read -r line
   do
@@ -375,8 +377,14 @@ handle_search_results() {
 
     # Ignore self tweet
     owner="$(echo "$line" | extract_owner)"
-    [ "$owner" = "$user_screen_name" ] && continue
+    [ "$owner" = "$user_screen_name" \
+      -o "$owner" = 'null' \
+      -o "$owner" = '' ] && continue
 
+    log "$separator"
+    log "TWEET DETECTED: Matched to the given query"
+
+    [ "$handler" = '' ] && continue
     echo "$line" |
       (cd "$work_dir"; eval "$handler")
   done
@@ -446,6 +454,8 @@ handle_mentions() {
     esac
   done
 
+  local separator='--------------------------------------------------------------'
+
   local owner
   while read -r line
   do
@@ -466,6 +476,7 @@ handle_mentions() {
                                jq -r .source.screen_name | \
                                tr -d '\n')"
         [ "$screen_name" = "$user_screen_name" ] && continue
+        log "$separator"
         log "EVENT DETECTED: Followed by $screen_name"
         echo "$line" |
           (cd "$work_dir"; eval "$followed_handler")
@@ -489,6 +500,7 @@ handle_mentions() {
               jq -r .quoted_status.user.screen_name | \
               tr -d '\n')" = "$user_screen_name" ]
     then
+      log "$separator"
       log "TWEET DETECTED: Retweeted with quotation"
       [ "$quoted_handler" = '' ] && continue
       echo "$line" |
@@ -499,6 +511,7 @@ handle_mentions() {
            jq -r .text |
            grep "RT @$user_screen_name:" > /dev/null
     then
+      log "$separator"
       log "TWEET DETECTED: Retweeted"
       [ "$retweet_handler" = '' ] && continue
       echo "$line" |
@@ -507,11 +520,13 @@ handle_mentions() {
            jq -r .text |
            grep "@$user_screen_name" > /dev/null
     then
+      log "$separator"
       log "TWEET DETECTED: Mentioned or Replied"
       [ "$mention_handler" = '' ] && continue
       echo "$line" |
         (cd "$work_dir"; eval "$mention_handler")
     else
+      log "$separator"
       log "TWEET DETECTED: Matched to the given keywords"
       [ "$search_handler" = '' ] && continue
       echo "$line" |
