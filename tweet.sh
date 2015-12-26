@@ -623,14 +623,18 @@ owner_screen_name() {
 # utilities to operate text
 
 url_encode() {
- url_encode_each_line |
-    tr -d '\n'
-}
-
-url_encode_each_line() {
-  nkf -wMQx |
-    sed 's/=$//' |
-    tr '=' '%' |
+  # process per line, because nkf -MQ automatically splits
+  # the output string to 72 characters per a line.
+  while read -r line
+  do
+    echo "$line" |
+      # convert to MIME quoted printable
+      nkf -wMQx |
+      sed 's/=$//' |
+      tr '=' '%' |
+      # reunify broken linkes to a line
+      tr -d '\n'
+  done |
     sed -e 's/%7E/~/g' \
         -e 's/%5F/_/g' \
         -e 's/%2D/-/g' \
@@ -655,7 +659,7 @@ to_encoded_list() {
     # remove blank lines
     grep -v '^\s*$' |
     # "name a b c" => "name%20a%20b%20c"
-    url_encode_each_line |
+    url_encode |
     # "name%20a%20b%20c" => "name=a%20b%20c"
     sed 's/%20/=/' |
     # connect lines with the delimiter
