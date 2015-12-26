@@ -261,9 +261,20 @@ help() {
   esac
 }
 
+check_errors() {
+  if [ "$(echo "$1" | jq -r '.errors | length')" = '0' ]
+  then
+    return 0
+  else
+    return 1
+  fi
+}
+
 post() {
   ensure_available
-  echo "status $*" | call_api POST https://api.twitter.com/1.1/statuses/update.json
+  local result="$(echo "status $*" | call_api POST https://api.twitter.com/1.1/statuses/update.json)"
+  echo "$result"
+  check_errors "$result"
 }
 
 reply() {
@@ -274,10 +285,13 @@ reply() {
 
   local id="$(echo "$target" | extract_tweet_id)"
 
-  cat << FIN | call_api POST https://api.twitter.com/1.1/statuses/update.json
+  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/statuses/update.json
 status $*
 in_reply_to_status_id $id
 FIN
+  )"
+  echo "$result"
+  check_errors "$result"
 }
 
 delete() {
@@ -286,7 +300,9 @@ delete() {
 
   local id="$(echo "$target" | extract_tweet_id)"
 
-  call_api POST "https://api.twitter.com/1.1/statuses/destroy/$id.json"
+  local result="$(call_api POST "https://api.twitter.com/1.1/statuses/destroy/$id.json")"
+  echo "$result"
+  check_errors "$result"
 }
 
 search() {
@@ -319,13 +335,16 @@ search() {
 
   if [ "$handler" = '' ]
   then
-    cat << FIN | call_api GET https://api.twitter.com/1.1/search/tweets.json
+    local result="$(cat << FIN | call_api GET https://api.twitter.com/1.1/search/tweets.json
 q $query
 lang $lang
 locale $locale
 result_type recent
 count $count
 FIN
+    )"
+    echo "$result"
+    check_errors "$result"
   else
     watch_search_results "$query" "$handler"
   fi
@@ -505,9 +524,12 @@ favorite() {
   local target="$1"
   local id="$(echo "$target" | extract_tweet_id)"
 
-  cat << FIN | call_api POST https://api.twitter.com/1.1/favorites/create.json
+  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/favorites/create.json
 id $id
 FIN
+  )"
+  echo "$result"
+  check_errors "$result"
 }
 
 unfavorite() {
@@ -516,9 +538,12 @@ unfavorite() {
   local target="$1"
   local id="$(echo "$target" | extract_tweet_id)"
 
-  cat << FIN | call_api POST https://api.twitter.com/1.1/favorites/destroy.json
+  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/favorites/destroy.json
 id $id
 FIN
+  )"
+  echo "$result"
+  check_errors "$result"
 }
 
 retweet() {
@@ -529,7 +554,9 @@ retweet() {
 
   local id="$(echo "$target" | extract_tweet_id)"
 
-  call_api POST "https://api.twitter.com/1.1/statuses/retweet/$id.json"
+  local result="$(call_api POST "https://api.twitter.com/1.1/statuses/retweet/$id.json")"
+  echo "$result"
+  check_errors "$result"
 }
 
 unretweet() {
@@ -577,10 +604,13 @@ follow() {
   local target="$1"
   local screen_name="$(echo "$target" | sed 's/^@//')"
 
-  cat << FIN | call_api POST https://api.twitter.com/1.1/friendships/create.json
+  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/friendships/create.json
 screen_name $screen_name
 follow true
 FIN
+  )"
+  echo "$result"
+  check_errors "$result"
 }
 
 unfollow() {
@@ -589,9 +619,12 @@ unfollow() {
   local target="$1"
   local screen_name="$(echo "$target" | sed 's/^@//')"
 
-  cat << FIN | call_api POST https://api.twitter.com/1.1/friendships/destroy.json
+  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/friendships/destroy.json
 screen_name $screen_name
 FIN
+  )"
+  echo "$result"
+  check_errors "$result"
 }
 
 body() {
