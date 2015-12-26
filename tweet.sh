@@ -704,8 +704,9 @@ url_encode() {
 to_encoded_list() {
   local delimiter="$1"
   [ "$delimiter" = '' ] && delimiter='\&'
-  # sort params by their name
-  sort -k 1 -t ' ' |
+  local transformed="$( \
+    # sort params by their name
+    sort -k 1 -t ' ' |
     # remove blank lines
     grep -v '^\s*$' |
     # "name a b c" => "name%20a%20b%20c"
@@ -715,7 +716,9 @@ to_encoded_list() {
     # connect lines with the delimiter
     paste -s -d "$delimiter" |
     # remove last line break
-    tr -d '\n'
+    tr -d '\n')"
+  echo "$transformed"
+  log "to_encoded_list: $transformed"
 }
 
 extract_tweet_id() {
