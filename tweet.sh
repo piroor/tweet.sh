@@ -426,6 +426,7 @@ handle_mentions() {
   local user_screen_name=$1
   shift
 
+  local keywords_matcher=''
   local mention_handler=''
   local retweet_handler=''
   local quoted_handler=''
@@ -436,6 +437,11 @@ handle_mentions() {
   while getopts k:m:r:q:f:s: OPT
   do
     case $OPT in
+      k )
+        keywords_matcher="$(echo "$OPTARG" | \
+                              sed -e 's/,/|/g' \
+                              sed -e 's/ +/.*/g')"
+        ;;
       m )
         mention_handler="$OPTARG"
         ;;
@@ -457,6 +463,7 @@ handle_mentions() {
   local separator='--------------------------------------------------------------'
 
   local owner
+  local tweet_body
   while read -r line
   do
     if [ "$line" = 'Exceeded connection limit for user' ]
@@ -502,35 +509,49 @@ handle_mentions() {
     then
       log "$separator"
       log "TWEET DETECTED: Retweeted with quotation"
-      [ "$quoted_handler" = '' ] && continue
-      echo "$line" |
-        (cd "$work_dir"; eval "$quoted_handler")
+      if [ "$quoted_handler" != '' ]
+      then
+        echo "$line" |
+          (cd "$work_dir"; eval "$quoted_handler")
+        continue
+      fi
+    fi
+
+    tweet_body="$(echo "$line" | body)"
+
     # Detect retweet before reqply, because "RT: @(screenname)"
     # can be deteted as a simple mention unexpectedly.
-    elif echo "$line" |
-           jq -r .text |
-           grep "RT @$user_screen_name:" > /dev/null
+    if echo "$tweet_body" | grep "RT @$user_screen_name:" > /dev/null
     then
       log "$separator"
       log "TWEET DETECTED: Retweeted"
-      [ "$retweet_handler" = '' ] && continue
-      echo "$line" |
-        (cd "$work_dir"; eval "$retweet_handler")
-    elif echo "$line" |
-           jq -r .text |
-           grep "@$user_screen_name" > /dev/null
+      if [ "$retweet_handler" = '' ]
+      then
+        echo "$line" |
+          (cd "$work_dir"; eval "$retweet_handler")
+        continue
+      fi
+    fi
+
+    if echo "$tweet_body" | grep "@$user_screen_name" > /dev/null
     then
       log "$separator"
       log "TWEET DETECTED: Mentioned or Replied"
       [ "$mention_handler" = '' ] && continue
       echo "$line" |
         (cd "$work_dir"; eval "$mention_handler")
-    else
+    fi
+
+    if echo "$tweet_body" | grep "$keywords_matcher" > /dev/null
+    then
       log "$separator"
       log "TWEET DETECTED: Matched to the given keywords"
-      [ "$search_handler" = '' ] && continue
-      echo "$line" |
-        (cd "$work_dir"; eval "$search_handler")
+      if [ "$search_handler" != '' ]
+      then
+        echo "$line" |
+          (cd "$work_dir"; eval "$search_handler")
+        continue
+      fi
     fi
   done
 }
