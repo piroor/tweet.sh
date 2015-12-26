@@ -478,6 +478,7 @@ handle_mentions() {
 
     # Ignore self tweet or non-tweet object
     owner="$(echo "$line" | extract_owner)"
+    log "Tweeted by $owner"
     [ "$owner" = "$user_screen_name" -o "$owner" = 'null' ] && continue
 
     # Detect quotation at first, because quotation can be
