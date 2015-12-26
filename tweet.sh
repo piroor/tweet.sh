@@ -695,10 +695,7 @@ call_api() {
   local params_file="$(prepare_tempfile params)"
   if [ -p /dev/stdin ]
   then
-    while read param
-    do
-      echo "$param" >> "$params_file"
-    done
+    cat - > "$params_file"
   fi
 
   local oauth="$(cat "$params_file" | generate_oauth_header "$method" "$url")"
@@ -745,21 +742,14 @@ generate_oauth_header() {
   local method=$1
   local url=$2
 
-  # prepare list of all parameters
-  local params="$(prepare_tempfile params)"
-
-  common_params_file="$(prepare_tempfile common_params)"
+  local common_params_file="$(prepare_tempfile common_params)"
   common_params > "$common_params_file"
 
-  cat "$common_params_file" > "$params"
-
-  while read extra_param
-  do
-    echo "$extra_param" >> "$params"
-  done
+  local all_params_file="$(prepare_tempfile all_params)"
+  cat "$common_params_file" - > "$all_params_file"
 
   # generate OAuth header
-  local signature=$(cat "$params" | generate_signature "$method" "$url")
+  local signature=$(cat "$all_params_file" | generate_signature "$method" "$url")
   local header=$(echo "oauth_signature $signature" |
     cat "$common_params_file" - |
     #縦一列を今度は横一列にして 項目=値,項目=値,...の形式に
@@ -769,7 +759,7 @@ generate_oauth_header() {
   echo -n "$header"
   log "HEADER $header"
 
-  rm -f "$common_params_file" "$params"
+  rm -f "$common_params_file" "$all_params_file"
 }
 
 # usage:
