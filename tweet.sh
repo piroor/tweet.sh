@@ -701,7 +701,9 @@ url_encode() {
   do
     echo "$line" |
       # convert to MIME quoted printable
-      nkf -wMQx |
+      #  W8 => input encoding is UTF-8
+      #  MQ => quoted printable
+      nkf -W8MQ |
       sed 's/=$//' |
       tr '=' '%' |
       # reunify broken linkes to a line
