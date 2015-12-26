@@ -440,7 +440,7 @@ handle_mentions() {
       k )
         keywords_matcher="$(echo "$OPTARG" | \
                               sed -e 's/,/|/g' \
-                              sed -e 's/ +/.*/g')"
+                                  -e 's/ +/.*/g')"
         ;;
       m )
         mention_handler="$OPTARG"
