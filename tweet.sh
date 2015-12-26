@@ -633,7 +633,7 @@ url_encode() {
       sed 's/=$//' |
       tr '=' '%' |
       # reunify broken linkes to a line
-      tr -d '\n'
+      paste -s -d ''
   done |
     sed -e 's/%7E/~/g' \
         -e 's/%5F/_/g' \
@@ -667,7 +667,7 @@ to_encoded_list() {
     # remove last line break
     tr -d '\n')
 
-  echo -n "$transformed"
+  echo "$transformed"
   log "TRANSFORMED $transformed"
 }
 
@@ -777,16 +777,12 @@ generate_signature() {
   local url=$2
   local encoded_url="$(echo "$url" | url_encode)"
 
-  # prepare signature key
-  local signature_key="$(prepare_tempfile signature_key)"
-  echo "${method}&${encoded_url}&" > "$signature_key"
-
-  local signature_source=$(to_encoded_list |
+  local signature_key="${method}&${encoded_url}&"
+  local signature_source="${signature_key}$( \
+    to_encoded_list |
     url_encode |
-    #頭に署名キーをつける
-    cat "$signature_key" - |
     #改行が一個入ってしまうので取る
-    tr -d '\n')
+    tr -d '\n')"
   log "SIGNATURE SOURCE $signature_source"
 
   # generate signature
@@ -798,8 +794,6 @@ generate_signature() {
 
   echo -n "$signature"
   log "SIGNATURE $signature"
-
-  rm -f "$signature_key"
 }
 
 common_params() {
