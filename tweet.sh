@@ -466,7 +466,7 @@ handle_mentions() {
                                jq -r .source.screen_name | \
                                tr -d '\n')"
         [ "$screen_name" = "$user_screen_name" ] && continue
-        log "FOLLOWED"
+        log "EVENT DETECTED: Followed by $screen_name"
         echo "$line" |
           (cd "$work_dir"; eval "$followed_handler")
         continue
@@ -489,7 +489,7 @@ handle_mentions() {
               jq -r .quoted_status.user.screen_name | \
               tr -d '\n')" = "$user_screen_name" ]
     then
-      log "QUOTATION"
+      log "TWEET DETECTED: Retweeted with quotation"
       [ "$quoted_handler" = '' ] && continue
       echo "$line" |
         (cd "$work_dir"; eval "$quoted_handler")
@@ -499,7 +499,7 @@ handle_mentions() {
            jq -r .text |
            grep "RT @$user_screen_name:" > /dev/null
     then
-      log "RETWEET"
+      log "TWEET DETECTED: Retweeted"
       [ "$retweet_handler" = '' ] && continue
       echo "$line" |
         (cd "$work_dir"; eval "$retweet_handler")
@@ -507,12 +507,12 @@ handle_mentions() {
            jq -r .text |
            grep "@$user_screen_name" > /dev/null
     then
-      log "MENTION"
+      log "TWEET DETECTED: Mentioned or Replied"
       [ "$mention_handler" = '' ] && continue
       echo "$line" |
         (cd "$work_dir"; eval "$mention_handler")
     else
-      log "SEARCH RESULT"
+      log "TWEET DETECTED: Matched to the given keywords"
       [ "$search_handler" = '' ] && continue
       echo "$line" |
         (cd "$work_dir"; eval "$search_handler")
@@ -689,9 +689,8 @@ url_encode() {
 to_encoded_list() {
   local delimiter="$1"
   [ "$delimiter" = '' ] && delimiter='\&'
-  transformed=$( \
-    # sort params by their name
-    sort -k 1 -t ' ' |
+  # sort params by their name
+  sort -k 1 -t ' ' |
     # remove blank lines
     grep -v '^\s*$' |
     # "name a b c" => "name%20a%20b%20c"
@@ -701,10 +700,7 @@ to_encoded_list() {
     # connect lines with the delimiter
     paste -s -d "$delimiter" |
     # remove last line break
-    tr -d '\n')
-
-  echo "$transformed"
-  log "TRANSFORMED $transformed"
+    tr -d '\n'
 }
 
 extract_tweet_id() {
@@ -742,10 +738,10 @@ call_api() {
   local headers="Authorization: OAuth $oauth"
   local params="$(cat "$params_file" | to_encoded_list)"
 
-  log "METHOD: $method"
-  log "URL: $url"
+  log "METHOD : $method"
+  log "URL    : $url"
   log "HEADERS: $headers"
-  log "PARAMS: $params"
+  log "PARAMS : $params"
 
   local debug_params=''
   if [ "$DEBUG" != '' ]
@@ -798,7 +794,7 @@ generate_oauth_header() {
     tr -d '\n')
 
   echo -n "$header"
-  log "HEADER $header"
+  log "HEADER: $header"
 
   rm -f "$common_params_file" "$all_params_file"
 }
@@ -820,7 +816,7 @@ generate_signature() {
     url_encode |
     #改行が一個入ってしまうので取る
     tr -d '\n')"
-  log "SIGNATURE SOURCE $signature_source"
+  log "SIGNATURE SOURCE: $signature_source"
 
   # generate signature
   local signature=$(echo -n "$signature_source" |
@@ -830,7 +826,7 @@ generate_signature() {
     tr -d '\n')
 
   echo -n "$signature"
-  log "SIGNATURE $signature"
+  log "SIGNATURE: $signature"
 }
 
 common_params() {
