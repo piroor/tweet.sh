@@ -325,7 +325,7 @@ direct_message() {
 
   target="$(echo "$target" | sed 's/^@//')"
 
-  local result="$(cat << FIN | call_api GET https://api.twitter.com/1.1/direct_messages/new.json
+  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/direct_messages/new.json
 screen_name $target
 text $*
 FIN
