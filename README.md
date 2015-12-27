@@ -63,6 +63,7 @@ Available commands are:
  * `body`: extracts the body of a tweet.
  * `owner`: extracts the owner of a tweet.
  * `whoami`: reports the screen name of yourself.
+ * `language` (`lang`): reports the selected language of yourself.
 
 If you hope to see detailed logs, run the script with an environment variable `DEBUG`, like:
 
@@ -290,11 +291,18 @@ $ ./tweet.sh owner https://twitter.com/username/status/0123456789
 $ echo "$tweet_json" | ./tweet.sh owner
 ~~~
 
-## How to get the screen name of my account?
+## How to get the information of my account?
 
 The `whoami` subcommand simply reports your screen name.
 
 ~~~
 $ ./tweet.sh whoami
 username
+~~~
+
+The `language` (`lang`) subcommand reports your language.
+
+~~~
+$ ./tweet.sh lang
+en
 ~~~

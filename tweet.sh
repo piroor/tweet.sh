@@ -181,6 +181,7 @@ help() {
       echo '  body           : extracts the body of a tweet.'
       echo '  owner          : extracts the owner of a tweet.'
       echo '  whoami         : reports the screen name of yourself.'
+      echo '  language(lang) : reports the selected language of yourself.'
       echo ''
       echo 'For more details, see also: "./tweet.sh help [command]"'
       ;;
@@ -271,6 +272,15 @@ help() {
       echo '  ./tweet.sh owner 012345'
       echo '  ./tweet.sh owner https://twitter.com/username/status/012345'
       echo '  echo "$tweet_json" | ./tweet.sh owner'
+      ;;
+    whoami )
+      echo 'Usage:'
+      echo '  ./tweet.sh whoami'
+      ;;
+    lang|language )
+      echo 'Usage:'
+      echo '  ./tweet.sh lang'
+      echo '  ./tweet.sh language'
       ;;
   esac
 }
@@ -426,6 +436,12 @@ handle_search_results() {
 self_screen_name() {
   call_api GET https://api.twitter.com/1.1/account/verify_credentials.json |
     jq -r .screen_name |
+    tr -d '\n'
+}
+
+self_language() {
+  call_api GET https://api.twitter.com/1.1/account/verify_credentials.json |
+    jq -r .lang |
     tr -d '\n'
 }
 
@@ -1003,6 +1019,9 @@ then
       ;;
     whoami )
       self_screen_name
+      ;;
+    lang|language )
+      self_language
       ;;
     help|* )
       help "$@"
