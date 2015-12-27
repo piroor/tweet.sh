@@ -701,11 +701,12 @@ body() {
     local id="$(echo "$target" | extract_tweet_id)"
     show "$id" | body
   else
-    local body_text="$(jq -r .text | unicode_unescape)"
+    local input="$(cat)"
+    local body_text="$(echo "$input" | jq -r .text | unicode_unescape)"
     # for DMs
     if [ "$body_text" = 'null' ]
     then
-      body_text="$(jq -r .direct_message.text | unicode_unescape)"
+      body_text="$(echo "$input" | jq -r .direct_message.text | unicode_unescape)"
     fi
     echo "$body_text"
   fi
