@@ -167,7 +167,8 @@ help() {
       echo '  reply          : replies to a tweet.'
       echo '  delete(del)    : deletes a tweet.'
       echo '  search         : searches tweets.'
-      echo '  watch-mentions : watches mentions as a stream.'
+      echo '  watch-mentions(watch)'
+      echo '                 : watches mentions, retweets, DMs, etc.'
       echo '  favorite(fav)  : marks a tweet as a favorite.'
       echo '  unfavorite(unfav)'
       echo '                 : removes favorited flag of a tweet.'
@@ -204,9 +205,15 @@ help() {
       echo '  ./tweet.sh search -q "Bash OR Shell Script"'
       echo '  ./tweet.sh search -q "queries" -h "cat"'
       ;;
-    watch-mentions )
+    watch|watch-mentions )
       echo 'Usage:'
-      echo "  ./tweet.sh watch-mentions -k keyword1,keyword2 -m \"echo 'MENTION'; cat\" -r \"echo 'RT'; cat\" -q \"echo 'QT'; cat\" -f \"echo 'FOLLOWED'; cat\" -s \"echo 'SEARCH-RESULT'; cat\""
+      echo '  ./tweet.sh watch-mentions -k keyword1,keyword2'
+      echo "                            -m \"echo 'MENTION'; cat\""
+      echo "                            -r \"echo 'RT'; cat\""
+      echo "                            -q \"echo 'QT'; cat\""
+      echo "                            -f \"echo 'FOLLOWED'; cat\""
+      echo "                            -d \"echo 'DM'; cat\""
+      echo "                            -s \"echo 'SEARCH-RESULT'; cat\""
       ;;
     fav|favorite )
       echo 'Usage:'
@@ -401,7 +408,7 @@ watch_mentions() {
 
   local extra_keywords=''
   OPTIND=1
-  while getopts k:m:r:q:f:s: OPT
+  while getopts k:m:r:q:f:d:s: OPT
   do
     case $OPT in
       k )
@@ -431,10 +438,11 @@ handle_mentions() {
   local retweet_handler=''
   local quoted_handler=''
   local followed_handler=''
+  local dm_handler=''
   local search_handler=''
 
   OPTIND=1
-  while getopts k:m:r:q:f:s: OPT
+  while getopts k:m:r:q:f:d:s: OPT
   do
     case $OPT in
       k )
@@ -454,6 +462,9 @@ handle_mentions() {
       f )
         followed_handler="$OPTARG"
         ;;
+      d )
+        dm_handler="$OPTARG"
+        ;;
       s )
         search_handler="$OPTARG"
         ;;
@@ -462,6 +473,7 @@ handle_mentions() {
 
   local separator='--------------------------------------------------------------'
 
+  local sender
   local owner
   local tweet_body
   while read -r line
@@ -493,6 +505,20 @@ handle_mentions() {
         continue
         ;;
     esac
+
+    # handle DM
+    sender="$(echo "$line" | jq -r .sender_screen_name)"
+    if [ "$sender" != '' ]
+    then
+      log "$separator"
+      log "DM DETECTED: Sent by @$sender"
+      if [ "$dm_handler" != '' ]
+      then
+        echo "$line" |
+          (cd "$work_dir"; eval "$dm_handler")
+        continue
+      fi
+    fi
 
     # Ignore self tweet or non-tweet object
     owner="$(echo "$line" | extract_owner)"
@@ -904,7 +930,7 @@ then
     search )
       search "$@"
       ;;
-    watch-mentions )
+    watch|watch-mentions )
       watch_mentions "$@"
       ;;
     fav|favorite )

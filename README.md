@@ -50,7 +50,7 @@ Available commands are:
  * `reply`: replies to an existing tweet.
  * `delete` (`del`): deletes a tweet.
  * `search`: searches tweets with queries.
- * `watch-mentions`: watches mentions and executes handlers for each mention.
+ * `watch-mentions` (`watch`): watches mentions, retweets, DMs, etc., and executes handlers for each event.
  * `favorite` (`fav`): marks a tweet as a favorite.
  * `unfavorite` (`unfav`): removes favorited flag of a tweet.
  * `retweet` (`rt`): retweets a tweet.
@@ -155,7 +155,7 @@ To stop the process, you need to send the `SIGINT` signal via Ctrl-C or somethin
 
 ## How to watch various mentions?
 
-If you hope to observe mentions and other events around you or any keyword, `watch-mentions` command will help you.
+If you hope to observe mentions and other events around you or any keyword, `watch-mentions` (`watch`) command will help you.
 
 ~~~
 $ ./tweet.sh watch-mentions -k "keyword1,keyword2,..." \
@@ -163,6 +163,7 @@ $ ./tweet.sh watch-mentions -k "keyword1,keyword2,..." \
                             -t "echo 'RT'; cat" \
                             -q "echo 'QT'; cat" \
                             -f "echo 'FOLLOWED'; cat" \
+                            -d "echo 'DM'; cat" \
                             -s "echo 'SEARCH-RESUT'; cat"
 ~~~
 
@@ -173,9 +174,10 @@ Available options:
  * `-r`: command line to run for each retweet.
  * `-q`: command line to run for each quotation.
  * `-f`: command line to run when a user follows you.
+ * `-d`: command line to run when a DM is received.
  * `-s`: command line to run for each search result, matched to the keywords given via the `-k` option.
 
-Handler command lines will receive a JSON string of the [mention](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid) or the [event](https://dev.twitter.com/streaming/overview/messages-types#Events_event) via the standard input.
+Handler command lines will receive a JSON string of the [mention](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid), [DM](https://dev.twitter.com/rest/reference/get/direct_messages/show), or the [event](https://dev.twitter.com/streaming/overview/messages-types#Events_event) via the standard input.
 
 In this case this script stays running.
 To stop the process, you need to send the `SIGINT` signal via Ctrl-C or something.
