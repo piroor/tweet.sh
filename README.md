@@ -50,6 +50,7 @@ Available commands are:
  * `help`: shows usage of the `tweet.sh` itself.
  * `post`: posts a new tweet.
  * `reply`: replies to an existing tweet.
+ * `direct-message` (`dm`): sends a DM.
  * `delete` (`del`): deletes a tweet.
  * `search`: searches tweets with queries.
  * `watch-mentions` (`watch`): watches mentions, retweets, DMs, etc., and executes handlers for each event.
@@ -89,7 +90,7 @@ All rest arguments following to the command name are posted as a tweet.
 If you hope to mention to another user, simply you have to `post` a tweet including his/her screen name.
 
 ~~~
-$ ./tweet.sh post @friend Hi!
+$ ./tweet.sh post @friend Good morning.
 ~~~
 
 When you hope to reply to an existing tweet, you need to use another command `reply`.
@@ -106,6 +107,21 @@ All rest arguments following to the command name and the tweet's identifier are 
 
 Note that you have to include the user's screen name manually if it is needed.
 The `reply` command does not append it automatically.
+
+## How to send a DM for my friend?
+
+If you hope to send a DM to another user, run the `direct-message` (`dm`) command.
+
+~~~
+$ ./tweet.sh direct-message @friend Good morning.
+$ ./tweet.sh direct-message friend Good morning.
+$ ./tweet.sh dm @friend Good morning.
+$ ./tweet.sh dm friend Good morning.
+~~~
+
+All rest arguments following to the command name and the recipient name are posted as a direct message.
+
+Note that you have to allow to access direct messages to your app.
 
 ## How to delete a tweet?
 

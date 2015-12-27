@@ -166,6 +166,8 @@ help() {
       echo '  post           : posts a new tweet.'
       echo '  reply          : replies to a tweet.'
       echo '  delete(del)    : deletes a tweet.'
+      echo '  direct-message(dm)'
+      echo '                 : sends a DM.'
       echo '  search         : searches tweets.'
       echo '  watch-mentions(watch)'
       echo '                 : watches mentions, retweets, DMs, etc.'
@@ -198,6 +200,11 @@ help() {
       echo '  ./tweet.sh del https://twitter.com/username/status/012345'
       echo '  ./tweet.sh delete 012345'
       echo '  ./tweet.sh delete https://twitter.com/username/status/012345'
+      ;;
+    dm|direct-message )
+      echo 'Usage:'
+      echo '  ./tweet.sh dm frinedname Good morning.'
+      echo '  ./tweet.sh direct-message frinedname "How are you?"'
       ;;
     search )
       echo 'Usage:'
@@ -308,6 +315,21 @@ delete() {
   local id="$(echo "$target" | extract_tweet_id)"
 
   local result="$(call_api POST "https://api.twitter.com/1.1/statuses/destroy/$id.json")"
+  echo "$result"
+  check_errors "$result"
+}
+
+direct_message() {
+  local target="$1"
+  shift
+
+  target="$(echo "$target" | sed 's/^@//')"
+
+  local result="$(cat << FIN | call_api GET https://api.twitter.com/1.1/direct_messages/new.json
+screen_name $target
+text $*
+FIN
+  )"
   echo "$result"
   check_errors "$result"
 }
@@ -941,6 +963,9 @@ then
       ;;
     del|delete )
       delete "$@"
+      ;;
+    dm|direct_message )
+      direct_message "$@"
       ;;
     search )
       search "$@"
