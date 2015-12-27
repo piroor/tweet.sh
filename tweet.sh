@@ -434,15 +434,23 @@ handle_search_results() {
 }
 
 self_screen_name() {
+  ensure_available
   call_api GET https://api.twitter.com/1.1/account/verify_credentials.json |
     jq -r .screen_name |
     tr -d '\n'
 }
 
 self_language() {
-  call_api GET https://api.twitter.com/1.1/account/verify_credentials.json |
+  ensure_available
+  local lang="$(call_api GET https://api.twitter.com/1.1/account/verify_credentials.json |
     jq -r .lang |
-    tr -d '\n'
+    tr -d '\n')"
+  if [ "$lang" = 'null' -o "$lang" = '' ]
+  then
+    echo "en"
+  else
+    echo "$lang"
+  fi
 }
 
 watch_mentions() {
