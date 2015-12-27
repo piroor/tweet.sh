@@ -370,7 +370,8 @@ search() {
         count="$OPTARG"
         ;;
       s )
-        since_id="since_id $(echo "$OPTARG" | extract_tweet_id)"
+        since_id="$(echo "$OPTARG" | extract_tweet_id)"
+        [ "$since_id" != '' ] && since_id="since_id $since_id"
         ;;
       h )
         handler="$OPTARG"
