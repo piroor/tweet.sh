@@ -92,7 +92,6 @@ case $(uname) in
     ;;
 esac
 
-whitespaces="\f\n\r\t　"
 
 ensure_available() {
   local fatal_error=0
@@ -792,7 +791,7 @@ to_encoded_list() {
     # sort params by their name
     sort -k 1 -t ' ' |
     # remove blank lines
-    grep -v "^[$whitespaces]*\$" |
+    grep -v '^\s*$' |
     # "name a b c" => "name%20a%20b%20c"
     url_encode |
     # "name%20a%20b%20c" => "name=a%20b%20c"
