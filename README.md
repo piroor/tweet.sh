@@ -150,6 +150,7 @@ Available options:
  * `-q`: queries.
  * `-l`: language.
  * `-c`: count of tweets to be responded. 10 by default.
+ * `-s`: the id of the last tweet already known. If you specify this option, only tweets newer than the given tweet will be returned.
 
 Then matched tweets will be reported via the standard output.
 

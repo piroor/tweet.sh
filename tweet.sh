@@ -210,7 +210,7 @@ help() {
     search )
       echo 'Usage:'
       echo '  ./tweet.sh search -q "queries" -l "ja" -c 10'
-      echo '  ./tweet.sh search -q "Bash OR Shell Script"'
+      echo '  ./tweet.sh search -q "Bash OR Shell Script" -s 0123456'
       echo '  ./tweet.sh search -q "queries" -h "cat"'
       ;;
     watch|watch-mentions )
@@ -353,10 +353,11 @@ search() {
   local lang='en'
   local locale='en'
   local count=10
+  local since_id=''
   local handler=''
 
   OPTIND=1
-  while getopts q:l:c:h: OPT
+  while getopts q:l:c:s:h: OPT
   do
     case $OPT in
       q )
@@ -367,6 +368,9 @@ search() {
         ;;
       c )
         count="$OPTARG"
+        ;;
+      s )
+        since_id="since_id $(echo "$OPTARG" | extract_tweet_id)"
         ;;
       h )
         handler="$OPTARG"
@@ -384,6 +388,7 @@ lang $lang
 locale $locale
 result_type recent
 count $count
+$since_id
 FIN
     )"
     echo "$result"
