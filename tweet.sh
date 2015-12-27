@@ -508,7 +508,7 @@ handle_mentions() {
 
     # handle DM
     sender="$(echo "$line" | jq -r .sender_screen_name)"
-    if [ "$sender" != '' ]
+    if [ "$sender" != '' -a "#sender" != "$user_screen_name" ]
     then
       log "$separator"
       log "DM DETECTED: Sent by @$sender"
