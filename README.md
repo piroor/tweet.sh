@@ -4,6 +4,8 @@
 
 You need to prepare API keys at first.
 Go to [the front page](https://apps.twitter.com/), create a new app, and generate a new access token.
+(If you hope to handle DMs by the `watch-mentions` command, you have to permit the app to access direct messages.)
+
 Then put them as a key file at `~/.tweet.client.key`, with the format:
 
 ~~~
