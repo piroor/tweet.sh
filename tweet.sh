@@ -507,7 +507,7 @@ handle_mentions() {
     esac
 
     # handle DM
-    sender="$(echo "$line" | jq -r .sender_screen_name)"
+    sender="$(echo "$line" | jq -r .direct_message.sender_screen_name)"
     if [ "$sender" != '' \
          -a "$sender" != 'null' \
          -a "#sender" != "$user_screen_name" ]
