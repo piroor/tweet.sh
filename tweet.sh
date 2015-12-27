@@ -701,8 +701,13 @@ body() {
     local id="$(echo "$target" | extract_tweet_id)"
     show "$id" | body
   else
-    jq -r .text |
-      unicode_unescape
+    local body_text="$(jq -r .text | unicode_unescape)"
+    # for DMs
+    if [ "$body_text" = 'null' ]
+    then
+      body_text="$(jq -r .direct_message.text | unicode_unescape)"
+    fi
+    echo "$body_text"
   fi
 }
 
@@ -778,7 +783,13 @@ extract_tweet_id() {
 }
 
 extract_owner() {
-  jq -r .user.screen_name
+  local owner="$(jq -r .user.screen_name)"
+  # for DMs
+  if [ "$owner" = 'null' ]
+  then
+    owner="$(jq -r .direct_message.sender_screen_name)"
+  fi
+  echo "$owner"
 }
 
 unicode_unescape() {
