@@ -180,6 +180,7 @@ help() {
       echo '  unfollow       : unfollows a user.'
       echo '  body           : extracts the body of a tweet.'
       echo '  owner          : extracts the owner of a tweet.'
+      echo '  showme         : reports the raw information of yourself.'
       echo '  whoami         : reports the screen name of yourself.'
       echo '  language(lang) : reports the selected language of yourself.'
       echo ''
@@ -272,6 +273,10 @@ help() {
       echo '  ./tweet.sh owner 012345'
       echo '  ./tweet.sh owner https://twitter.com/username/status/012345'
       echo '  echo "$tweet_json" | ./tweet.sh owner'
+      ;;
+    showme )
+      echo 'Usage:'
+      echo '  ./tweet.sh showme'
       ;;
     whoami )
       echo 'Usage:'
@@ -439,16 +444,19 @@ handle_search_results() {
   done
 }
 
-self_screen_name() {
+my_information() {
   ensure_available
-  call_api GET https://api.twitter.com/1.1/account/verify_credentials.json |
+  call_api GET https://api.twitter.com/1.1/account/verify_credentials.json
+}
+
+self_screen_name() {
+  my_information |
     jq -r .screen_name |
     tr -d '\n'
 }
 
 self_language() {
-  ensure_available
-  local lang="$(call_api GET https://api.twitter.com/1.1/account/verify_credentials.json |
+  local lang="$(my_information |
     jq -r .lang |
     tr -d '\n')"
   if [ "$lang" = 'null' -o "$lang" = '' ]
@@ -1030,6 +1038,9 @@ then
       ;;
     owner )
       owner_screen_name "$@"
+      ;;
+    showme )
+      my_information
       ;;
     whoami )
       self_screen_name
