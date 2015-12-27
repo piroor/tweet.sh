@@ -783,11 +783,12 @@ extract_tweet_id() {
 }
 
 extract_owner() {
-  local owner="$(jq -r .user.screen_name)"
+  local input="$(cat)"
+  local owner="$(echo "$input" | jq -r .user.screen_name)"
   # for DMs
   if [ "$owner" = 'null' ]
   then
-    owner="$(jq -r .direct_message.sender_screen_name)"
+    owner="$(echo "$input" | jq -r .direct_message.sender.screen_name)"
   fi
   echo "$owner"
 }
