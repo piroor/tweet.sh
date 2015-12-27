@@ -309,6 +309,8 @@ FIN
 }
 
 delete() {
+  ensure_available
+
   local target="$1"
   shift
 
@@ -320,6 +322,8 @@ delete() {
 }
 
 direct_message() {
+  ensure_available
+
   local target="$1"
   shift
 
