@@ -361,7 +361,7 @@ search() {
   local since_id=''
   local handler=''
 
-  OPTIND=1
+  local OPTIND OPTARG OPT
   while getopts q:l:c:s:h: OPT
   do
     case $OPT in
@@ -471,7 +471,7 @@ watch_mentions() {
   ensure_available
 
   local extra_keywords=''
-  OPTIND=1
+  local OPTIND OPTARG OPT
   while getopts k:m:r:q:f:d:s: OPT
   do
     case $OPT in
@@ -505,7 +505,7 @@ handle_mentions() {
   local dm_handler=''
   local search_handler=''
 
-  OPTIND=1
+  local OPTIND OPTARG OPT
   while getopts k:m:r:q:f:d:s: OPT
   do
     case $OPT in
