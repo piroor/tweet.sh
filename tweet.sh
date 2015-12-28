@@ -989,12 +989,21 @@ FIN
 
 #================================================================
 
+kill_descendants() {
+  local pgid=$1
+  local pids="$(ps a -o pid,pgid | grep " $pgid$" | cut -d " " -f 1)"
+  if [ "$pids" != '' ]
+  then
+    kill $pids
+  fi
+}
+
 if [ "$(basename "$0")" = "tweet.sh" ]
 then
   command="$1"
   shift
 
-  trap 'jobs="$(jobs -p)"; [ "$jobs" = "" ] || kill $jobs; exit 0' 1 2 3 15
+  trap 'kill_descendants $$; exit 0' HUP INT QUIT KILL TERM
 
   case "$command" in
     post )
