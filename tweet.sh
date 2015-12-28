@@ -993,24 +993,14 @@ FIN
 # because there can be detached. We manually find them and kill all.
 kill_descendants() {
   local target_pid=$1
-  # find process group id of the given process
-  local pgid=$(ps a -o pid,pgid |
-                 grep "^$target_pid " |
-                 cut -d ' ' -f 2)
-  # find descendant pids based on the pgid
-               # sort by their start time,
-  local pids=$(ps a -o pgid,pid --sort -stime |
-                 grep "^$pgid " |
-                 # extract pids
-                 cut -d ' ' -f 2 |
-                 # and output only after the given process.
-                 # preceding processes are ancestors.
-                 sed -ne "/^$target_pid$/,\$p" |
-                 # and reject the target process itself
-                 tail -n +2)
-  if [ "$pids" != '' ]
+  local children=$(ps --no-heading --ppid $target_pid -o pid)
+  for child in children
+  do
+    kill_descendants $child
+  done
+  if [ $target_pid != $$ ]
   then
-    kill $pids 2>&1 > /dev/null
+    kill $target_pid 2>&1 > /dev/null
   fi
 }
 
