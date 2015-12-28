@@ -994,7 +994,7 @@ then
   command="$1"
   shift
 
-  trap 'jobs="$(jobs -p)"; [ "$jobs" = "" ] || kill $jobs' QUIT KILL TERM
+  trap 'jobs="$(jobs -p)"; [ "$jobs" = "" ] || kill $jobs; exit 0' 1 2 3 15
 
   case "$command" in
     post )
