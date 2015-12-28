@@ -634,7 +634,7 @@ handle_mentions() {
         (cd "$work_dir"; eval "$mention_handler")
     fi
 
-    if echo "$tweet_body" | grep "$keywords_matcher" > /dev/null
+    if echo "$tweet_body" | egrep -i "$keywords_matcher" > /dev/null
     then
       log "$separator"
       log "TWEET DETECTED: Matched to the given keywords"
