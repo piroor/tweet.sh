@@ -994,7 +994,7 @@ FIN
 kill_descendants() {
   local target_pid=$1
   local children=$(ps --no-heading --ppid $target_pid -o pid)
-  for child in children
+  for child in $children
   do
     kill_descendants $child
   done
