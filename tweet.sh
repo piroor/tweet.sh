@@ -634,7 +634,7 @@ handle_mentions() {
         (cd "$work_dir"; eval "$mention_handler")
     fi
 
-    if echo "$tweet_body" | grep "$keywords_matcher" > /dev/null
+    if echo "$tweet_body" | egrep -i "$keywords_matcher" > /dev/null
     then
       log "$separator"
       log "TWEET DETECTED: Matched to the given keywords"
@@ -989,12 +989,28 @@ FIN
 
 #================================================================
 
+# Orphan processes can be left after Ctrl-C or something,
+# because there can be detached. We manually find them and kill all.
+kill_descendants() {
+  local target_pid=$1
+  local children=$(ps --no-heading --ppid $target_pid -o pid)
+  for child in $children
+  do
+    kill_descendants $child
+  done
+  if [ $target_pid != $$ ]
+  then
+    kill $target_pid 2>&1 > /dev/null
+  fi
+}
+
 if [ "$(basename "$0")" = "tweet.sh" ]
 then
   command="$1"
   shift
 
-  trap 'jobs="$(jobs -p)"; [ "$jobs" = "" ] || kill $jobs' QUIT KILL TERM
+  self_pid=$$
+  trap 'kill_descendants $self_pid; exit 0' HUP INT QUIT KILL TERM
 
   case "$command" in
     post )
