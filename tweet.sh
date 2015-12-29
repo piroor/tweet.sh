@@ -624,6 +624,11 @@ handle_mentions() {
         continue
       fi
     fi
+    if echo "$tweet_body" | egrep "RT @[^:]+:" > /dev/null
+    then
+      # don't handle RT of RT
+      continue
+    fi
 
     if echo "$tweet_body" | grep "@$user_screen_name" > /dev/null
     then
