@@ -298,6 +298,10 @@ help() {
 }
 
 check_errors() {
+  if echo "$1" | grep '^\[' > /dev/null
+  then
+    return 0
+  fi
   if [ "$(echo "$1" | jq -r '.errors | length')" = '0' ]
   then
     return 0
