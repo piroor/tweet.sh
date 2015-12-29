@@ -166,6 +166,8 @@ help() {
       echo '  post           : posts a new tweet.'
       echo '  reply          : replies to a tweet.'
       echo '  delete(del)    : deletes a tweet.'
+      echo '  fetch-direct-messages(fetch-dm)'
+      echo '                 : fetches recent DMs.'
       echo '  direct-message(dm)'
       echo '                 : sends a DM.'
       echo '  search         : searches tweets.'
@@ -202,6 +204,11 @@ help() {
       echo '  ./tweet.sh del https://twitter.com/username/status/012345'
       echo '  ./tweet.sh delete 012345'
       echo '  ./tweet.sh delete https://twitter.com/username/status/012345'
+      ;;
+    fetch-dm|fetch-direct-messages )
+      echo 'Usage:'
+      echo '  ./tweet.sh fetch-dm -c 10'
+      echo '  ./tweet.sh fetch-direct-messages -c 100 -s 0123456'
       ;;
     dm|direct-message )
       echo 'Usage:'
@@ -332,6 +339,34 @@ delete() {
   local id="$(echo "$target" | extract_tweet_id)"
 
   local result="$(call_api POST "https://api.twitter.com/1.1/statuses/destroy/$id.json")"
+  echo "$result"
+  check_errors "$result"
+}
+
+fetch_direct_messages() {
+  ensure_available
+  local count=10
+  local since_id=''
+
+  local OPTIND OPTARG OPT
+  while getopts c:s: OPT
+  do
+    case $OPT in
+      c )
+        count="$OPTARG"
+        ;;
+      s )
+        since_id="$(echo "$OPTARG" | extract_tweet_id)"
+        [ "$since_id" != '' ] && since_id="since_id $since_id"
+        ;;
+    esac
+  done
+
+  local result="$(cat << FIN | call_api GET https://api.twitter.com/1.1/direct_messages.json
+count $count
+$since_id
+FIN
+  )"
   echo "$result"
   check_errors "$result"
 }
@@ -1013,6 +1048,9 @@ then
       ;;
     del|delete )
       delete "$@"
+      ;;
+    fetch-dm|fetch-direct-messages )
+      fetch_direct_messages "$@"
       ;;
     dm|direct-message )
       direct_message "$@"

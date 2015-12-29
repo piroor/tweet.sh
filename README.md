@@ -50,6 +50,7 @@ Available commands are:
  * `help`: shows usage of the `tweet.sh` itself.
  * `post`: posts a new tweet.
  * `reply`: replies to an existing tweet.
+ * `fetch-direct-messages` (`fetch-dm`): fetches recent DMs.
  * `direct-message` (`dm`): sends a DM.
  * `delete` (`del`): deletes a tweet.
  * `search`: searches tweets with queries.
@@ -109,21 +110,6 @@ All rest arguments following to the command name and the tweet's identifier are 
 Note that you have to include the user's screen name manually if it is needed.
 The `reply` command does not append it automatically.
 
-## How to send a DM for my friend?
-
-If you hope to send a DM to another user, run the `direct-message` (`dm`) command.
-
-~~~
-$ ./tweet.sh direct-message @friend Good morning.
-$ ./tweet.sh direct-message friend Good morning.
-$ ./tweet.sh dm @friend Good morning.
-$ ./tweet.sh dm friend Good morning.
-~~~
-
-All rest arguments following to the command name and the recipient name are posted as a direct message.
-
-Note that you have to allow to access direct messages to your app.
-
 ## How to delete a tweet?
 
 You can delete your tweet via the `delete` (`del`) command.
@@ -149,7 +135,7 @@ Available options:
 
  * `-q`: queries.
  * `-l`: language.
- * `-c`: count of tweets to be responded. 10 by default.
+ * `-c`: maximum number of tweets to be responded. 10 by default.
  * `-s`: the id of the last tweet already known. If you specify this option, only tweets newer than the given tweet will be returned.
 
 Then matched tweets will be reported via the standard output.
@@ -307,3 +293,39 @@ The `language` (`lang`) subcommand reports your language.
 $ ./tweet.sh lang
 en
 ~~~
+
+## How to send a DM for my friend?
+
+If you hope to send a DM to another user, run the `direct-message` (`dm`) command.
+
+~~~
+$ ./tweet.sh direct-message @friend Good morning.
+$ ./tweet.sh direct-message friend Good morning.
+$ ./tweet.sh dm @friend Good morning.
+$ ./tweet.sh dm friend Good morning.
+~~~
+
+All rest arguments following to the command name and the recipient name are posted as a direct message.
+
+Note that you have to allow to access direct messages to your app.
+
+## How to fetch DMs?
+
+Recent DMs can be fetched by the `fetch-direct-messages` (`fetch-dm`) command.
+
+~~~
+$ ./tweet.sh fetch-direct-messages -c 20
+$ ./tweet.sh fetch-direct-messages -c 10 -s 0123456789
+$ ./tweet.sh fetch-dm -c 20
+$ ./tweet.sh fetch-dm -c 10 -s 0123456789
+~~~
+
+Available options:
+
+ * `-c`: maximum number of messages to be fetched. 10 by default.
+ * `-s`: the id of the last message already known. If you specify this option, only messages newer than the given id will be fetched.
+
+Then fetched messages will be reported via the standard output.
+For details of the format, see also the [API document](https://dev.twitter.com/rest/reference/get/direct_messages).
+
+Note that you have to allow to access direct messages to your app.
