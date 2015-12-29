@@ -536,7 +536,7 @@ handle_mentions() {
   local user_screen_name=$1
   shift
 
-  local keywords_matcher=''
+  local keywords=''
   local mention_handler=''
   local retweet_handler=''
   local quoted_handler=''
@@ -549,9 +549,7 @@ handle_mentions() {
   do
     case $OPT in
       k )
-        keywords_matcher="$(echo "$OPTARG" | \
-                              sed -e 's/,/|/g' \
-                                  -e 's/ +/.*/g')"
+        keywords="$OPTARG"
         ;;
       m )
         mention_handler="$OPTARG"
@@ -574,123 +572,179 @@ handle_mentions() {
     esac
   done
 
-  local separator='--------------------------------------------------------------'
-
-  local sender
-  local owner
-  local tweet_body
+  local type
   while read -r line
   do
-    if [ "$line" = 'Exceeded connection limit for user' ]
-    then
-      echo "$line" 1>&2
-      exit 1
-    fi
+    type="$(echo "$line" |
+              detect_mention_type -s "$user_screen_name" \
+                                  -k "$keywords")"
+    [ $? != 0 ] && continue;
 
-    # Events
-    case "$(echo "$line" | jq -r .event)" in
-      null )
-        : # do nothing for tweets at here
-        ;;
-      follow )
-        [ "$followed_handler" = '' ] && continue
-        local screen_name="$(echo "$line" | \
-                               jq -r .source.screen_name | \
-                               tr -d '\n')"
-        [ "$screen_name" = "$user_screen_name" ] && continue
-        log "$separator"
-        log "EVENT DETECTED: Followed by $screen_name"
-        echo "$line" |
-          (cd "$work_dir"; eval "$followed_handler")
+    log "Detected: $type"
+
+    case "$type" in
+      event-follow )
+        if [ "$followed_handler" != '' ]
+        then
+          echo "$line" |
+            (cd "$work_dir"; eval "$followed_handler")
+        fi
         continue
         ;;
-      * ) # ignore other unknown events
+
+      direct-message )
+        if [ "$dm_handler" != '' ]
+        then
+          echo "$line" |
+            jq -r -c .direct_message
+            (cd "$work_dir"; eval "$dm_handler")
+        fi
+        continue
+        ;;
+
+      quotation )
+        if [ "$quoted_handler" != '' ]
+        then
+          echo "$line" |
+            (cd "$work_dir"; eval "$quoted_handler")
+        fi
+        continue
+        ;;
+
+      retweet )
+        if [ "$retweet_handler" != '' ]
+        then
+          echo "$line" |
+            (cd "$work_dir"; eval "$retweet_handler")
+        fi
+        continue
+        ;;
+
+      mention )
+        if [ "$mention_handler" != '' ]
+        then
+          echo "$line" |
+            (cd "$work_dir"; eval "$mention_handler")
+        fi
+        continue
+        ;;
+
+      search-result )
+        if [ "$search_handler" != '' ]
+        then
+          echo "$line" |
+            (cd "$work_dir"; eval "$search_handler")
+        fi
         continue
         ;;
     esac
-
-    # handle DM
-    sender="$(echo "$line" | jq -r .direct_message.sender_screen_name)"
-    if [ "$sender" != '' \
-         -a "$sender" != 'null' \
-         -a "$sender" != "$user_screen_name" ]
-    then
-      log "$separator"
-      log "DM DETECTED: Sent by @$sender"
-      if [ "$dm_handler" != '' ]
-      then
-        echo "$line" |
-          jq -r -c .direct_message
-          (cd "$work_dir"; eval "$dm_handler")
-        continue
-      fi
-    fi
-
-    # Ignore self tweet or non-tweet object
-    owner="$(echo "$line" | extract_owner)"
-    log "Tweeted by $owner"
-    [ "$owner" = "$user_screen_name" \
-      -o "$owner" = 'null'  \
-      -o "$owner" = '' ] && continue
-
-    # Detect quotation at first, because quotation can be
-    # deteted as retweet or a simple mention unexpectedly.
-    if [ "$(echo "$line" | \
-              jq -r .quoted_status.user.screen_name | \
-              tr -d '\n')" = "$user_screen_name" ]
-    then
-      log "$separator"
-      log "TWEET DETECTED: Retweeted with quotation"
-      if [ "$quoted_handler" != '' ]
-      then
-        echo "$line" |
-          (cd "$work_dir"; eval "$quoted_handler")
-        continue
-      fi
-    fi
-
-    tweet_body="$(echo "$line" | body)"
-
-    # Detect retweet before reqply, because "RT: @(screenname)"
-    # can be deteted as a simple mention unexpectedly.
-    if echo "$tweet_body" | grep "RT @$user_screen_name:" > /dev/null
-    then
-      log "$separator"
-      log "TWEET DETECTED: Retweeted"
-      if [ "$retweet_handler" = '' ]
-      then
-        echo "$line" |
-          (cd "$work_dir"; eval "$retweet_handler")
-        continue
-      fi
-    fi
-    if echo "$tweet_body" | egrep "^RT @[^:]+:" > /dev/null
-    then
-      # don't handle RT of RT
-      continue
-    fi
-
-    if echo "$tweet_body" | grep "@$user_screen_name" > /dev/null
-    then
-      log "$separator"
-      log "TWEET DETECTED: Mentioned or Replied"
-      [ "$mention_handler" = '' ] && continue
-      echo "$line" |
-        (cd "$work_dir"; eval "$mention_handler")
-    fi
-
-    if echo "$tweet_body" | egrep -i "$keywords_matcher" > /dev/null
-    then
-      log "$separator"
-      log "TWEET DETECTED: Matched to the given keywords"
-      if [ "$search_handler" != '' ]
-      then
-        echo "$line" |
-          (cd "$work_dir"; eval "$search_handler")
-        continue
-      fi
-    fi
   done
+}
+
+detect_mention_type() {
+  local self_screen_name=''
+  local keywords_matcher=''
+
+  local OPTIND OPTARG OPT
+  while getopts s:k: OPT
+  do
+    case $OPT in
+      s )
+        self_screen_name="$OPTARG"
+        ;;
+      k )
+        keywords_matcher="$(echo "$OPTARG" | \
+                              sed -e 's/,/|/g' \
+                                  -e 's/ +/.*/g')"
+        ;;
+    esac
+  done
+
+  local input="$(cat)"
+
+  if [ "$input" = 'Exceeded connection limit for user' ]
+  then
+    return 1
+  fi
+
+  # Events
+  case "$(echo "$input" | jq -r .event)" in
+    null )
+      : # do nothing for tweets at here
+      ;;
+    follow )
+      local screen_name="$(echo "$input" | \
+                             jq -r .source.screen_name | \
+                             tr -d '\n')"
+      if [ "$screen_name" != "$self_screen_name" ]
+      then
+        echo "event-follow"
+        return 0
+      fi
+      return 1
+      ;;
+    * ) # ignore other unknown events
+      return 1
+      ;;
+  esac
+
+  # DM
+  local sender="$(echo "$input" | jq -r .direct_message.sender_screen_name)"
+  if [ "$sender" != '' \
+       -a "$sender" != 'null' \
+       -a "$sender" != "$self_screen_name" ]
+  then
+    echo "direct-message"
+    return 0
+  fi
+
+  # Ignore self tweet or non-tweet object
+  local owner="$(echo "$input" | extract_owner)"
+  if [ "$owner" = "$self_screen_name" \
+       -o "$owner" = 'null'  \
+       -o "$owner" = '' ]
+  then
+    return 1
+  fi
+
+  # Detect quotation at first, because quotation can be
+  # deteted as retweet or a simple mention unexpectedly.
+  if [ "$(echo "$line" | \
+            jq -r .quoted_status.user.screen_name | \
+            tr -d '\n')" = "$self_screen_name" ]
+  then
+    echo "quotation"
+    return 0
+  fi
+
+  local tweet_body="$(echo "$line" | body)"
+
+  # Detect retweet before reqply, because "RT: @(screenname)"
+  # can be deteted as a simple mention unexpectedly.
+  if echo "$tweet_body" | grep "RT @$self_screen_name:" > /dev/null
+  then
+    echo "retweet"
+    return 0
+  fi
+  if echo "$tweet_body" | egrep "^RT @[^:]+:" > /dev/null
+  then
+    # don't handle RT of RT
+    return 1
+  fi
+
+  if echo "$tweet_body" | grep "@$self_screen_name" > /dev/null
+  then
+    echo "mention"
+    return 0
+  fi
+
+  if echo "$tweet_body" | egrep -i "$keywords_matcher" > /dev/null
+  then
+    echo "search-result"
+    return 0
+  fi
+
+  return 1
 }
 
 
