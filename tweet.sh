@@ -624,7 +624,7 @@ handle_mentions() {
         continue
       fi
     fi
-    if echo "$tweet_body" | egrep "RT @[^:]+:" > /dev/null
+    if echo "$tweet_body" | egrep "^RT @[^:]+:" > /dev/null
     then
       # don't handle RT of RT
       continue
