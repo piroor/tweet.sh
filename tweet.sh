@@ -180,6 +180,7 @@ help() {
       echo '  unretweet(unrt): deletes the retweet of a tweet.'
       echo '  follow         : follows a user.'
       echo '  unfollow       : unfollows a user.'
+      echo '  type           : detects the type of the given input.'
       echo '  body           : extracts the body of a tweet.'
       echo '  owner          : extracts the owner of a tweet.'
       echo '  showme         : reports the raw information of yourself.'
@@ -268,6 +269,10 @@ help() {
       echo 'Usage:'
       echo '  ./tweet.sh unfollow username'
       echo '  ./tweet.sh unfollow @username'
+      ;;
+    type )
+      echo 'Usage:'
+      echo '  echo "$tweet_json" | ./tweet.sh type -s my_screen_name -k keyword1,keyword2'
       ;;
     body )
       echo 'Usage:'
@@ -576,8 +581,8 @@ handle_mentions() {
   while read -r line
   do
     type="$(echo "$line" |
-              detect_mention_type -s "$user_screen_name" \
-                                  -k "$keywords")"
+              detect_type -s "$user_screen_name" \
+                          -k "$keywords")"
     [ $? != 0 ] && continue;
 
     log "Detected: $type"
@@ -641,7 +646,7 @@ handle_mentions() {
   done
 }
 
-detect_mention_type() {
+detect_type() {
   local self_screen_name=''
   local keywords_matcher=''
 
@@ -689,7 +694,8 @@ detect_mention_type() {
   esac
 
   # DM
-  local sender="$(echo "$input" | jq -r .direct_message.sender_screen_name)"
+  local sender="$(echo "$input" | jq -r .sender_screen_name)"
+  [ "$sender" = '' ] && sender="$(echo "$input" | jq -r .direct_message.sender_screen_name)"
   if [ "$sender" != '' \
        -a "$sender" != 'null' \
        -a "$sender" != "$self_screen_name" ]
@@ -709,7 +715,7 @@ detect_mention_type() {
 
   # Detect quotation at first, because quotation can be
   # deteted as retweet or a simple mention unexpectedly.
-  if [ "$(echo "$line" | \
+  if [ "$(echo "$input" | \
             jq -r .quoted_status.user.screen_name | \
             tr -d '\n')" = "$self_screen_name" ]
   then
@@ -717,7 +723,7 @@ detect_mention_type() {
     return 0
   fi
 
-  local tweet_body="$(echo "$line" | body)"
+  local tweet_body="$(echo "$input" | body)"
 
   # Detect retweet before reqply, because "RT: @(screenname)"
   # can be deteted as a simple mention unexpectedly.
@@ -1136,6 +1142,9 @@ then
       ;;
     unfollow )
       unfollow "$@"
+      ;;
+    type )
+      detect_type "$@"
       ;;
     body )
       body "$@"

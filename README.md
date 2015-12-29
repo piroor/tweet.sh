@@ -61,6 +61,7 @@ Available commands are:
  * `unretweet` (`unrt`): deletes the retweet of a tweet.
  * `follow`: follows a user.
  * `unfollow`: unfollows a user.
+ * `type`: detects the type of the given input.
  * `body`: extracts the body of a tweet.
  * `owner`: extracts the owner of a tweet.
  * `whoami`: reports the screen name of yourself.
@@ -277,6 +278,31 @@ $ ./tweet.sh owner 0123456789
 $ ./tweet.sh owner https://twitter.com/username/status/0123456789
 $ echo "$tweet_json" | ./tweet.sh owner
 ~~~
+
+## How to detect the type of the input JSON?
+
+There is a command to detect the type of each line returned from the streaming API.
+Give the JSON string via the standard input, with the command `type`.
+
+~~~
+$ echo "$tweet_json" | ./tweet.sh type -s my_screen_name -k keyword1,keyword2
+~~~
+
+Available options:
+
+ * `-s`: the screen name of yourself
+ * `-k`: comma-separated list of keywords which are used for "search".
+
+Then the command will reports the detected type via the standard output, one of them:
+
+ * `event-follow`: An event when you are followed.
+ * `direct-message`: A direct message. It can be wrapped with a key `direct_message`.
+ * `quotation`: A commented RT.
+ * `retweet`: An RT.
+ * `mention`: A mention or reply.
+ * `search-result`: A tweet which is matched to the given keywords.
+
+For unknown type input, this command returns an exit status `1` and reports nothing via the standard output,
 
 ## How to get the information of my account?
 
