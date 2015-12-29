@@ -882,7 +882,7 @@ extract_tweet_id() {
 }
 
 extract_owner() {
-  jq -r .user.screen_name)"
+  jq -r .user.screen_name
 }
 
 unicode_unescape() {
