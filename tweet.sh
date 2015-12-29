@@ -581,6 +581,7 @@ handle_mentions() {
       if [ "$dm_handler" != '' ]
       then
         echo "$line" |
+          jq -r -c .direct_message
           (cd "$work_dir"; eval "$dm_handler")
         continue
       fi
@@ -770,14 +771,7 @@ body() {
     local id="$(echo "$target" | extract_tweet_id)"
     show "$id" | body
   else
-    local input="$(cat)"
-    local body_text="$(echo "$input" | jq -r .text | unicode_unescape)"
-    # for DMs
-    if [ "$body_text" = 'null' ]
-    then
-      body_text="$(echo "$input" | jq -r .direct_message.text | unicode_unescape)"
-    fi
-    echo "$body_text"
+    jq -r .text | unicode_unescape
   fi
 }
 
@@ -853,14 +847,7 @@ extract_tweet_id() {
 }
 
 extract_owner() {
-  local input="$(cat)"
-  local owner="$(echo "$input" | jq -r .user.screen_name)"
-  # for DMs
-  if [ "$owner" = 'null' ]
-  then
-    owner="$(echo "$input" | jq -r .direct_message.sender.screen_name)"
-  fi
-  echo "$owner"
+  jq -r .user.screen_name)"
 }
 
 unicode_unescape() {
@@ -1027,7 +1014,7 @@ then
     del|delete )
       delete "$@"
       ;;
-    dm|direct_message )
+    dm|direct-message )
       direct_message "$@"
       ;;
     search )
