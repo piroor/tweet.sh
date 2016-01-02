@@ -726,6 +726,19 @@ self_screen_name() {
     tr -d '\n'
 }
 
+# implementation of language
+self_language() {
+  local lang="$(my_information |
+    jq -r .lang |
+    tr -d '\n')"
+  if [ "$lang" = 'null' -o "$lang" = '' ]
+  then
+    echo "en"
+  else
+    echo "$lang"
+  fi
+}
+
 
 post() {
   ensure_available
