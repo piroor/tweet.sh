@@ -180,6 +180,7 @@ help() {
       echo '  unretweet(unrt): deletes the retweet of a tweet.'
       echo '  follow         : follows a user.'
       echo '  unfollow       : unfollows a user.'
+      echo '  fetch          : fetches a JSON string of a tweet.'
       echo '  type           : detects the type of the given input.'
       echo '  body           : extracts the body of a tweet.'
       echo '  owner          : extracts the owner of a tweet.'
@@ -269,6 +270,11 @@ help() {
       echo 'Usage:'
       echo '  ./tweet.sh unfollow username'
       echo '  ./tweet.sh unfollow @username'
+      ;;
+    fetch )
+      echo 'Usage:'
+      echo '  ./tweet.sh fetch 012345'
+      echo '  ./tweet.sh fetch https://twitter.com/username/status/012345'
       ;;
     type )
       echo 'Usage:'
@@ -803,11 +809,11 @@ unretweet() {
 
   local id="$(echo "$target" | extract_tweet_id)"
 
-  local retweet_id="$(show_with_my_retweet "$id" | jq -r .current_user_retweet.id_str)"
+  local retweet_id="$(fetch_with_my_retweet "$id" | jq -r .current_user_retweet.id_str)"
   delete "$retweet_id"
 }
 
-show_with_my_retweet() {
+fetch_with_my_retweet() {
   ensure_available
 
   local target="$1"
@@ -821,7 +827,7 @@ include_my_retweet true
 FIN
 }
 
-show() {
+fetch() {
   ensure_available
 
   local target="$1"
@@ -868,7 +874,7 @@ body() {
   if [ "$target" != '' ]
   then
     local id="$(echo "$target" | extract_tweet_id)"
-    show "$id" | body
+    fetch "$id" | body
   else
     jq -r .text | unicode_unescape
   fi
@@ -879,7 +885,7 @@ owner_screen_name() {
   if [ "$target" != '' ]
   then
     local id="$(echo "$target" | extract_tweet_id)"
-    show | echo "@$(extract_owner)"
+    echo "@$(fetch "$id" | extract_owner)"
   else
     echo "@$(extract_owner)"
   fi
@@ -1142,6 +1148,9 @@ then
       ;;
     unfollow )
       unfollow "$@"
+      ;;
+    fetch )
+      fetch "$@"
       ;;
     type )
       detect_type "$@"

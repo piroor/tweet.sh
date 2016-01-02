@@ -61,6 +61,7 @@ Available commands are:
  * `unretweet` (`unrt`): deletes the retweet of a tweet.
  * `follow`: follows a user.
  * `unfollow`: unfollows a user.
+ * `fetch`: fetches a JSON string of a tweet.
  * `type`: detects the type of the given input.
  * `body`: extracts the body of a tweet.
  * `owner`: extracts the owner of a tweet.
@@ -258,6 +259,17 @@ To unfollow him/her, simply use the inverted command `unfollow`.
 $ ./tweet.sh unfollow @username
 $ ./tweet.sh unfollow username
 ~~~
+
+## How to fetch a tweet itself?
+
+You must give the ID or the URL of the tweet to the command `fetch`.
+
+~~~
+$ ./tweet.sh fetch 0123456789
+$ ./tweet.sh fetch https://twitter.com/username/status/0123456789
+~~~
+
+Then a JSON string will be reported via the standard output.
 
 ## How to read the body of a tweet?
 
