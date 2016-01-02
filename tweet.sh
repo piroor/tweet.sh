@@ -163,24 +163,10 @@ help() {
       echo '  ./tweet.sh [command] [...arguments]'
       echo ''
       echo 'Available commands:'
-      echo '  post           : posts a new tweet.'
-      echo '  reply          : replies to a tweet.'
-      echo '  delete(del)    : deletes a tweet.'
-      echo '  fetch-direct-messages(fetch-dm)'
-      echo '                 : fetches recent DMs.'
-      echo '  direct-message(dm)'
-      echo '                 : sends a DM.'
+      echo '  fetch          : fetches a JSON string of a tweet.'
       echo '  search         : searches tweets.'
       echo '  watch-mentions(watch)'
       echo '                 : watches mentions, retweets, DMs, etc.'
-      echo '  favorite(fav)  : marks a tweet as a favorite.'
-      echo '  unfavorite(unfav)'
-      echo '                 : removes favorited flag of a tweet.'
-      echo '  retweet(rt)    : retweets a tweet.'
-      echo '  unretweet(unrt): deletes the retweet of a tweet.'
-      echo '  follow         : follows a user.'
-      echo '  unfollow       : unfollows a user.'
-      echo '  fetch          : fetches a JSON string of a tweet.'
       echo '  type           : detects the type of the given input.'
       echo '  body           : extracts the body of a tweet.'
       echo '  owner          : extracts the owner of a tweet.'
@@ -188,34 +174,29 @@ help() {
       echo '  whoami         : reports the screen name of yourself.'
       echo '  language(lang) : reports the selected language of yourself.'
       echo ''
+      echo '  post           : posts a new tweet.'
+      echo '  reply          : replies to a tweet.'
+      echo '  delete(del)    : deletes a tweet.'
+      echo '  favorite(fav)  : marks a tweet as a favorite.'
+      echo '  unfavorite(unfav)'
+      echo '                 : removes favorited flag of a tweet.'
+      echo '  retweet(rt)    : retweets a tweet.'
+      echo '  unretweet(unrt): deletes the retweet of a tweet.'
+      echo '  follow         : follows a user.'
+      echo '  unfollow       : unfollows a user.'
+      echo ''
+      echo '  fetch-direct-messages(fetch-dm)'
+      echo '                 : fetches recent DMs.'
+      echo '  direct-message(dm)'
+      echo '                 : sends a DM.'
+      echo ''
       echo 'For more details, see also: "./tweet.sh help [command]"'
       ;;
-    post )
+
+    fetch )
       echo 'Usage:'
-      echo '  ./tweet.sh post A tweet from command line'
-      echo '  ./tweet.sh post 何らかのつぶやき'
-      ;;
-    reply )
-      echo 'Usage:'
-      echo '  ./tweet.sh reply 012345 a reply'
-      echo '  ./tweet.sh reply https://twitter.com/username/status/012345 a reply'
-      ;;
-    del|delete )
-      echo 'Usage:'
-      echo '  ./tweet.sh del 012345'
-      echo '  ./tweet.sh del https://twitter.com/username/status/012345'
-      echo '  ./tweet.sh delete 012345'
-      echo '  ./tweet.sh delete https://twitter.com/username/status/012345'
-      ;;
-    fetch-dm|fetch-direct-messages )
-      echo 'Usage:'
-      echo '  ./tweet.sh fetch-dm -c 10'
-      echo '  ./tweet.sh fetch-direct-messages -c 100 -s 0123456'
-      ;;
-    dm|direct-message )
-      echo 'Usage:'
-      echo '  ./tweet.sh dm frinedname Good morning.'
-      echo '  ./tweet.sh direct-message frinedname "How are you?"'
+      echo '  ./tweet.sh fetch 012345'
+      echo '  ./tweet.sh fetch https://twitter.com/username/status/012345'
       ;;
     search )
       echo 'Usage:'
@@ -232,6 +213,53 @@ help() {
       echo "                            -f \"echo 'FOLLOWED'; cat\""
       echo "                            -d \"echo 'DM'; cat\""
       echo "                            -s \"echo 'SEARCH-RESULT'; cat\""
+      ;;
+    type )
+      echo 'Usage:'
+      echo '  echo "$tweet_json" | ./tweet.sh type -s my_screen_name -k keyword1,keyword2'
+      ;;
+    body )
+      echo 'Usage:'
+      echo '  ./tweet.sh body 012345'
+      echo '  ./tweet.sh body https://twitter.com/username/status/012345'
+      echo '  echo "$tweet_json" | ./tweet.sh body'
+      ;;
+    owner )
+      echo 'Usage:'
+      echo '  ./tweet.sh owner 012345'
+      echo '  ./tweet.sh owner https://twitter.com/username/status/012345'
+      echo '  echo "$tweet_json" | ./tweet.sh owner'
+      ;;
+    showme )
+      echo 'Usage:'
+      echo '  ./tweet.sh showme'
+      ;;
+    whoami )
+      echo 'Usage:'
+      echo '  ./tweet.sh whoami'
+      ;;
+    lang|language )
+      echo 'Usage:'
+      echo '  ./tweet.sh lang'
+      echo '  ./tweet.sh language'
+      ;;
+
+    post )
+      echo 'Usage:'
+      echo '  ./tweet.sh post A tweet from command line'
+      echo '  ./tweet.sh post 何らかのつぶやき'
+      ;;
+    reply )
+      echo 'Usage:'
+      echo '  ./tweet.sh reply 012345 a reply'
+      echo '  ./tweet.sh reply https://twitter.com/username/status/012345 a reply'
+      ;;
+    del|delete )
+      echo 'Usage:'
+      echo '  ./tweet.sh del 012345'
+      echo '  ./tweet.sh del https://twitter.com/username/status/012345'
+      echo '  ./tweet.sh delete 012345'
+      echo '  ./tweet.sh delete https://twitter.com/username/status/012345'
       ;;
     fav|favorite )
       echo 'Usage:'
@@ -271,39 +299,16 @@ help() {
       echo '  ./tweet.sh unfollow username'
       echo '  ./tweet.sh unfollow @username'
       ;;
-    fetch )
+
+    fetch-dm|fetch-direct-messages )
       echo 'Usage:'
-      echo '  ./tweet.sh fetch 012345'
-      echo '  ./tweet.sh fetch https://twitter.com/username/status/012345'
+      echo '  ./tweet.sh fetch-dm -c 10'
+      echo '  ./tweet.sh fetch-direct-messages -c 100 -s 0123456'
       ;;
-    type )
+    dm|direct-message )
       echo 'Usage:'
-      echo '  echo "$tweet_json" | ./tweet.sh type -s my_screen_name -k keyword1,keyword2'
-      ;;
-    body )
-      echo 'Usage:'
-      echo '  ./tweet.sh body 012345'
-      echo '  ./tweet.sh body https://twitter.com/username/status/012345'
-      echo '  echo "$tweet_json" | ./tweet.sh body'
-      ;;
-    owner )
-      echo 'Usage:'
-      echo '  ./tweet.sh owner 012345'
-      echo '  ./tweet.sh owner https://twitter.com/username/status/012345'
-      echo '  echo "$tweet_json" | ./tweet.sh owner'
-      ;;
-    showme )
-      echo 'Usage:'
-      echo '  ./tweet.sh showme'
-      ;;
-    whoami )
-      echo 'Usage:'
-      echo '  ./tweet.sh whoami'
-      ;;
-    lang|language )
-      echo 'Usage:'
-      echo '  ./tweet.sh lang'
-      echo '  ./tweet.sh language'
+      echo '  ./tweet.sh dm frinedname Good morning.'
+      echo '  ./tweet.sh direct-message frinedname "How are you?"'
       ;;
   esac
 }
@@ -321,82 +326,32 @@ check_errors() {
   fi
 }
 
-post() {
-  ensure_available
-  local result="$(echo "status $*" | call_api POST https://api.twitter.com/1.1/statuses/update.json)"
-  echo "$result"
-  check_errors "$result"
-}
 
-reply() {
+fetch() {
   ensure_available
 
   local target="$1"
   shift
 
   local id="$(echo "$target" | extract_tweet_id)"
-
-  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/statuses/update.json
-status $*
-in_reply_to_status_id $id
+  local result="$(cat << FIN | call_api GET https://api.twitter.com/1.1/statuses/show.json
+id $id
 FIN
   )"
   echo "$result"
   check_errors "$result"
 }
 
-delete() {
+fetch_with_my_retweet() {
   ensure_available
 
   local target="$1"
   shift
 
   local id="$(echo "$target" | extract_tweet_id)"
-
-  local result="$(call_api POST "https://api.twitter.com/1.1/statuses/destroy/$id.json")"
-  echo "$result"
-  check_errors "$result"
-}
-
-fetch_direct_messages() {
-  ensure_available
-  local count=10
-  local since_id=''
-
-  local OPTIND OPTARG OPT
-  while getopts c:s: OPT
-  do
-    case $OPT in
-      c )
-        count="$OPTARG"
-        ;;
-      s )
-        since_id="$(echo "$OPTARG" | extract_tweet_id)"
-        [ "$since_id" != '' ] && since_id="since_id $since_id"
-        ;;
-    esac
-  done
-
-  local result="$(cat << FIN | call_api GET https://api.twitter.com/1.1/direct_messages.json
-count $count
-$since_id
-FIN
-  )"
-  echo "$result"
-  check_errors "$result"
-}
-
-direct_message() {
-  ensure_available
-
-  local target="$1"
-  shift
-
-  target="$(echo "$target" | sed 's/^@//')"
-
-  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/direct_messages/new.json
-screen_name $target
-text $*
+  local result="$(cat << FIN | call_api GET https://api.twitter.com/1.1/statuses/show.json
+id $id
+include_my_retweet true
 FIN
   )"
   echo "$result"
@@ -492,29 +447,6 @@ handle_search_results() {
     echo "$line" |
       (cd "$work_dir"; eval "$handler")
   done
-}
-
-my_information() {
-  ensure_available
-  call_api GET https://api.twitter.com/1.1/account/verify_credentials.json
-}
-
-self_screen_name() {
-  my_information |
-    jq -r .screen_name |
-    tr -d '\n'
-}
-
-self_language() {
-  local lang="$(my_information |
-    jq -r .lang |
-    tr -d '\n')"
-  if [ "$lang" = 'null' -o "$lang" = '' ]
-  then
-    echo "en"
-  else
-    echo "$lang"
-  fi
 }
 
 watch_mentions() {
@@ -759,6 +691,78 @@ detect_type() {
   return 1
 }
 
+body() {
+  local target="$1"
+  if [ "$target" != '' ]
+  then
+    local id="$(echo "$target" | extract_tweet_id)"
+    fetch "$id" | body
+  else
+    jq -r .text | unicode_unescape
+  fi
+}
+
+owner_screen_name() {
+  local target="$1"
+  if [ "$target" != '' ]
+  then
+    local id="$(echo "$target" | extract_tweet_id)"
+    echo "@$(fetch "$id" | extract_owner)"
+  else
+    echo "@$(extract_owner)"
+  fi
+}
+
+# implementation of showme
+my_information() {
+  ensure_available
+  call_api GET https://api.twitter.com/1.1/account/verify_credentials.json
+}
+
+# implementation of whoami
+self_screen_name() {
+  my_information |
+    jq -r .screen_name |
+    tr -d '\n'
+}
+
+
+post() {
+  ensure_available
+  local result="$(echo "status $*" | call_api POST https://api.twitter.com/1.1/statuses/update.json)"
+  echo "$result"
+  check_errors "$result"
+}
+
+reply() {
+  ensure_available
+
+  local target="$1"
+  shift
+
+  local id="$(echo "$target" | extract_tweet_id)"
+
+  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/statuses/update.json
+status $*
+in_reply_to_status_id $id
+FIN
+  )"
+  echo "$result"
+  check_errors "$result"
+}
+
+delete() {
+  ensure_available
+
+  local target="$1"
+  shift
+
+  local id="$(echo "$target" | extract_tweet_id)"
+
+  local result="$(call_api POST "https://api.twitter.com/1.1/statuses/destroy/$id.json")"
+  echo "$result"
+  check_errors "$result"
+}
 
 favorite() {
   ensure_available
@@ -813,33 +817,6 @@ unretweet() {
   delete "$retweet_id"
 }
 
-fetch_with_my_retweet() {
-  ensure_available
-
-  local target="$1"
-  shift
-
-  local id="$(echo "$target" | extract_tweet_id)"
-
-  cat << FIN | call_api GET https://api.twitter.com/1.1/statuses/show.json
-id $id
-include_my_retweet true
-FIN
-}
-
-fetch() {
-  ensure_available
-
-  local target="$1"
-  shift
-
-  local id="$(echo "$target" | extract_tweet_id)"
-
-  cat << FIN | call_api GET https://api.twitter.com/1.1/statuses/show.json
-id $id
-FIN
-}
-
 follow() {
   ensure_available
 
@@ -869,26 +846,50 @@ FIN
   check_errors "$result"
 }
 
-body() {
-  local target="$1"
-  if [ "$target" != '' ]
-  then
-    local id="$(echo "$target" | extract_tweet_id)"
-    fetch "$id" | body
-  else
-    jq -r .text | unicode_unescape
-  fi
+
+fetch_direct_messages() {
+  ensure_available
+  local count=10
+  local since_id=''
+
+  local OPTIND OPTARG OPT
+  while getopts c:s: OPT
+  do
+    case $OPT in
+      c )
+        count="$OPTARG"
+        ;;
+      s )
+        since_id="$(echo "$OPTARG" | extract_tweet_id)"
+        [ "$since_id" != '' ] && since_id="since_id $since_id"
+        ;;
+    esac
+  done
+
+  local result="$(cat << FIN | call_api GET https://api.twitter.com/1.1/direct_messages.json
+count $count
+$since_id
+FIN
+  )"
+  echo "$result"
+  check_errors "$result"
 }
 
-owner_screen_name() {
+direct_message() {
+  ensure_available
+
   local target="$1"
-  if [ "$target" != '' ]
-  then
-    local id="$(echo "$target" | extract_tweet_id)"
-    echo "@$(fetch "$id" | extract_owner)"
-  else
-    echo "@$(extract_owner)"
-  fi
+  shift
+
+  target="$(echo "$target" | sed 's/^@//')"
+
+  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/direct_messages/new.json
+screen_name $target
+text $*
+FIN
+  )"
+  echo "$result"
+  check_errors "$result"
 }
 
 
@@ -916,7 +917,6 @@ url_encode() {
         -e 's/%2D/-/g' \
         -e 's/%2E/./g'
 }
-
 
 # usage:
 #   $ cat params
@@ -1110,47 +1110,14 @@ then
   trap 'kill_descendants $self_pid; exit 0' HUP INT QUIT KILL TERM
 
   case "$command" in
-    post )
-      post "$@"
-      ;;
-    reply )
-      reply "$@"
-      ;;
-    del|delete )
-      delete "$@"
-      ;;
-    fetch-dm|fetch-direct-messages )
-      fetch_direct_messages "$@"
-      ;;
-    dm|direct-message )
-      direct_message "$@"
+    fetch )
+      fetch "$@"
       ;;
     search )
       search "$@"
       ;;
     watch|watch-mentions )
       watch_mentions "$@"
-      ;;
-    fav|favorite )
-      favorite "$@"
-      ;;
-    unfav|unfavorite )
-      unfavorite "$@"
-      ;;
-    rt|retweet )
-      retweet "$@"
-      ;;
-    unrt|unretweet )
-      unretweet "$@"
-      ;;
-    follow )
-      follow "$@"
-      ;;
-    unfollow )
-      unfollow "$@"
-      ;;
-    fetch )
-      fetch "$@"
       ;;
     type )
       detect_type "$@"
@@ -1170,6 +1137,42 @@ then
     lang|language )
       self_language
       ;;
+
+    post )
+      post "$@"
+      ;;
+    reply )
+      reply "$@"
+      ;;
+    del|delete )
+      delete "$@"
+      ;;
+    fav|favorite )
+      favorite "$@"
+      ;;
+    unfav|unfavorite )
+      unfavorite "$@"
+      ;;
+    rt|retweet )
+      retweet "$@"
+      ;;
+    unrt|unretweet )
+      unretweet "$@"
+      ;;
+    follow )
+      follow "$@"
+      ;;
+    unfollow )
+      unfollow "$@"
+      ;;
+
+    fetch-dm|fetch-direct-messages )
+      fetch_direct_messages "$@"
+      ;;
+    dm|direct-message )
+      direct_message "$@"
+      ;;
+
     help|* )
       help "$@"
       ;;
