@@ -8,6 +8,7 @@ Go to [the front page](https://apps.twitter.com/), create a new app, and generat
 Then put them as a key file at `~/.tweet.client.key`, with the format:
 
 ~~~
+SCREEN_NAME=xxxxxxxxxxxxxxxxxxx
 CONSUMER_KEY=xxxxxxxxxxxxxxxxxxx
 CONSUMER_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ACCESS_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -20,6 +21,7 @@ Otherwise, the file `~/.tweet.client.key` will be used as the default key file.
 Moreover, you can give those information via environment variables without a key file.
 
 ~~~
+$ export SCREEN_NAME=xxxxxxxxxxxxxxxxxxx
 $ export CONSUMER_KEY=xxxxxxxxxxxxxxxxxxx
 $ export CONSUMER_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 $ export ACCESS_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -176,7 +178,6 @@ To stop the process, you need to send the `SIGINT` signal via Ctrl-C or somethin
 
  * Parameters
    * The standard input: [a JSON string of a tweet](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid).
-   * `-s`: the screen name of yourself.
    * `-k`: comma-separated list of keywords which are used for "search".
  * Standard output
    * The data type detected from the input.
@@ -190,7 +191,7 @@ To stop the process, you need to send the `SIGINT` signal via Ctrl-C or somethin
  * Example
    
    ~~~
-   $ echo "$tweet_json" | ./tweet.sh type -s my_screen_name -k keyword1,keyword2
+   $ echo "$tweet_json" | ./tweet.sh type -k keyword1,keyword2
    ~~~
 
 This command provides ability to detect the type of each object returned from the [user stream](https://dev.twitter.com/streaming/userstreams).

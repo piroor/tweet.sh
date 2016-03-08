@@ -77,6 +77,7 @@ load_keys() {
     source "$tools_dir/tweet.client.key"
   fi
 
+  export SCREEN_NAME
   export CONSUMER_KEY
   export CONSUMER_SECRET
   export ACCESS_TOKEN
@@ -97,6 +98,12 @@ ensure_available() {
   local fatal_error=0
 
   load_keys
+
+  if [ "$SCREEN_NAME" = '' ]
+  then
+    echo 'FATAL ERROR: You need to specify your screen name via an environment variable "SCREEN_NAME".' 1>&2
+    fatal_error=1
+  fi
 
   if [ "$CONSUMER_KEY" = '' ]
   then
@@ -585,16 +592,12 @@ handle_mentions() {
 }
 
 detect_type() {
-  local self_screen_name=''
   local keywords_matcher=''
 
   local OPTIND OPTARG OPT
-  while getopts s:k: OPT
+  while getopts k: OPT
   do
     case $OPT in
-      s )
-        self_screen_name="$OPTARG"
-        ;;
       k )
         keywords_matcher="$(echo "$OPTARG" | \
                               sed -e 's/,/|/g' \
@@ -619,7 +622,7 @@ detect_type() {
       local screen_name="$(echo "$input" | \
                              jq -r .source.screen_name | \
                              tr -d '\n')"
-      if [ "$screen_name" != "$self_screen_name" ]
+      if [ "$screen_name" != "$SCREEN_NAME" ]
       then
         echo "event-follow"
         return 0
@@ -636,7 +639,7 @@ detect_type() {
   [ "$sender" = '' ] && sender="$(echo "$input" | jq -r .direct_message.sender_screen_name)"
   if [ "$sender" != '' \
        -a "$sender" != 'null' \
-       -a "$sender" != "$self_screen_name" ]
+       -a "$sender" != "$SCREEN_NAME" ]
   then
     echo "direct-message"
     return 0
@@ -644,7 +647,7 @@ detect_type() {
 
   # Ignore self tweet or non-tweet object
   local owner="$(echo "$input" | extract_owner)"
-  if [ "$owner" = "$self_screen_name" \
+  if [ "$owner" = "$SCREEN_NAME" \
        -o "$owner" = 'null'  \
        -o "$owner" = '' ]
   then
@@ -655,7 +658,7 @@ detect_type() {
   # deteted as retweet or a simple mention unexpectedly.
   if [ "$(echo "$input" | \
             jq -r .quoted_status.user.screen_name | \
-            tr -d '\n')" = "$self_screen_name" ]
+            tr -d '\n')" = "$SCREEN_NAME" ]
   then
     echo "quotation"
     return 0
@@ -665,7 +668,7 @@ detect_type() {
 
   # Detect retweet before reqply, because "RT: @(screenname)"
   # can be deteted as a simple mention unexpectedly.
-  if echo "$tweet_body" | grep "RT @$self_screen_name:" > /dev/null
+  if echo "$tweet_body" | grep "RT @$SCREEN_NAME:" > /dev/null
   then
     echo "retweet"
     return 0
@@ -676,7 +679,7 @@ detect_type() {
     return 1
   fi
 
-  if echo "$tweet_body" | grep "@$self_screen_name" > /dev/null
+  if echo "$tweet_body" | grep "@$SCREEN_NAME" > /dev/null
   then
     echo "mention"
     return 0
