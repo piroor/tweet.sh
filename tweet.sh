@@ -214,7 +214,7 @@ help() {
       ;;
     search )
       echo 'Usage:'
-      echo '  ./tweet.sh search -q "queries" -l "ja" -c 10'
+      echo '  ./tweet.sh search -q "queries" -c 10'
       echo '  ./tweet.sh search -q "Bash OR Shell Script" -s 0123456'
       echo '  ./tweet.sh search -q "queries" -h "cat"'
       ;;
@@ -230,7 +230,7 @@ help() {
       ;;
     type )
       echo 'Usage:'
-      echo '  echo "$tweet_json" | ./tweet.sh type -s my_screen_name -k keyword1,keyword2'
+      echo '  echo "$tweet_json" | ./tweet.sh type -k keyword1,keyword2'
       ;;
     body )
       echo 'Usage:'
@@ -529,8 +529,7 @@ handle_mentions() {
   while read -r line
   do
     type="$(echo "$line" |
-              detect_type -s "$user_screen_name" \
-                          -k "$keywords")"
+              detect_type -k "$keywords")"
     [ $? != 0 ] && continue;
 
     log "Detected: $type"
