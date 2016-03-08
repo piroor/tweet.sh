@@ -8,7 +8,7 @@ Go to [the front page](https://apps.twitter.com/), create a new app, and generat
 Then put them as a key file at `~/.tweet.client.key`, with the format:
 
 ~~~
-SCREEN_NAME=xxxxxxxxxxxxxxxxxxx
+MY_SCREEN_NAME=xxxxxxxxxxxxxxxxxxx
 MY_LANGUAGE=xx
 CONSUMER_KEY=xxxxxxxxxxxxxxxxxxx
 CONSUMER_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -22,7 +22,7 @@ Otherwise, the file `~/.tweet.client.key` will be used as the default key file.
 Moreover, you can give those information via environment variables without a key file.
 
 ~~~
-$ export SCREEN_NAME=xxxxxxxxxxxxxxxxxxx
+$ export MY_SCREEN_NAME=xxxxxxxxxxxxxxxxxxx
 $ export MY_LANGUAGE=xx
 $ export CONSUMER_KEY=xxxxxxxxxxxxxxxxxxx
 $ export CONSUMER_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
