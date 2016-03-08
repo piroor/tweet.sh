@@ -78,6 +78,7 @@ load_keys() {
   fi
 
   export SCREEN_NAME
+  export MY_LANGUAGE
   export CONSUMER_KEY
   export CONSUMER_SECRET
   export ACCESS_TOKEN
@@ -102,6 +103,12 @@ ensure_available() {
   if [ "$SCREEN_NAME" = '' ]
   then
     echo 'FATAL ERROR: You need to specify your screen name via an environment variable "SCREEN_NAME".' 1>&2
+    fatal_error=1
+  fi
+
+  if [ "$MY_LANGUAGE" = '' ]
+  then
+    echo 'FATAL ERROR: You need to specify your language (like "en") via an environment variable "MY_LANGUAGE".' 1>&2
     fatal_error=1
   fi
 
@@ -367,7 +374,6 @@ FIN
 
 search() {
   ensure_available
-  local lang='en'
   local locale='en'
   local count=10
   local since_id=''
@@ -379,9 +385,6 @@ search() {
     case $OPT in
       q )
         query="$OPTARG"
-        ;;
-      l )
-        lang="$OPTARG"
         ;;
       c )
         count="$OPTARG"
@@ -396,13 +399,13 @@ search() {
     esac
   done
 
-  [ "$lang" = 'ja' ] && locale='ja'
+  [ "$MY_LANGUAGE" = 'ja' ] && locale='ja'
 
   if [ "$handler" = '' ]
   then
     local result="$(cat << FIN | call_api GET https://api.twitter.com/1.1/search/tweets.json
 q $query
-lang $lang
+lang $MY_LANGUAGE
 locale $locale
 result_type recent
 count $count

@@ -9,6 +9,7 @@ Then put them as a key file at `~/.tweet.client.key`, with the format:
 
 ~~~
 SCREEN_NAME=xxxxxxxxxxxxxxxxxxx
+MY_LANGUAGE=xx
 CONSUMER_KEY=xxxxxxxxxxxxxxxxxxx
 CONSUMER_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ACCESS_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -22,6 +23,7 @@ Moreover, you can give those information via environment variables without a key
 
 ~~~
 $ export SCREEN_NAME=xxxxxxxxxxxxxxxxxxx
+$ export MY_LANGUAGE=xx
 $ export CONSUMER_KEY=xxxxxxxxxxxxxxxxxxx
 $ export CONSUMER_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 $ export ACCESS_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
