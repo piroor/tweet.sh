@@ -107,7 +107,6 @@ See descriptions of each JSON: [a tweet](https://dev.twitter.com/rest/reference/
 
  * Parameters
    * `-q`: queries.
-   * `-l`: language. (optional)
    * `-c`: maximum number of tweets to be responded. 10 by default. (optional)
    * `-s`: the id of the last tweet already known. (optional)
      If you specify this option, only tweets newer than the given tweet will be returned.
@@ -118,7 +117,7 @@ See descriptions of each JSON: [a tweet](https://dev.twitter.com/rest/reference/
  * Example
    
    ~~~
-   $ ./tweet.sh search -q "queries" -l "ja" -c 10
+   $ ./tweet.sh search -q "queries" -c 10
    $ ./tweet.sh search -q "Bash OR Shell Script"
    ~~~
 
