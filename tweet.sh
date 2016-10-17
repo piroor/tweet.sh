@@ -660,7 +660,12 @@ detect_type() {
   # deteted as retweet or a simple mention unexpectedly.
   if [ "$(echo "$input" | \
             jq -r .quoted_status.user.screen_name | \
-            tr -d '\n')" = "$MY_SCREEN_NAME" ]
+            tr -d '\n')" = "$MY_SCREEN_NAME" -a \
+       # NOTE: An RT of a QT can have both quoted_status and retweeted_status.
+       #       We must ignore such case, because it is actually an RT not a QT.
+       "$(echo "$input" | \
+            jq -r .retweeted_status.user.screen_name | \
+            tr -d '\n')" != "$MY_SCREEN_NAME" ]
   then
     echo "quotation"
     return 0
