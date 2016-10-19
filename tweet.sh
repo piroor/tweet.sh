@@ -658,11 +658,12 @@ detect_type() {
 
   # Detect quotation at first, because quotation can be
   # deteted as retweet or a simple mention unexpectedly.
+  # NOTE: An RT of a QT can have both quoted_status and retweeted_status.
+  #       We must ignore such case, because it is actually an RT not a QT.
   if [ "$(echo "$input" | \
             jq -r .quoted_status.user.screen_name | \
-            tr -d '\n')" = "$MY_SCREEN_NAME" -a \
-       # NOTE: An RT of a QT can have both quoted_status and retweeted_status.
-       #       We must ignore such case, because it is actually an RT not a QT.
+            tr -d '\n')" = "$MY_SCREEN_NAME" \
+       -a \
        "$(echo "$input" | \
             jq -r .retweeted_status.user.screen_name | \
             tr -d '\n')" != "$MY_SCREEN_NAME" ]
