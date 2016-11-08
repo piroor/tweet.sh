@@ -1044,21 +1044,19 @@ call_api() {
 
   if [ "$method" = 'POST' ]
   then
+    local main_params=''
     if [ "$file_params" = '' ]
     then
-      curl --header "$headers" \
-           --data "$params" \
-           --silent \
-           $debug_params \
-           "$url"
+      main_params="--data '$params'"
     else
-      curl --header "$headers" \
-           --form "$params" \
-           --silent \
-           $debug_params \
-           $file_params \
-           "$url"
+      main_params="--form '$params'"
     fi
+    curl --header "$headers" \
+         --silent \
+         $main_params \
+         $file_params \
+         $debug_params \
+         "$url"
   else
     curl --get \
          --header "$headers" \
