@@ -767,6 +767,7 @@ post() {
     case $OPT in
       m )
         media_params="media_ids=$OPTARG"
+        shift 2
         ;;
     esac
   done
@@ -792,6 +793,7 @@ reply() {
     case $OPT in
       m )
         media_params="media_ids=$OPTARG"
+        shift 2
         ;;
     esac
   done
