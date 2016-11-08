@@ -190,6 +190,7 @@ help() {
       echo ''
       echo '  post           : posts a new tweet.'
       echo '  reply          : replies to a tweet.'
+      echo '  upload         : upload a media file.'
       echo '  delete(del)    : deletes a tweet.'
       echo '  favorite(fav)  : marks a tweet as a favorite.'
       echo '  unfavorite(unfav)'
@@ -267,6 +268,10 @@ help() {
       echo 'Usage:'
       echo '  ./tweet.sh reply 012345 a reply'
       echo '  ./tweet.sh reply https://twitter.com/username/status/012345 a reply'
+      ;;
+    upload )
+      echo 'Usage:'
+      echo '  ./tweet.sh upload /path/to/file.png'
       ;;
     del|delete )
       echo 'Usage:'
@@ -775,6 +780,14 @@ FIN
   check_errors "$result"
 }
 
+upload() {
+  ensure_available
+
+  local target="$1"
+
+  echo "NOT IMPLEMENTED"
+}
+
 delete() {
   ensure_available
 
@@ -1167,6 +1180,9 @@ then
       ;;
     reply )
       reply "$@"
+      ;;
+    upload )
+      upload "$@"
       ;;
     del|delete )
       delete "$@"
