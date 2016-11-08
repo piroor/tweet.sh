@@ -1050,7 +1050,6 @@ call_api() {
          --data "$params" \
          --silent \
          $debug_params \
-         $file_params \
          "$url"
     else
       curl --header "$headers" \
