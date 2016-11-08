@@ -1031,7 +1031,7 @@ call_api() {
   then
     local file_param_name="$(echo "$file" | $esed 's/=.+$//')"
     local file_path="$(echo "$file" | $esed 's/^[^=]+=//')"
-    file_params="--form '$file_param_name=@$file_path'"
+    file_params="--form $file_param_name=@'$file_path'"
     log "FILE   : $file_path (as $file_param_name)"
   fi
 
