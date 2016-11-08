@@ -758,13 +758,43 @@ self_language() {
 
 post() {
   ensure_available
-  local result="$(echo "status $*" | call_api POST https://api.twitter.com/1.1/statuses/update.json)"
+
+  local media_params=''
+
+  local OPTIND OPTARG OPT
+  while getopts m: OPT
+  do
+    case $OPT in
+      m )
+        media_params="media_ids=$OPTARG"
+        ;;
+    esac
+  done
+
+  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/statuses/update.json
+status $*
+$media_params
+FIN
+  )"
+
   echo "$result"
   check_errors "$result"
 }
 
 reply() {
   ensure_available
+
+  local media_params=''
+
+  local OPTIND OPTARG OPT
+  while getopts m: OPT
+  do
+    case $OPT in
+      m )
+        media_params="media_ids=$OPTARG"
+        ;;
+    esac
+  done
 
   local target="$1"
   shift
@@ -774,6 +804,7 @@ reply() {
   local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/statuses/update.json
 status $*
 in_reply_to_status_id $id
+$media_params
 FIN
   )"
   echo "$result"
