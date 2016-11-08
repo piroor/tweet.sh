@@ -785,7 +785,7 @@ upload() {
 
   local target="$1"
 
-  local result="$(call_api POST https://upload.twitter.com/1.1/media/upload.json media='$target')"
+  local result="$(call_api POST https://upload.twitter.com/1.1/media/upload.json media="$target")"
   echo "$result"
   check_errors "$result"
 }
