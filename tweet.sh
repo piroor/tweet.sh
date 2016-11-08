@@ -785,7 +785,9 @@ upload() {
 
   local target="$1"
 
-  echo "NOT IMPLEMENTED"
+  local result="$(call_api POST https://upload.twitter.com/1.1/media/upload.json media='$target')"
+  echo "$result"
+  check_errors "$result"
 }
 
 delete() {
@@ -1006,6 +1008,7 @@ unicode_unescape() {
 call_api() {
   local method=$1
   local url=$2
+  local file=$3
 
   # prepare list of all parameters
   local params_file="$(prepare_tempfile params)"
@@ -1023,6 +1026,15 @@ call_api() {
   log "HEADERS: $headers"
   log "PARAMS : $params"
 
+  local file_params=''
+  if [ "$file" != '' ]
+  then
+    local file_param_name="$(echo '$file' | $esed 's/=.+$//')"
+    local file_path="$(echo '$file' | $esed 's/^[^=]+=//')"
+    file_params="-F '$file_param_name=@$file_path'"
+    log "FILE   : $file_path (as $file_param_name)"
+  fi
+
   local debug_params=''
   if [ "$DEBUG" != '' ]
   then
@@ -1036,6 +1048,7 @@ call_api() {
          --data "$params" \
          --silent \
          $debug_params \
+         $file_params \
          "$url"
   else
     curl --get \
