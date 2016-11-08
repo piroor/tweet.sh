@@ -281,7 +281,8 @@ This will be useful if you hope to get both informations `whoami` and `language`
 ### `post`: posts a new tweet.
 
  * Parameters
-   * All arguments: the body of a new tweet to be posted.
+   * `-m`: comma-separated list of uploaded media IDs. See also the `upload` command.
+   * All rest arguments: the body of a new tweet to be posted.
  * Standard output
    * [A JSON string of the posted tweet](https://dev.twitter.com/rest/reference/post/statuses/update).
  * Example
@@ -290,6 +291,7 @@ This will be useful if you hope to get both informations `whoami` and `language`
    $ ./tweet.sh post A tweet from command line
    $ ./tweet.sh post 何らかのつぶやき
    $ ./tweet.sh post @friend Good morning.
+   $ ./tweet.sh post -m 123,456,789 My Photos!
    ~~~
 
 All rest arguments following to the command name are posted as a tweet.
@@ -298,8 +300,9 @@ If you include a user's screen name manually in the body, it will become a menti
 ### `reply`: replies to an existing tweet.
 
  * Parameters
-   * 1st argument: the ID or the URL of a tweet to be replied.
-   * All rest arguments: the body of a new reply to be posted.
+   * `-m`: comma-separated list of uploaded media IDs. See also the `upload` command.
+   * 1st rest argument: the ID or the URL of a tweet to be replied.
+   * All other rest arguments: the body of a new reply to be posted.
  * Standard output
    * [A JSON string of the posted reply tweet](https://dev.twitter.com/rest/reference/post/statuses/update).
  * Example
@@ -309,6 +312,7 @@ If you include a user's screen name manually in the body, it will become a menti
    $ ./tweet.sh reply 0123456789 A silent reply
    $ ./tweet.sh reply https://twitter.com/username/status/0123456789 @friend A regular reply
    $ ./tweet.sh reply https://twitter.com/username/status/0123456789 A silent reply
+   $ ./tweet.sh reply 0123456789 -m 123,456,789 Photo reply
    ~~~
 
 Note that you have to include the user's screen name manually if it is needed.
