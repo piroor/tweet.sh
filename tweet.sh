@@ -1046,11 +1046,11 @@ call_api() {
   then
     if [ "$file_params" = '' ]
     then
-    curl --header "$headers" \
-         --data "$params" \
-         --silent \
-         $debug_params \
-         "$url"
+      curl --header "$headers" \
+           --data "$params" \
+           --silent \
+           $debug_params \
+           "$url"
     else
       curl --header "$headers" \
            --form "$params" \
