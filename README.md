@@ -64,6 +64,7 @@ Available commands are:
  * Making some changes (require "Write" permission)
    * `post`: posts a new tweet.
    * `reply`: replies to an existing tweet.
+   * `upload`: uploads a media file.
    * `delete` (`del`): deletes a tweet.
    * `favorite` (`fav`): marks a tweet as a favorite.
    * `unfavorite` (`unfav`): removes favorited flag of a tweet.
@@ -312,6 +313,18 @@ If you include a user's screen name manually in the body, it will become a menti
 
 Note that you have to include the user's screen name manually if it is needed.
 This command does not append it automatically.
+
+### `upload`: uploads a file.
+
+ * Parameters
+   * 1st argument: absolute path to a local file.
+ * Standard output
+   * [A JSON string of the uplaod result](https://dev.twitter.com/rest/media/uploading-media).
+ * Example
+   
+   ~~~
+   $ ./tweet.sh upload /path/to/file.png
+   ~~~
 
 ### `delete` (`del`): deletes a tweet.
 
