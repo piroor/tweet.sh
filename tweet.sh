@@ -1029,8 +1029,8 @@ call_api() {
   local file_params=''
   if [ "$file" != '' ]
   then
-    local file_param_name="$(echo '$file' | $esed 's/=.+$//')"
-    local file_path="$(echo '$file' | $esed 's/^[^=]+=//')"
+    local file_param_name="$(echo "$file" | $esed 's/=.+$//')"
+    local file_path="$(echo "$file" | $esed 's/^[^=]+=//')"
     file_params="-F '$file_param_name=@$file_path'"
     log "FILE   : $file_path (as $file_param_name)"
   fi
