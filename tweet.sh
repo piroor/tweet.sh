@@ -1082,9 +1082,9 @@ call_api() {
     then
       if [ "$file_params" = '' ]
       then
-        main_params="--data '$params'"
+        main_params="--data $params"
       else
-        main_params="--form '$params'"
+        main_params="--form $params"
       fi
     fi
     curl --header "$headers" \
