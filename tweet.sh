@@ -1075,32 +1075,40 @@ call_api() {
     debug_params='--dump-header /dev/stderr  --verbose'
   fi
 
+  local curl_params
   if [ "$method" = 'POST' ]
   then
     local main_params=''
-    if [ "$params" != '' ]
+    if [ "$params" = '' ]
     then
-      if [ "$file_params" = '' ]
-      then
-        main_params="--data $params"
-      else
-        main_params="--form $params"
-      fi
+      params='""'
     fi
-    curl --header "$headers" \
+    if [ "$file_params" = '' ]
+    then
+      main_params="--data $params"
+    else
+      main_params="--form $params"
+    fi
+    curl_params="--header \"$headers\" \
          --silent \
          $main_params \
          $file_params \
          $debug_params \
-         "$url"
+         $url"
   else
-    curl --get \
-         --header "$headers" \
-         --data "$params" \
+    curl_params="--get \
+         --header \"$headers\" \
+         --data \"$params\" \
          --silent \
          $debug_params \
-         "$url"
+         $url"
   fi
+  log "curl $curl_params"
+  # Command line string for logging couldn't be executed directly because
+  # quotation marks in the command line will be passed to curl as is.
+  # To avoid sending of needless quotation marks, the command line must be
+  # executed via "eval".
+  eval "curl $curl_params"
 
   rm -f "$params_file"
 }
