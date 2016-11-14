@@ -1089,19 +1089,19 @@ call_api() {
     else
       main_params="--form $params"
     fi
-    curl_params=--header "$headers" \
+    curl_params="--header \"$headers\" \
          --silent \
          $main_params \
          $file_params \
          $debug_params \
-         "$url"
+         \"$url\""
   else
-    curl_params=--get \
-         --header "$headers" \
-         --data "$params" \
+    curl_params="--get \
+         --header \"$headers\" \
+         --data \"$params\" \
          --silent \
          $debug_params \
-         "$url"
+         \"$url\""
   fi
   log "curl $curl_params"
   curl $curl_params
