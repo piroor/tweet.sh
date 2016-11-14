@@ -1124,12 +1124,10 @@ generate_oauth_header() {
   local method=$1
   local url=$2
 
-  # generate OAuth header
-  local signature=$(cat | cat "$(common_params)" - | generate_signature "$method" "$url")
-  local header=$(echo "oauth_signature $signature" |
-    cat "$(common_params)" - |
-    # "key1 value1\nkey2 value2\nkey3 value3\n..."
-    # => "key1=value1,key2=value2,key3=value3,..."
+  local all_params="$(cat "$(common_params)" -)"
+  local signature=$(echo "$all_params" | generate_signature "$method" "$url")
+  local header=$(echo "$all_params\
+    oauth_signature $signature" |
     to_encoded_list ',' |
     tr -d '\n')
 
