@@ -1160,7 +1160,7 @@ generate_signature() {
   local signature_source="${method}&${encoded_url}&$( \
     to_encoded_list |
     url_encode |
-    #改行が一個入ってしまうので取る
+    # Remove last extra line-break
     tr -d '\n')"
   log "SIGNATURE SOURCE: $signature_source"
 
