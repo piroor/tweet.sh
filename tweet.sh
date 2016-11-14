@@ -1104,6 +1104,10 @@ call_api() {
          $url"
   fi
   log "curl $curl_params"
+  # Command line string for logging couldn't be executed directly because
+  # quotation marks in the command line will be passed to curl as is.
+  # To avoid sending of needless quotation marks, the command line must be
+  # executed via "eval".
   eval "curl $curl_params"
 
   rm -f "$params_file"
