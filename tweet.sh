@@ -1152,10 +1152,11 @@ generate_oauth_header() {
 generate_signature() {
   local method=$1
   local url=$2
-  local encoded_url="$(echo "$url" | url_encode)"
 
-  local signature_key="${method}&${encoded_url}&"
-  local signature_source="${signature_key}$( \
+  local signature_key=$CONSUMER_SECRET'&'$ACCESS_TOKEN_SECRET
+
+  local encoded_url="$(echo "$url" | url_encode)"
+  local signature_source="${method}&${encoded_url}&$( \
     to_encoded_list |
     url_encode |
     #改行が一個入ってしまうので取る
@@ -1165,7 +1166,7 @@ generate_signature() {
   # generate signature
   local signature=$(echo -n "$signature_source" |
     #エンコード
-    openssl sha1 -hmac $CONSUMER_SECRET'&'$ACCESS_TOKEN_SECRET -binary |
+    openssl sha1 -hmac $signature_key -binary |
     openssl base64 |
     tr -d '\n')
 
