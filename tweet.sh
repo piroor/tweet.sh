@@ -1094,14 +1094,14 @@ call_api() {
          $main_params \
          $file_params \
          $debug_params \
-         \"$url\""
+         $url"
   else
     curl_params="--get \
          --header \"$headers\" \
          --data \"$params\" \
          --silent \
          $debug_params \
-         \"$url\""
+         $url"
   fi
   log "curl $curl_params"
   curl $curl_params
