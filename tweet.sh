@@ -1153,7 +1153,7 @@ generate_signature() {
   local method=$1
   local url=$2
 
-  local signature_key=$CONSUMER_SECRET'&'$ACCESS_TOKEN_SECRET
+  local signature_key="${CONSUMER_SECRET}&${$ACCESS_TOKEN_SECRET}"
 
   local encoded_url="$(echo "$url" | url_encode)"
   local signature_source="${method}&${encoded_url}&$( \
