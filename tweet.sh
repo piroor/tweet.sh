@@ -37,15 +37,6 @@ tools_dir="$(cd "$(dirname "$0")" && pwd)"
 
 tmp="/tmp/$$"
 
-prepare_tempfile() {
-  local key="$1"
-  mktemp "$tmp-$key.XXXXXX"
-}
-
-cleanup() {
-  rm -f "$tmp-*"
-}
-
 log() {
   [ "$DEBUG" = '' ] && return 0
   echo "$*" 1>&2
@@ -1043,16 +1034,15 @@ call_api() {
   local url=$2
   local file=$3
 
-  # prepare list of all parameters
-  local params_file="$(prepare_tempfile params)"
+  local params=''
   if [ -p /dev/stdin ]
   then
-    cat - > "$params_file"
+    params="$(cat)"
   fi
 
-  local oauth="$(cat "$params_file" | generate_oauth_header "$method" "$url")"
+  local oauth="$(echo "$params" | generate_oauth_header "$method" "$url")"
   local headers="Authorization: OAuth $oauth"
-  local params="$(cat "$params_file" | to_encoded_list)"
+  params="$(echo "$params" | to_encoded_list)"
 
   log "METHOD : $method"
   log "URL    : $url"
@@ -1110,8 +1100,6 @@ call_api() {
   # To avoid sending of needless quotation marks, the command line must be
   # executed via "eval".
   eval "curl $curl_params"
-
-  rm -f "$params_file"
 }
 
 # usage:
