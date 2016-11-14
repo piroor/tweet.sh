@@ -979,10 +979,11 @@ url_encode() {
       #  W8 => input encoding is UTF-8
       #  MQ => quoted printable
       nkf -W8MQ |
+      # remove "=" on each line-end splitted by nkf
       sed 's/=$//' |
-      tr '=' '%' |
-      # reunify broken linkes to a line
-      paste -s -d ''
+      # reunify broken lines to a line
+      paste -s -d '' |
+      tr '=' '%'
   done |
     sed -e 's/%7E/~/g' \
         -e 's/%5F/_/g' \
