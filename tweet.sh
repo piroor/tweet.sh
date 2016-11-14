@@ -1075,6 +1075,7 @@ call_api() {
     debug_params='--dump-header /dev/stderr  --verbose'
   fi
 
+  local curl_params
   if [ "$method" = 'POST' ]
   then
     local main_params=''
@@ -1088,20 +1089,22 @@ call_api() {
     else
       main_params="--form $params"
     fi
-    curl --header "$headers" \
+    curl_params=--header "$headers" \
          --silent \
          $main_params \
          $file_params \
          $debug_params \
          "$url"
   else
-    curl --get \
+    curl_params=--get \
          --header "$headers" \
          --data "$params" \
          --silent \
          $debug_params \
          "$url"
   fi
+  log "curl $curl_params"
+  curl $curl_params
 
   rm -f "$params_file"
 }
