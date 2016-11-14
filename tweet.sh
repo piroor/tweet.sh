@@ -1051,7 +1051,7 @@ call_api() {
   fi
 
   local oauth="$(cat "$params_file" | generate_oauth_header "$method" "$url")"
-  local headers="Authorization: OAuth $oauth"
+  local headers="Authorization:\\ OAuth $oauth"
   local params="$(cat "$params_file" | to_encoded_list)"
 
   log "METHOD : $method"
@@ -1089,7 +1089,7 @@ call_api() {
     else
       main_params="--form $params"
     fi
-    curl_params="--header \"$headers\" \
+    curl_params="--header $headers \
          --silent \
          $main_params \
          $file_params \
@@ -1097,7 +1097,7 @@ call_api() {
          $url"
   else
     curl_params="--get \
-         --header \"$headers\" \
+         --header $headers \
          --data \"$params\" \
          --silent \
          $debug_params \
