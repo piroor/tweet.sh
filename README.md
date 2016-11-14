@@ -165,7 +165,7 @@ To stop the process, you need to send the `SIGINT` signal via Ctrl-C or somethin
                                -q "echo 'QT'; cat" \
                                -f "echo 'FOLLOWED'; cat" \
                                -d "echo 'DM'; cat" \
-                               -s "echo 'SEARCH-RESUT'; cat"
+                               -s "echo 'SEARCH-RESULT'; cat"
    ~~~
 
 This command provides ability to observe various events around you or any keyword.
