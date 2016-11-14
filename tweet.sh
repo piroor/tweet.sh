@@ -1078,15 +1078,16 @@ call_api() {
   if [ "$method" = 'POST' ]
   then
     local main_params=''
-    if [ "$params" != '' ]
+    if [ "$params" = '' ]
     then
+      params='""'
+    fi
       if [ "$file_params" = '' ]
       then
         main_params="--data $params"
       else
         main_params="--form $params"
       fi
-    fi
     curl --header "$headers" \
          --silent \
          $main_params \
