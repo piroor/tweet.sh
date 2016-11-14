@@ -1104,7 +1104,7 @@ call_api() {
          $url"
   fi
   log "curl $curl_params"
-  curl $curl_params
+  eval "curl $curl_params"
 
   rm -f "$params_file"
 }
