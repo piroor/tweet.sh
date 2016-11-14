@@ -1166,7 +1166,6 @@ generate_signature() {
 
   # generate signature
   local signature=$(echo -n "$signature_source" |
-    #エンコード
     openssl sha1 -hmac $signature_key -binary |
     openssl base64 |
     tr -d '\n')
