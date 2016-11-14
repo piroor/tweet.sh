@@ -1082,12 +1082,12 @@ call_api() {
     then
       params='""'
     fi
-      if [ "$file_params" = '' ]
-      then
-        main_params="--data $params"
-      else
-        main_params="--form $params"
-      fi
+    if [ "$file_params" = '' ]
+    then
+      main_params="--data $params"
+    else
+      main_params="--form $params"
+    fi
     curl --header "$headers" \
          --silent \
          $main_params \
