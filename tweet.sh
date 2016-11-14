@@ -1103,6 +1103,7 @@ call_api() {
          $debug_params \
          $url"
   fi
+  curl_params="$(echo "$curl_params" | tr -d '\n' | $esed 's/  +/ /g')"
   log "curl $curl_params"
   # Command line string for logging couldn't be executed directly because
   # quotation marks in the command line will be passed to curl as is.
