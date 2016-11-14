@@ -1127,10 +1127,7 @@ generate_oauth_header() {
   local common_params_file="$(prepare_tempfile common_params)"
   common_params > "$common_params_file"
 
-  local all_params_file="$(prepare_tempfile all_params)"
-  cat "$common_params_file" - > "$all_params_file"
-
-  local signature=$(cat "$all_params_file" | generate_signature "$method" "$url")
+  local signature=$(cat "$common_params_file" - | generate_signature "$method" "$url")
   local header=$(echo "oauth_signature $signature" |
     cat "$common_params_file" - |
     to_encoded_list ',' |
@@ -1139,7 +1136,7 @@ generate_oauth_header() {
   echo -n "$header"
   log "HEADER: $header"
 
-  rm -f "$common_params_file" "$all_params_file"
+  rm -f "$common_params_file"
 }
 
 # usage:
