@@ -1134,7 +1134,8 @@ generate_oauth_header() {
   local signature=$(cat "$all_params_file" | generate_signature "$method" "$url")
   local header=$(echo "oauth_signature $signature" |
     cat "$common_params_file" - |
-    #縦一列を今度は横一列にして 項目=値,項目=値,...の形式に
+    # "key1 value1\nkey2 value2\nkey3 value3\n..."
+    # => "key1=value1,key2=value2,key3=value3,..."
     to_encoded_list ',' |
     tr -d '\n')
 
