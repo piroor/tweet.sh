@@ -149,17 +149,17 @@ To stop the process, you need to send the `SIGINT` signal via Ctrl-C or somethin
 
  * Parameters
    * `-k`: comma-separated list of tracking keywords.
-   * `-m`: command line to run for each reply or mention.
+   * `-m`: command line to run for each reply or mention. (optional)
      (It will receive [mention tweets](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid) via the standard input.)
-   * `-r`: command line to run for each retweet.
+   * `-r`: command line to run for each retweet. (optional)
      (It will receive [retweet tweets](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid) via the standard input.)
-   * `-q`: command line to run for each quotation.
+   * `-q`: command line to run for each quotation. (optional)
      (It will receive [quotation tweets](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid) via the standard input.)
-   * `-f`: command line to run when a user follows you.
+   * `-f`: command line to run when a user follows you. (optional)
      (It will receive [`follow` event](https://dev.twitter.com/streaming/overview/messages-types#Events_event) via the standard input.)
-   * `-d`: command line to run when a DM is received.
+   * `-d`: command line to run when a DM is received. (optional)
      (It will receive [quotation tweets](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid) via the standard input.)
- * `-s`: command line to run for each search result, matched to the keywords given via the `-k` option.
+   * `-s`: command line to run for each search result, matched to the keywords given via the `-k` option. (optional)
  * Standard output
    * Nothing.
  * Example 1: without handlers
