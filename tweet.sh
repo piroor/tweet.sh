@@ -344,10 +344,12 @@ fetch() {
   shift
 
   local id="$(echo "$target" | extract_tweet_id)"
-  local result="$(cat << FIN | call_api GET https://api.twitter.com/1.1/statuses/show.json
+  local params="$(cat << FIN
 id $id
 FIN
   )"
+  local result="$(echo "$params" |
+                    call_api GET https://api.twitter.com/1.1/statuses/show.json)"
   echo "$result"
   check_errors "$result"
 }
@@ -359,11 +361,13 @@ fetch_with_my_retweet() {
   shift
 
   local id="$(echo "$target" | extract_tweet_id)"
-  local result="$(cat << FIN | call_api GET https://api.twitter.com/1.1/statuses/show.json
+  local params="$(cat << FIN
 id $id
 include_my_retweet true
 FIN
   )"
+  local result="$(echo "$params" |
+                    call_api GET https://api.twitter.com/1.1/statuses/show.json)"
   echo "$result"
   check_errors "$result"
 }
@@ -399,7 +403,7 @@ search() {
 
   if [ "$handler" = '' ]
   then
-    local result="$(cat << FIN | call_api GET https://api.twitter.com/1.1/search/tweets.json
+    local params="$(cat << FIN
 q $query
 lang $MY_LANGUAGE
 locale $locale
@@ -408,6 +412,8 @@ count $count
 $since_id
 FIN
     )"
+    local result="$(echo "$params" |
+                      call_api GET https://api.twitter.com/1.1/search/tweets.json)"
     echo "$result"
     check_errors "$result"
   else
@@ -420,9 +426,13 @@ watch_search_results() {
   local handler="$2"
   echo "Tracking tweets with the query: $query..." 1>&2
   local user_screen_name="$(self_screen_name)"
-  cat << FIN | call_api POST https://stream.twitter.com/1.1/statuses/filter.json | handle_search_results "$user_screen_name" "$handler"
+  local params="$(cat << FIN
 track $query
 FIN
+  )"
+  echo "$params" |
+    call_api POST https://stream.twitter.com/1.1/statuses/filter.json |
+    handle_search_results "$user_screen_name" "$handler"
 }
 
 handle_search_results() {
@@ -475,10 +485,14 @@ watch_mentions() {
 
   echo "Tracking mentions for $tracking_keywords..." 1>&2
 
-  cat << FIN | call_api GET https://userstream.twitter.com/1.1/user.json | handle_mentions "$user_screen_name" "$@"
+  local params="$(cat << FIN
 replies all
 track $tracking_keywords
 FIN
+  )"
+  echo "$params" |
+    call_api GET https://userstream.twitter.com/1.1/user.json |
+    handle_mentions "$user_screen_name" "$@"
 }
 
 handle_mentions() {
@@ -763,11 +777,13 @@ post() {
     esac
   done
 
-  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/statuses/update.json
+  local params="$(cat << FIN
 status $*
 $media_params
 FIN
   )"
+  local result="$(echo "$params" |
+                    call_api POST https://api.twitter.com/1.1/statuses/update.json)"
 
   echo "$result"
   check_errors "$result"
@@ -794,12 +810,14 @@ reply() {
 
   local id="$(echo "$target" | extract_tweet_id)"
 
-  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/statuses/update.json
+  local params="$(cat << FIN
 status $*
 in_reply_to_status_id $id
 $media_params
 FIN
   )"
+  local result="$(echo "$params" |
+                    call_api POST https://api.twitter.com/1.1/statuses/update.json)"
   echo "$result"
   check_errors "$result"
 }
@@ -833,10 +851,12 @@ favorite() {
   local target="$1"
   local id="$(echo "$target" | extract_tweet_id)"
 
-  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/favorites/create.json
+  local params="$(cat << FIN
 id $id
 FIN
   )"
+  local result="$(echo "$params" |
+                    call_api POST https://api.twitter.com/1.1/favorites/create.json)"
   echo "$result"
   check_errors "$result"
 }
@@ -847,10 +867,12 @@ unfavorite() {
   local target="$1"
   local id="$(echo "$target" | extract_tweet_id)"
 
-  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/favorites/destroy.json
+  local params="$(cat << FIN
 id $id
 FIN
   )"
+  local result="$(echo "$params" |
+                    call_api POST https://api.twitter.com/1.1/favorites/destroy.json)"
   echo "$result"
   check_errors "$result"
 }
@@ -886,11 +908,13 @@ follow() {
   local target="$1"
   local screen_name="$(echo "$target" | sed 's/^@//')"
 
-  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/friendships/create.json
+  local params="$(cat << FIN
 screen_name $screen_name
 follow true
 FIN
   )"
+  local result="$(echo "$params" |
+                    call_api POST https://api.twitter.com/1.1/friendships/create.json)"
   echo "$result"
   check_errors "$result"
 }
@@ -901,10 +925,12 @@ unfollow() {
   local target="$1"
   local screen_name="$(echo "$target" | sed 's/^@//')"
 
-  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/friendships/destroy.json
+  local params="$(cat << FIN
 screen_name $screen_name
 FIN
   )"
+  local result="$(echo "$params" |
+                    call_api POST https://api.twitter.com/1.1/friendships/destroy.json)"
   echo "$result"
   check_errors "$result"
 }
@@ -929,11 +955,13 @@ fetch_direct_messages() {
     esac
   done
 
-  local result="$(cat << FIN | call_api GET https://api.twitter.com/1.1/direct_messages.json
+  local params="$(cat << FIN
 count $count
 $since_id
 FIN
   )"
+  local result="$(echo "$params" |
+                    call_api GET https://api.twitter.com/1.1/direct_messages.json)"
   echo "$result"
   check_errors "$result"
 }
@@ -946,11 +974,13 @@ direct_message() {
 
   target="$(echo "$target" | sed 's/^@//')"
 
-  local result="$(cat << FIN | call_api POST https://api.twitter.com/1.1/direct_messages/new.json
+  local params="$(cat << FIN
 screen_name $target
 text $*
 FIN
   )"
+  local result="$(echo "$params" |
+                    call_api POST https://api.twitter.com/1.1/direct_messages/new.json)"
   echo "$result"
   check_errors "$result"
 }
