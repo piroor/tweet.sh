@@ -521,10 +521,10 @@ handle_search_results() {
 
     if [ "$handler" = '' ]
     then
+      echo "$line"
+    else
       echo "$line" |
         (cd "$work_dir"; eval "$handler")
-    else
-      echo "$line"
     fi
   done
 }
