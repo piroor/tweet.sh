@@ -254,6 +254,8 @@ help() {
       echo 'Usage:'
       echo '  ./tweet.sh post A tweet from command line'
       echo '  ./tweet.sh post 何らかのつぶやき'
+      echo '  ./tweet.sh tweet Hello'
+      echo '  ./tweet.sh tw Hi'
       ;;
     reply )
       echo 'Usage:'
