@@ -65,7 +65,7 @@ Available commands are:
    * `post` (`tweet`, `tw`): posts a new tweet.
    * `reply`: replies to an existing tweet.
    * `upload`: uploads a media file.
-   * `delete` (`del`): deletes a tweet.
+   * `delete` (`del`, `remove`, `rm`): deletes a tweet.
    * `favorite` (`fav`): marks a tweet as a favorite.
    * `unfavorite` (`unfav`): removes favorited flag of a tweet.
    * `retweet` (`rt`): retweets a tweet.
@@ -332,7 +332,7 @@ This command does not append it automatically.
    $ ./tweet.sh upload /path/to/file.png
    ~~~
 
-### `delete` (`del`): deletes a tweet.
+### `delete` (`del`, `remove`, `rm`): deletes a tweet.
 
  * Parameters
    * 1st argument: the ID or the URL of a tweet to be deleted.
@@ -342,9 +342,9 @@ This command does not append it automatically.
    
    ~~~
    $ ./tweet.sh delete 0123456789
-   $ ./tweet.sh delete https://twitter.com/username/status/0123456789
-   $ ./tweet.sh del 0123456789
    $ ./tweet.sh del https://twitter.com/username/status/0123456789
+   $ ./tweet.sh remove 0123456789
+   $ ./tweet.sh rm https://twitter.com/username/status/0123456789
    ~~~
 
 ### `favorite` (`fav`): marks a tweet as a favorite.

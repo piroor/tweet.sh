@@ -183,7 +183,8 @@ help() {
       echo '  post(tweet, tw): posts a new tweet.'
       echo '  reply          : replies to a tweet.'
       echo '  upload         : upload a media file.'
-      echo '  delete(del)    : deletes a tweet.'
+      echo '  delete(del, remove, rm)'
+      echo '                 : deletes a tweet.'
       echo '  favorite(fav)  : marks a tweet as a favorite.'
       echo '  unfavorite(unfav)'
       echo '                 : removes favorited flag of a tweet.'
@@ -269,12 +270,12 @@ help() {
       echo 'Usage:'
       echo '  ./tweet.sh upload /path/to/file.png'
       ;;
-    del|delete )
+    del|delete|rm|remove )
       echo 'Usage:'
       echo '  ./tweet.sh del 012345'
-      echo '  ./tweet.sh del https://twitter.com/username/status/012345'
-      echo '  ./tweet.sh delete 012345'
       echo '  ./tweet.sh delete https://twitter.com/username/status/012345'
+      echo '  ./tweet.sh rm 012345'
+      echo '  ./tweet.sh remove https://twitter.com/username/status/012345'
       ;;
     fav|favorite )
       echo 'Usage:'
@@ -1265,7 +1266,7 @@ then
     upload )
       upload "$@"
       ;;
-    del|delete )
+    del|delete|rm|remove )
       delete "$@"
       ;;
     fav|favorite )
