@@ -115,6 +115,7 @@ See descriptions of each JSON: [a tweet](https://dev.twitter.com/rest/reference/
      If you specify this option, only tweets newer than the given tweet will be returned.
    * `-h`: command line to run for each search result. (optional)
      (It will receive [tweets](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid) via the standard input.)
+   * `-w`: start watching without handler. (optional)
  * Standard output
    * [A JSON string of the search result](https://dev.twitter.com/rest/reference/get/search/tweets).
  * Example
@@ -122,6 +123,9 @@ See descriptions of each JSON: [a tweet](https://dev.twitter.com/rest/reference/
    ~~~
    $ ./tweet.sh search -q "queries" -c 10
    $ ./tweet.sh search -q "Bash OR Shell Script"
+   $ ./tweet.sh search -q "Bash OR Shell Script" -h 'echo "found!"; cat'
+   $ ./tweet.sh search -q "Bash OR Shell Script" -w |
+       while read -r tweet; do echo "found!: ${tweet}"; done
    ~~~
 
 #### Streaming

@@ -217,7 +217,9 @@ FIN
 Usage:
   ./tweet.sh search -q "queries" -c 10
   ./tweet.sh search -q "Bash OR Shell Script" -s 0123456
-  ./tweet.sh search -q "queries" -h "cat"
+  ./tweet.sh search -q "queries" -h "echo 'found!'; cat"
+  ./tweet.sh search -q "Bash OR Shell Script" -w |
+    while read -r tweet; do echo "found!: ${tweet}"; done
 FIN
       ;;
     watch|watch-mentions )
@@ -432,9 +434,10 @@ search() {
   local count=10
   local since_id=''
   local handler=''
+  local watch=0
 
   local OPTIND OPTARG OPT
-  while getopts q:l:c:s:h: OPT
+  while getopts q:l:c:s:h:w OPT
   do
     case $OPT in
       q )
@@ -450,12 +453,15 @@ search() {
       h )
         handler="$OPTARG"
         ;;
+      w )
+        watch=1
+        ;;
     esac
   done
 
   [ "$MY_LANGUAGE" = 'ja' ] && locale='ja'
 
-  if [ "$handler" = '' ]
+  if [ "$handler" = '' -a $watch = 0 ]
   then
     local params="$(cat << FIN
 q $query
@@ -513,9 +519,13 @@ handle_search_results() {
     log "$separator"
     log "TWEET DETECTED: Matched to the given query"
 
-    [ "$handler" = '' ] && continue
-    echo "$line" |
-      (cd "$work_dir"; eval "$handler")
+    if [ "$handler" = '' ]
+    then
+      echo "$line" |
+        (cd "$work_dir"; eval "$handler")
+    else
+      echo "$line"
+    fi
   done
 }
 
