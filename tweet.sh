@@ -168,7 +168,7 @@ help() {
       echo '  ./tweet.sh [command] [...arguments]'
       echo ''
       echo 'Available commands:'
-      echo '  fetch (`get`, `show`)'
+      echo '  fetch(get, show)'
       echo '                 : fetches a JSON string of a tweet.'
       echo '  search         : searches tweets.'
       echo '  watch-mentions(watch)'
