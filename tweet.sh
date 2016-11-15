@@ -164,169 +164,213 @@ help() {
 
   case "$command" in
     '' )
-      echo 'Usage:'
-      echo '  ./tweet.sh [command] [...arguments]'
-      echo ''
-      echo 'Available commands:'
-      echo '  fetch(get, show)'
-      echo '                 : fetches a JSON string of a tweet.'
-      echo '  search         : searches tweets.'
-      echo '  watch-mentions(watch)'
-      echo '                 : watches mentions, retweets, DMs, etc.'
-      echo '  type           : detects the type of the given input.'
-      echo '  body           : extracts the body of a tweet.'
-      echo '  owner          : extracts the owner of a tweet.'
-      echo '  showme         : reports the raw information of yourself.'
-      echo '  whoami         : reports the screen name of yourself.'
-      echo '  language(lang) : reports the selected language of yourself.'
-      echo ''
-      echo '  post(tweet, tw): posts a new tweet.'
-      echo '  reply          : replies to a tweet.'
-      echo '  upload         : upload a media file.'
-      echo '  delete(del, remove, rm)'
-      echo '                 : deletes a tweet.'
-      echo '  favorite(fav)  : marks a tweet as a favorite.'
-      echo '  unfavorite(unfav)'
-      echo '                 : removes favorited flag of a tweet.'
-      echo '  retweet(rt)    : retweets a tweet.'
-      echo '  unretweet(unrt): deletes the retweet of a tweet.'
-      echo '  follow         : follows a user.'
-      echo '  unfollow       : unfollows a user.'
-      echo ''
-      echo '  fetch-direct-messages(fetch-dm, get-direct-messages, get-dm)'
-      echo '                 : fetches recent DMs.'
-      echo '  direct-message(dm)'
-      echo '                 : sends a DM.'
-      echo ''
-      echo 'For more details, see also: "./tweet.sh help [command]"'
+      cat << FIN
+Usage:
+  ./tweet.sh [command] [...arguments]
+
+Available commands:
+  fetch(get, show)
+                 : fetches a JSON string of a tweet.
+  search         : searches tweets.
+  watch-mentions(watch)
+                 : watches mentions, retweets, DMs, etc.
+  type           : detects the type of the given input.
+  body           : extracts the body of a tweet.
+  owner          : extracts the owner of a tweet.
+  showme         : reports the raw information of yourself.
+  whoami         : reports the screen name of yourself.
+  language(lang) : reports the selected language of yourself.
+
+  post(tweet, tw): posts a new tweet.
+  reply          : replies to a tweet.
+  upload         : upload a media file.
+  delete(del, remove, rm)
+                 : deletes a tweet.
+  favorite(fav)  : marks a tweet as a favorite.
+  unfavorite(unfav)
+                 : removes favorited flag of a tweet.
+  retweet(rt)    : retweets a tweet.
+  unretweet(unrt): deletes the retweet of a tweet.
+  follow         : follows a user.
+  unfollow       : unfollows a user.
+
+  fetch-direct-messages(fetch-dm, get-direct-messages, get-dm)
+                 : fetches recent DMs.
+  direct-message(dm)
+                 : sends a DM.
+
+For more details, see also: "./tweet.sh help [command]"
+FIN
       ;;
 
     fetch|get|show )
-      echo 'Usage:'
-      echo '  ./tweet.sh fetch 012345'
-      echo '  ./tweet.sh fetch https://twitter.com/username/status/012345'
-      echo '  ./tweet.sh get 012345'
-      echo '  ./tweet.sh show 012345'
+      cat << FIN
+Usage:
+  ./tweet.sh fetch 012345
+  ./tweet.sh fetch https://twitter.com/username/status/012345
+  ./tweet.sh get 012345
+  ./tweet.sh show 012345
+FIN
       ;;
     search )
-      echo 'Usage:'
-      echo '  ./tweet.sh search -q "queries" -c 10'
-      echo '  ./tweet.sh search -q "Bash OR Shell Script" -s 0123456'
-      echo '  ./tweet.sh search -q "queries" -h "cat"'
+      cat << FIN
+Usage:
+  ./tweet.sh search -q "queries" -c 10
+  ./tweet.sh search -q "Bash OR Shell Script" -s 0123456
+  ./tweet.sh search -q "queries" -h "cat"
+FIN
       ;;
     watch|watch-mentions )
-      echo 'Usage:'
-      echo '  ./tweet.sh watch-mentions -k keyword1,keyword2'
-      echo "                            -m \"echo 'MENTION'; cat\""
-      echo "                            -r \"echo 'RT'; cat\""
-      echo "                            -q \"echo 'QT'; cat\""
-      echo "                            -f \"echo 'FOLLOWED'; cat\""
-      echo "                            -d \"echo 'DM'; cat\""
-      echo "                            -s \"echo 'SEARCH-RESULT'; cat\""
+      cat << FIN
+Usage:
+  ./tweet.sh watch-mentions -k keyword1,keyword2
+                            -m "echo 'MENTION'; cat"
+                            -r "echo 'RT'; cat"
+                            -q "echo 'QT'; cat"
+                            -f "echo 'FOLLOWED'; cat"
+                            -d "echo 'DM'; cat"
+                            -s "echo 'SEARCH-RESULT'; cat"
+FIN
       ;;
     type )
-      echo 'Usage:'
-      echo '  echo "$tweet_json" | ./tweet.sh type -k keyword1,keyword2'
+      cat << FIN
+Usage:
+  echo "\$tweet_json" | ./tweet.sh type -k keyword1,keyword2
+FIN
       ;;
     body )
-      echo 'Usage:'
-      echo '  ./tweet.sh body 012345'
-      echo '  ./tweet.sh body https://twitter.com/username/status/012345'
-      echo '  echo "$tweet_json" | ./tweet.sh body'
+      cat << FIN
+Usage:
+  ./tweet.sh body 012345
+  ./tweet.sh body https://twitter.com/username/status/012345
+  echo "\$tweet_json" | ./tweet.sh body
+FIN
       ;;
     owner )
-      echo 'Usage:'
-      echo '  ./tweet.sh owner 012345'
-      echo '  ./tweet.sh owner https://twitter.com/username/status/012345'
-      echo '  echo "$tweet_json" | ./tweet.sh owner'
+      cat << FIN
+Usage:
+  ./tweet.sh owner 012345
+  ./tweet.sh owner https://twitter.com/username/status/012345
+  echo "\$tweet_json" | ./tweet.sh owner
+FIN
       ;;
     showme )
-      echo 'Usage:'
-      echo '  ./tweet.sh showme'
+      cat << FIN
+Usage:
+  ./tweet.sh showme
+FIN
       ;;
     whoami )
-      echo 'Usage:'
-      echo '  ./tweet.sh whoami'
+      cat << FIN
+Usage:
+  ./tweet.sh whoami
+FIN
       ;;
     lang|language )
-      echo 'Usage:'
-      echo '  ./tweet.sh lang'
-      echo '  ./tweet.sh language'
+      cat << FIN
+Usage:
+  ./tweet.sh lang
+  ./tweet.sh language
+FIN
       ;;
 
     post|tweet|tw )
-      echo 'Usage:'
-      echo '  ./tweet.sh post A tweet from command line'
-      echo '  ./tweet.sh post 何らかのつぶやき'
-      echo '  ./tweet.sh tweet Hello'
-      echo '  ./tweet.sh tw Hi'
+      cat << FIN
+Usage:
+  ./tweet.sh post A tweet from command line
+  ./tweet.sh post 何らかのつぶやき
+  ./tweet.sh tweet Hello
+  ./tweet.sh tw Hi
+FIN
       ;;
     reply )
-      echo 'Usage:'
-      echo '  ./tweet.sh reply 012345 a reply'
-      echo '  ./tweet.sh reply https://twitter.com/username/status/012345 a reply'
+      cat << FIN
+Usage:
+  ./tweet.sh reply 012345 a reply
+  ./tweet.sh reply https://twitter.com/username/status/012345 a reply
+FIN
       ;;
     upload )
-      echo 'Usage:'
-      echo '  ./tweet.sh upload /path/to/file.png'
+      cat << FIN
+Usage:
+  ./tweet.sh upload /path/to/file.png
+FIN
       ;;
     del|delete|rm|remove )
-      echo 'Usage:'
-      echo '  ./tweet.sh del 012345'
-      echo '  ./tweet.sh delete https://twitter.com/username/status/012345'
-      echo '  ./tweet.sh rm 012345'
-      echo '  ./tweet.sh remove https://twitter.com/username/status/012345'
+      cat << FIN
+Usage:
+  ./tweet.sh del 012345
+  ./tweet.sh delete https://twitter.com/username/status/012345
+  ./tweet.sh rm 012345
+  ./tweet.sh remove https://twitter.com/username/status/012345
+FIN
       ;;
     fav|favorite )
-      echo 'Usage:'
-      echo '  ./tweet.sh fav 012345'
-      echo '  ./tweet.sh fav https://twitter.com/username/status/012345'
-      echo '  ./tweet.sh favorite 012345'
-      echo '  ./tweet.sh favorite https://twitter.com/username/status/012345'
+      cat << FIN
+Usage:
+  ./tweet.sh fav 012345
+  ./tweet.sh fav https://twitter.com/username/status/012345
+  ./tweet.sh favorite 012345
+  ./tweet.sh favorite https://twitter.com/username/status/012345
+FIN
       ;;
     unfav|unfavorite )
-      echo 'Usage:'
-      echo '  ./tweet.sh unfav 012345'
-      echo '  ./tweet.sh unfav https://twitter.com/username/status/012345'
-      echo '  ./tweet.sh unfavorite 012345'
-      echo '  ./tweet.sh unfavorite https://twitter.com/username/status/012345'
+      cat << FIN
+Usage:
+  ./tweet.sh unfav 012345
+  ./tweet.sh unfav https://twitter.com/username/status/012345
+  ./tweet.sh unfavorite 012345
+  ./tweet.sh unfavorite https://twitter.com/username/status/012345
+FIN
       ;;
     rt|retweet )
-      echo 'Usage:'
-      echo '  ./tweet.sh rt 012345'
-      echo '  ./tweet.sh rt https://twitter.com/username/status/012345'
-      echo '  ./tweet.sh retweet 012345'
-      echo '  ./tweet.sh retweet https://twitter.com/username/status/012345'
+      cat << FIN
+Usage:
+  ./tweet.sh rt 012345
+  ./tweet.sh rt https://twitter.com/username/status/012345
+  ./tweet.sh retweet 012345
+  ./tweet.sh retweet https://twitter.com/username/status/012345
+FIN
       ;;
     unrt|unretweet )
-      echo 'Usage:'
-      echo '  ./tweet.sh unrt 012345'
-      echo '  ./tweet.sh unrt https://twitter.com/username/status/012345'
-      echo '  ./tweet.sh unretweet 012345'
-      echo '  ./tweet.sh unretweet https://twitter.com/username/status/012345'
+      cat << FIN
+Usage:
+  ./tweet.sh unrt 012345
+  ./tweet.sh unrt https://twitter.com/username/status/012345
+  ./tweet.sh unretweet 012345
+  ./tweet.sh unretweet https://twitter.com/username/status/012345
+FIN
       ;;
     follow )
-      echo 'Usage:'
-      echo '  ./tweet.sh follow username'
-      echo '  ./tweet.sh follow @username'
+      cat << FIN
+Usage:
+  ./tweet.sh follow username
+  ./tweet.sh follow @username
+FIN
       ;;
     unfollow )
-      echo 'Usage:'
-      echo '  ./tweet.sh unfollow username'
-      echo '  ./tweet.sh unfollow @username'
+      cat << FIN
+Usage:
+  ./tweet.sh unfollow username
+  ./tweet.sh unfollow @username
+FIN
       ;;
 
     fetch-dm|fetch-direct-messages|get-dm|get-direct-messages )
-      echo 'Usage:'
-      echo '  ./tweet.sh fetch-dm -c 10'
-      echo '  ./tweet.sh fetch-direct-messages -c 100 -s 0123456'
-      echo '  ./tweet.sh get-dm -c 10'
-      echo '  ./tweet.sh get-direct-messages -c 10 -s 0123456'
+      cat << FIN
+Usage:
+  ./tweet.sh fetch-dm -c 10
+  ./tweet.sh fetch-direct-messages -c 100 -s 0123456
+  ./tweet.sh get-dm -c 10
+  ./tweet.sh get-direct-messages -c 10 -s 0123456
+FIN
       ;;
     dm|direct-message )
-      echo 'Usage:'
-      echo '  ./tweet.sh dm frinedname Good morning.'
-      echo '  ./tweet.sh direct-message frinedname "How are you?"'
+      cat << FIN
+Usage:
+  ./tweet.sh dm frinedname Good morning.
+  ./tweet.sh direct-message frinedname "How are you?"
+FIN
       ;;
   esac
 }
