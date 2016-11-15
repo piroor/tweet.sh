@@ -52,7 +52,7 @@ Available commands are:
 
  * `help`: shows usage of the `tweet.sh` itself.
  * Reading existing tweets (require "Read" permission)
-   * `fetch`: fetches a JSON string of a tweet.
+   * `fetch` (`get`, `show`): fetches a JSON string of a tweet.
    * `search`: searches tweets with queries.
    * `watch-mentions` (`watch`): watches mentions, retweets, DMs, etc., and executes handlers for each event.
    * `type`: detects the type of the given input.
@@ -91,7 +91,7 @@ See descriptions of each JSON: [a tweet](https://dev.twitter.com/rest/reference/
 
 ## Reading existing tweets
 
-### `fetch`: fetches a JSON string of a tweet
+### `fetch` (`get`, `show`): fetches a JSON string of a tweet
 
  * Parameters
    * 1st argument: the ID or the URL of the tweet.
@@ -102,6 +102,8 @@ See descriptions of each JSON: [a tweet](https://dev.twitter.com/rest/reference/
    ~~~
    $ ./tweet.sh fetch 0123456789
    $ ./tweet.sh fetch https://twitter.com/username/status/0123456789
+   $ ./tweet.sh get 0123456789
+   $ ./tweet.sh show 0123456789
    ~~~
 
 ### `search`: searches tweets with queries.

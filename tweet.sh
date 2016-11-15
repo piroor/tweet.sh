@@ -168,7 +168,8 @@ help() {
       echo '  ./tweet.sh [command] [...arguments]'
       echo ''
       echo 'Available commands:'
-      echo '  fetch          : fetches a JSON string of a tweet.'
+      echo '  fetch (`get`, `show`)'
+      echo '                 : fetches a JSON string of a tweet.'
       echo '  search         : searches tweets.'
       echo '  watch-mentions(watch)'
       echo '                 : watches mentions, retweets, DMs, etc.'
@@ -199,10 +200,12 @@ help() {
       echo 'For more details, see also: "./tweet.sh help [command]"'
       ;;
 
-    fetch )
+    fetch|get|show )
       echo 'Usage:'
       echo '  ./tweet.sh fetch 012345'
       echo '  ./tweet.sh fetch https://twitter.com/username/status/012345'
+      echo '  ./tweet.sh get 012345'
+      echo '  ./tweet.sh show 012345'
       ;;
     search )
       echo 'Usage:'
@@ -1223,7 +1226,7 @@ then
   trap 'kill_descendants $self_pid; exit 0' HUP INT QUIT KILL TERM
 
   case "$command" in
-    fetch )
+    fetch|get|show )
       fetch "$@"
       ;;
     search )
