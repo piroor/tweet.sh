@@ -179,7 +179,7 @@ help() {
       echo '  whoami         : reports the screen name of yourself.'
       echo '  language(lang) : reports the selected language of yourself.'
       echo ''
-      echo '  post           : posts a new tweet.'
+      echo '  post(tweet, tw): posts a new tweet.'
       echo '  reply          : replies to a tweet.'
       echo '  upload         : upload a media file.'
       echo '  delete(del)    : deletes a tweet.'
@@ -250,7 +250,7 @@ help() {
       echo '  ./tweet.sh language'
       ;;
 
-    post )
+    post|tweet|tw )
       echo 'Usage:'
       echo '  ./tweet.sh post A tweet from command line'
       echo '  ./tweet.sh post 何らかのつぶやき'
@@ -1249,7 +1249,7 @@ then
       self_language
       ;;
 
-    post )
+    post|tweet|tw )
       post "$@"
       ;;
     reply )

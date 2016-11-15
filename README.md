@@ -62,7 +62,7 @@ Available commands are:
    * `whoami`: reports the screen name of yourself.
    * `language` (`lang`): reports the selected language of yourself.
  * Making some changes (require "Write" permission)
-   * `post`: posts a new tweet.
+   * `post` (`tweet`, `tw`): posts a new tweet.
    * `reply`: replies to an existing tweet.
    * `upload`: uploads a media file.
    * `delete` (`del`): deletes a tweet.
@@ -278,7 +278,7 @@ This will be useful if you hope to get both informations `whoami` and `language`
 
 ## Making some changes
 
-### `post`: posts a new tweet.
+### `post` (`tweet`, `tw`): posts a new tweet.
 
  * Parameters
    * `-m`: comma-separated list of uploaded media IDs. See also the `upload` command.
@@ -290,8 +290,8 @@ This will be useful if you hope to get both informations `whoami` and `language`
    ~~~
    $ ./tweet.sh post A tweet from command line
    $ ./tweet.sh post 何らかのつぶやき
-   $ ./tweet.sh post @friend Good morning.
-   $ ./tweet.sh post -m 123,456,789 My Photos!
+   $ ./tweet.sh tweet @friend Good morning.
+   $ ./tweet.sh tw -m 123,456,789 My Photos!
    ~~~
 
 All rest arguments following to the command name are posted as a tweet.
