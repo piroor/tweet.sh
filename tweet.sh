@@ -192,7 +192,7 @@ help() {
       echo '  follow         : follows a user.'
       echo '  unfollow       : unfollows a user.'
       echo ''
-      echo '  fetch-direct-messages(fetch-dm)'
+      echo '  fetch-direct-messages(fetch-dm, get-direct-messages, get-dm)'
       echo '                 : fetches recent DMs.'
       echo '  direct-message(dm)'
       echo '                 : sends a DM.'
@@ -315,10 +315,12 @@ help() {
       echo '  ./tweet.sh unfollow @username'
       ;;
 
-    fetch-dm|fetch-direct-messages )
+    fetch-dm|fetch-direct-messages|get-dm|get-direct-messages )
       echo 'Usage:'
       echo '  ./tweet.sh fetch-dm -c 10'
       echo '  ./tweet.sh fetch-direct-messages -c 100 -s 0123456'
+      echo '  ./tweet.sh get-dm -c 10'
+      echo '  ./tweet.sh get-direct-messages -c 10 -s 0123456'
       ;;
     dm|direct-message )
       echo 'Usage:'
@@ -1285,7 +1287,7 @@ then
       unfollow "$@"
       ;;
 
-    fetch-dm|fetch-direct-messages )
+    fetch-dm|fetch-direct-messages|get-dm|get-direct-messages )
       fetch_direct_messages "$@"
       ;;
     dm|direct-message )

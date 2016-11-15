@@ -73,7 +73,7 @@ Available commands are:
    * `follow`: follows a user.
    * `unfollow`: unfollows a user.
  * Operate direct messages (require "Access direct messages" permission)
-   * `fetch-direct-messages` (`fetch-dm`): fetches recent DMs.
+   * `fetch-direct-messages` (`fetch-dm`, `get-direct-messages`, `get-dm`): fetches recent DMs.
    * `direct-message` (`dm`): sends a DM.
 
 If you hope to handle DMs by the `watch-mentions` command, you have to permit the app to access direct messages.
@@ -443,7 +443,7 @@ $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
 
 #Operate direct messages
 
-### `fetch-direct-messages` (`fetch-dm`): fetches recent DMs.
+### `fetch-direct-messages` (`fetch-dm`, `get-direct-messages`, `get-dm`): fetches recent DMs.
 
  * Parameters
    * `-c`: maximum number of messages to be fetched. 10 by default.
@@ -454,9 +454,9 @@ $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
    
    ~~~
    $ ./tweet.sh fetch-direct-messages -c 20
-   $ ./tweet.sh fetch-direct-messages -c 10 -s 0123456789
-   $ ./tweet.sh fetch-dm -c 20
    $ ./tweet.sh fetch-dm -c 10 -s 0123456789
+   $ ./tweet.sh get-direct-messages -c 20
+   $ ./tweet.sh get-dm -c 10 -s 0123456789
    ~~~
 
 ### `direct-message` (`dm`): sends a DM.
