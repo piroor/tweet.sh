@@ -223,6 +223,8 @@ FIN
     watch|watch-mentions )
       cat << FIN
 Usage:
+  ./tweet.sh watch-mentions -k keyword1,keyword2 |
+    while read -r event; do ... done
   ./tweet.sh watch-mentions -k keyword1,keyword2
                             -m "echo 'MENTION'; cat"
                             -r "echo 'RT'; cat"
@@ -602,6 +604,8 @@ handle_mentions() {
         then
           echo "$line" |
             (cd "$work_dir"; eval "$followed_handler")
+        else
+          echo "$line"
         fi
         continue
         ;;
@@ -612,6 +616,8 @@ handle_mentions() {
           echo "$line" |
             jq -r -c .direct_message
             (cd "$work_dir"; eval "$dm_handler")
+        else
+          echo "$line"
         fi
         continue
         ;;
@@ -621,6 +627,8 @@ handle_mentions() {
         then
           echo "$line" |
             (cd "$work_dir"; eval "$quoted_handler")
+        else
+          echo "$line"
         fi
         continue
         ;;
@@ -630,6 +638,8 @@ handle_mentions() {
         then
           echo "$line" |
             (cd "$work_dir"; eval "$retweet_handler")
+        else
+          echo "$line"
         fi
         continue
         ;;
@@ -639,6 +649,8 @@ handle_mentions() {
         then
           echo "$line" |
             (cd "$work_dir"; eval "$mention_handler")
+        else
+          echo "$line"
         fi
         continue
         ;;
@@ -648,6 +660,8 @@ handle_mentions() {
         then
           echo "$line" |
             (cd "$work_dir"; eval "$search_handler")
+        else
+          echo "$line"
         fi
         continue
         ;;

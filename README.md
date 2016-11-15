@@ -158,7 +158,13 @@ To stop the process, you need to send the `SIGINT` signal via Ctrl-C or somethin
  * `-s`: command line to run for each search result, matched to the keywords given via the `-k` option.
  * Standard output
    * Nothing.
- * Example
+ * Example 1: without handlers
+   
+   ~~~
+   $ ./tweet.sh watch-mentions -k "keyword1,keyword2,..." |
+       while read -r event; do echo "event: ${event}"; done
+   ~~~
+ * Example 2: with handlers
    
    ~~~
    $ ./tweet.sh watch-mentions -k "keyword1,keyword2,..." \
