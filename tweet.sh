@@ -1079,12 +1079,12 @@ url_encode() {
       sed 's/=$//' |
       tr '=' '%' |
       # reunify broken linkes to a line
-      paste -s -d ''
-  done |
-    sed -e 's/%7E/~/g' \
-        -e 's/%5F/_/g' \
-        -e 's/%2D/-/g' \
-        -e 's/%2E/./g'
+      paste -s -d '' |
+      sed -e 's/%7E/~/g' \
+          -e 's/%5F/_/g' \
+          -e 's/%2D/-/g' \
+          -e 's/%2E/./g'
+  done
 }
 
 # usage:
