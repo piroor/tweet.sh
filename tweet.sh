@@ -37,7 +37,40 @@ tools_dir="$(cd "$(dirname "$0")" && pwd)"
 
 tmp="/tmp/$$"
 
-URL_REDIRECTORS="https?://(1drv\\.ms|amzn\\.to|bit\\.ly|boog\\.io|bugzil\\.la|g\\.co|gigaz\\.in|go\\.ascii\\.jp|goo\\.gl|fb\\.me|is\\.gd|kuku\\.lu|macaf\\.ee|nico\\.ms|nico\\.sc|num\\.to|ow\\.ly|p\\.tl|prt\\.nu|r10\\.to|s\\.nikkei\\.com|sdrv\\.ms|t\\.asahi\\.com|t\\.co|tiny\\.cc|tinyurl\\.com|urx\\.nu|ustre\\.am|wolfr\\.am|y2u\\.be|youtu\\.be)"
+URL_REDIRECTORS="$(cat << FIN
+1drv.ms
+amzn.to
+bit.ly
+boog.io
+bugzil.la
+g.co
+gigaz.in
+go.ascii.jp
+goo.gl
+fb.me
+is.gd
+kuku.lu
+macaf.ee
+nico.ms
+nico.sc
+num.to
+ow.ly
+p.tl
+prt.nu
+r10.to
+s.nikkei.com
+sdrv.ms
+t.asahi.com
+t.co
+tiny.cc
+tinyurl.com
+urx.nu
+ustre.am
+wolfr.am
+y2u.be
+youtu.be
+FIN
+)"
 
 log() {
   [ "$DEBUG" = '' ] && return 0
@@ -1132,10 +1165,12 @@ unicode_unescape() {
     nkf --numchar-input
 }
 
+URL_REDIRECTORS_MATCHER="^https?://($(echo "$URL_REDIRECTORS" | $esed 's/\./\\./g' | paste -s -d '|' | $esed 's/^ *| *$//g'))/"
+
 resolve_original_url() {
   while read -r url
   do
-    if echo "$url" | egrep -i "$URL_REDIRECTORS" 2>&1 >/dev/null
+    if echo "$url" | egrep -i "$URL_REDIRECTORS_MATCHER" 2>&1 >/dev/null
     then
       curl --silent --head "$url" | egrep -i "^Location:" | $esed "s/^[^:]+: *//"
     else
