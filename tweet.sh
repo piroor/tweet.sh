@@ -1119,8 +1119,8 @@ to_encoded_list() {
 
 extract_tweet_id() {
   resolve_original_url |
-  $esed -e 's;https://[^/]+/[^/]+/status/;;' \
-        -e 's;^([0-9]+)[^0-9].*$;\1;'
+    $esed -e 's;https://[^/]+/[^/]+/status/;;' \
+          -e 's;^([0-9]+)[^0-9].*$;\1;'
 }
 
 extract_owner() {
