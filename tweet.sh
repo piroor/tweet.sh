@@ -1139,7 +1139,7 @@ resolve_original_url() {
     then
       curl --silent --head "$url" | egrep -i "^Location:" | $esed "s/^[^:]+: *//"
     else
-      echo url
+      echo $url
     fi
   done
 }
