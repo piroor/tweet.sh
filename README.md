@@ -88,6 +88,7 @@ This script is mainly designed to be a client library to implement Twitter bot p
 For most cases this script reports response JSONs of Twitter's APIs via the standard output.
 See descriptions of each JSON: [a tweet](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid), [an event](https://dev.twitter.com/streaming/overview/messages-types#Events_event), and other responses also.
 
+Some commands require URL of a tweet, and they accept shortened URLs like `http://t.co/***`. Such URLs are automatically resolved as actual URLs like `https://twitter.com/***/status/***`. The detectipn pattern for such shortened URLs is defined as `URL_REDIRECTORS` in the script, and it must be updated for new services.
 
 ## Reading existing tweets
 
