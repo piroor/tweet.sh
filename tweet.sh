@@ -1114,7 +1114,7 @@ url_encode() {
       sed 's/=$//' |
       tr '=' '%' |
       # reunify broken linkes to a line
-      paste -s -d '' |
+      tr -d '\n' |
       sed -e 's/%7E/~/g' \
           -e 's/%5F/_/g' \
           -e 's/%2D/-/g' \
@@ -1143,7 +1143,7 @@ to_encoded_list() {
     # "name%20a%20b%20c" => "name=a%20b%20c"
     sed 's/%20/=/' |
     # connect lines with the delimiter
-    paste -s -d "$delimiter" |
+    paste -s -d "$delimiter" - |
     # remove last line break
     tr -d '\n')"
   echo "$transformed"
@@ -1165,7 +1165,7 @@ unicode_unescape() {
     nkf --numchar-input
 }
 
-URL_REDIRECTORS_MATCHER="^https?://($(echo "$URL_REDIRECTORS" | $esed 's/\./\\./g' | paste -s -d '|' | $esed 's/^ *| *$//g'))/"
+URL_REDIRECTORS_MATCHER="^https?://($(echo "$URL_REDIRECTORS" | $esed 's/\./\\./g' | paste -s -d '|' - | $esed 's/^ *| *$//g'))/"
 
 resolve_original_url() {
   while read -r url
