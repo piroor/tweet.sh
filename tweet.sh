@@ -254,7 +254,7 @@ Usage:
   ./tweet.sh search -q "Bash OR Shell Script" -s 0123456
   ./tweet.sh search -q "queries" -h "echo 'found!'; cat"
   ./tweet.sh search -q "Bash OR Shell Script" -w |
-    while read -r tweet; do echo "found!: ${tweet}"; done
+    while read -r tweet; do echo "found!: \${tweet}"; done
 FIN
       ;;
     watch|watch-mentions )
