@@ -1114,7 +1114,7 @@ url_encode() {
       sed 's/=$//' |
       tr '=' '%' |
       # reunify broken linkes to a line
-      tr -d '\n' |
+      paste -s -d '\0' - |
       sed -e 's/%7E/~/g' \
           -e 's/%5F/_/g' \
           -e 's/%2D/-/g' \
