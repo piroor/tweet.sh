@@ -1246,6 +1246,7 @@ call_api() {
          --header \"$headers\" \
          --data \"$params\" \
          --silent \
+         --http1.1 \
          $debug_params \
          $url"
   fi
