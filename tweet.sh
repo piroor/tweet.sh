@@ -1205,7 +1205,7 @@ resolve_all_urls() {
       resolved="$(./tweetbot.sh/tweet.sh/tweet.sh resolve "$url" | tr -d '\r\n')"
       if [ "$url" != "$resolved" ]
       then
-        echo -n " -e s;$url;$resolved;"
+        echo -n " -e s;$url;$resolved;g"
       fi
     done)"
   if [ "$url_resolvers" != '' ]
