@@ -234,6 +234,8 @@ Available commands:
   direct-message(dm)
                  : sends a DM.
 
+  resolve        : resolves a shortened URL like "https://t.co/xxxx"
+
 For more details, see also: "./tweet.sh help [command]"
 FIN
       ;;
@@ -409,6 +411,12 @@ FIN
 Usage:
   ./tweet.sh dm frinedname Good morning.
   ./tweet.sh direct-message frinedname "How are you?"
+FIN
+      ;;
+    resolve )
+      cat << FIN
+Usage:
+  ./tweet.sh resolve https://t.co/xxxx
 FIN
       ;;
   esac
@@ -1411,6 +1419,10 @@ then
       ;;
     dm|direct-message )
       direct_message "$@"
+      ;;
+
+    resolve )
+      echo "$2" | resolve_original_url
       ;;
 
     help|* )
