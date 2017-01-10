@@ -1202,7 +1202,9 @@ resolve_all_urls() {
     uniq |
     while read url
     do
-      resolved="$(./tweetbot.sh/tweet.sh/tweet.sh resolve "$url" | tr -d '\r\n')"
+      resolved="$(./tweetbot.sh/tweet.sh/tweet.sh resolve "$url" |
+                    sed -r -e 's/([$&])/\\\1/g' |
+                    tr -d '\r\n')"
       if [ "$url" != "$resolved" ]
       then
         echo -n " -e s;$url;$resolved;g"
