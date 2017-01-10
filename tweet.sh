@@ -1423,7 +1423,7 @@ then
       ;;
 
     resolve )
-      echo "$2" | resolve_original_url
+      echo "$1" | resolve_original_url
       ;;
 
     help|* )
