@@ -75,7 +75,9 @@ Available commands are:
  * Operate direct messages (require "Access direct messages" permission)
    * `fetch-direct-messages` (`fetch-dm`, `get-direct-messages`, `get-dm`): fetches recent DMs.
    * `direct-message` (`dm`): sends a DM.
+ * Misc.
    * `resolve`: resolves a shortened URL.
+   * `resolve-all`: resolve all shortened URLs in the given input.
 
 If you hope to handle DMs by the `watch-mentions` command, you have to permit the app to access direct messages.
 
@@ -499,5 +501,17 @@ $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
    
    ~~~
    $ ./tweet.sh resolve https://t.co/xxxx
+   ~~~
+
+### `resolve-all`: resolve all shortened URLs in the given input.
+
+ * Parameters
+   * Nothing.
+ * Standard output
+   * The given input with resolved URLs.
+ * Example
+   
+   ~~~
+   $ cat ./tweet-body.txt | ./tweet.sh resolve-all
    ~~~
 

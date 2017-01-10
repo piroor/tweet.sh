@@ -235,6 +235,7 @@ Available commands:
                  : sends a DM.
 
   resolve        : resolves a shortened URL like "https://t.co/xxxx"
+  resolve-all    : resolves all shortened URLs in the given input.
 
 For more details, see also: "./tweet.sh help [command]"
 FIN
@@ -417,6 +418,12 @@ FIN
       cat << FIN
 Usage:
   ./tweet.sh resolve https://t.co/xxxx
+FIN
+      ;;
+    resolve-all )
+      cat << FIN
+Usage:
+  cat ./tweet-body.txt | ./tweet.sh resolve-all
 FIN
       ;;
   esac
@@ -1187,6 +1194,28 @@ resolve_original_url() {
   done
 }
 
+resolve_all_urls() {
+  input="$(cat)"
+  url_resolvers="$(echo "$input" |
+    grep -o -i -E 'https?://[a-z0-9/\.]+' |
+    sort |
+    uniq |
+    while read url
+    do
+      resolved="$(./tweetbot.sh/tweet.sh/tweet.sh resolve "$url" | tr -d '\r\n')"
+      if [ "$url" != "$resolved" ]
+      then
+        echo -n " -e s;$url;$resolved;"
+      fi
+    done)"
+  if [ "$url_resolvers" != '' ]
+  then
+    echo -n "$input" | $esed $url_resolvers
+  else
+    echo -n "$input"
+  fi
+}
+
 
 #================================================================
 # utilities to generate API requests with OAuth authentication
@@ -1424,6 +1453,10 @@ then
 
     resolve )
       echo "$1" | resolve_original_url
+      ;;
+
+    resolve-all )
+      resolve_all_urls
       ;;
 
     help|* )
