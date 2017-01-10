@@ -1203,7 +1203,7 @@ resolve_all_urls() {
     while read url
     do
       resolved="$(./tweetbot.sh/tweet.sh/tweet.sh resolve "$url" |
-                    sed -r -e 's/([$&])/\\\1/g' |
+                    $esed -e 's/([$&])/\\\1/g' |
                     tr -d '\r\n')"
       if [ "$url" != "$resolved" ]
       then
