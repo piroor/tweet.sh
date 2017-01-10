@@ -1197,7 +1197,7 @@ resolve_original_url() {
 resolve_all_urls() {
   input="$(cat)"
   url_resolvers="$(echo "$input" |
-    grep -o -i -E 'https?://[a-z0-9/\.]+' |
+    egrep -o -i 'https?://[a-z0-9/\.]+' |
     sort |
     uniq |
     while read url
