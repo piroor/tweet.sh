@@ -536,13 +536,19 @@ watch_search_results() {
   local handler="$2"
   echo "Tracking tweets with the query: $query..." 1>&2
   local user_screen_name="$(self_screen_name)"
-  local params="$(cat << FIN
+
+  if [ "$query" = '' ]
+  then
+    call_api GET https://stream.twitter.com/1.1/statuses/sample.json |
+    handle_search_results "$user_screen_name" "$handler"
+  else
+    echo "$(cat << FIN
 track $query
 FIN
-  )"
-  echo "$params" |
-    call_api POST https://stream.twitter.com/1.1/statuses/filter.json |
-    handle_search_results "$user_screen_name" "$handler"
+    )" |
+      call_api POST https://stream.twitter.com/1.1/statuses/filter.json |
+      handle_search_results "$user_screen_name" "$handler"
+  fi
 }
 
 handle_search_results() {
