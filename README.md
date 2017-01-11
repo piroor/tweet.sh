@@ -114,6 +114,7 @@ Some commands require URL of a tweet, and they accept shortened URLs like `http:
 
  * Parameters
    * `-q`: queries.
+     If you specify no query, then you'll see [sample tweets](https://dev.twitter.com/streaming/reference/get/statuses/sample) as results.
    * `-c`: maximum number of tweets to be responded. 10 by default. (optional)
    * `-s`: the id of the last tweet already known. (optional)
      If you specify this option, only tweets newer than the given tweet will be returned.
