@@ -535,6 +535,7 @@ watch_search_results() {
   local query="$1"
   local handler="$2"
   local user_screen_name="$(self_screen_name)"
+  local params
   if [ "$query" = '' ]
   then
     echo "Tracking sample tweets..." 1>&2
@@ -542,7 +543,7 @@ watch_search_results() {
       handle_search_results "$user_screen_name" "$handler"
   else
     echo "Tracking tweets with the query: $query..." 1>&2
-    local params="$(cat << FIN
+    params="$(cat << FIN
 track $query
 FIN
     )"
