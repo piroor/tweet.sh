@@ -388,6 +388,7 @@ FIN
 Usage:
   ./tweet.sh follow username
   ./tweet.sh follow @username
+  ./tweet.sh follow https://twitter.com/username/status/012345
 FIN
       ;;
     unfollow )
@@ -395,6 +396,7 @@ FIN
 Usage:
   ./tweet.sh unfollow username
   ./tweet.sh unfollow @username
+  ./tweet.sh unfollow https://twitter.com/username/status/012345
 FIN
       ;;
 
@@ -1040,7 +1042,13 @@ follow() {
   ensure_available
 
   local target="$1"
-  local screen_name="$(echo "$target" | sed 's/^@//')"
+  local screen_name
+
+  if echo "$target" | egrep '^https?:' >/dev/null 2>&1
+  then
+    target="$(owner_screen_name "$target")"
+  fi
+  screen_name="$(echo "$target" | sed 's/^@//')"
 
   local params="$(cat << FIN
 screen_name $screen_name
@@ -1057,7 +1065,13 @@ unfollow() {
   ensure_available
 
   local target="$1"
-  local screen_name="$(echo "$target" | sed 's/^@//')"
+  local screen_name
+
+  if echo "$target" | egrep '^https?:' >/dev/null 2>&1
+  then
+    target="$(owner_screen_name "$target")"
+  fi
+  screen_name="$(echo "$target" | sed 's/^@//')"
 
   local params="$(cat << FIN
 screen_name $screen_name

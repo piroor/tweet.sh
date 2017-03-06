@@ -432,7 +432,7 @@ $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
 ### `follow`: follows a user.
 
  * Parameters
-   * 1st argument: the screen name of a user to be followed.
+   * 1st argument: the screen name of a user to be followed, or an URL of a tweet.
  * Standard output
    * [A JSON string of the followed user](https://dev.twitter.com/rest/reference/post/friendships/create).
  * Example
@@ -440,12 +440,13 @@ $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
    ~~~
    $ ./tweet.sh follow @username
    $ ./tweet.sh follow username
+   $ ./tweet.sh follow https://twitter.com/username/status/012345
    ~~~
 
 ### `unfollow`: unfollows a user.
 
  * Parameters
-   * 1st argument: the screen name of a user to be unfollowed.
+   * 1st argument: the screen name of a user to be unfollowed, or an URL of a tweet.
  * Standard output
    * [A JSON string of the unfollowed user](https://dev.twitter.com/rest/reference/post/friendships/destroy).
  * Example
@@ -453,6 +454,7 @@ $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
    ~~~
    $ ./tweet.sh unfollow @username
    $ ./tweet.sh unfollow username
+   $ ./tweet.sh unfollow https://twitter.com/username/status/012345
    ~~~
 
 
