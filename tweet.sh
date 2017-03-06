@@ -861,12 +861,19 @@ body() {
 
 owner_screen_name() {
   local target="$1"
+  local screen_name
   if [ "$target" != '' ]
   then
     local id="$(echo "$target" | extract_tweet_id)"
-    echo "@$(fetch "$id" | extract_owner)"
+    screen_name="$(fetch "$id" | extract_owner)"
   else
-    echo "@$(extract_owner)"
+    screen_name="$(extract_owner)"
+  fi
+  if [ "$screen_name" = '' -o "$screen_name" = 'null' ]
+  then
+    echo ''
+  else
+    echo "@$screen_name"
   fi
 }
 
@@ -1050,6 +1057,11 @@ follow() {
   fi
   screen_name="$(echo "$target" | sed 's/^@//')"
 
+  if [ "$screen_name" = '' ]
+  then
+    return 1
+  fi
+
   local params="$(cat << FIN
 screen_name $screen_name
 follow true
@@ -1072,6 +1084,11 @@ unfollow() {
     target="$(owner_screen_name "$target")"
   fi
   screen_name="$(echo "$target" | sed 's/^@//')"
+
+  if [ "$screen_name" = '' ]
+  then
+    return 1
+  fi
 
   local params="$(cat << FIN
 screen_name $screen_name
