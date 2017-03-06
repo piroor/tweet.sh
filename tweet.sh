@@ -982,6 +982,7 @@ delete() {
   shift
 
   local id="$(echo "$target" | extract_tweet_id)"
+  [ "$id" = '' ] && return 1
 
   local result="$(call_api POST "https://api.twitter.com/1.1/statuses/destroy/$id.json")"
   echo "$result"
@@ -993,6 +994,7 @@ favorite() {
 
   local target="$1"
   local id="$(echo "$target" | extract_tweet_id)"
+  [ "$id" = '' ] && return 1
 
   local params="$(cat << FIN
 id $id
@@ -1009,6 +1011,7 @@ unfavorite() {
 
   local target="$1"
   local id="$(echo "$target" | extract_tweet_id)"
+  [ "$id" = '' ] && return 1
 
   local params="$(cat << FIN
 id $id
@@ -1027,6 +1030,7 @@ retweet() {
   shift
 
   local id="$(echo "$target" | extract_tweet_id)"
+  [ "$id" = '' ] && return 1
 
   local result="$(call_api POST "https://api.twitter.com/1.1/statuses/retweet/$id.json")"
   echo "$result"
@@ -1040,6 +1044,7 @@ unretweet() {
   shift
 
   local id="$(echo "$target" | extract_tweet_id)"
+  [ "$id" = '' ] && return 1
 
   local retweet_id="$(fetch_with_my_retweet "$id" | jq -r .current_user_retweet.id_str)"
   delete "$retweet_id"
@@ -1057,10 +1062,7 @@ follow() {
   fi
   screen_name="$(echo "$target" | sed 's/^@//')"
 
-  if [ "$screen_name" = '' ]
-  then
-    return 1
-  fi
+  [ "$screen_name" = '' ] && return 1
 
   local params="$(cat << FIN
 screen_name $screen_name
@@ -1085,10 +1087,7 @@ unfollow() {
   fi
   screen_name="$(echo "$target" | sed 's/^@//')"
 
-  if [ "$screen_name" = '' ]
-  then
-    return 1
-  fi
+  [ "$screen_name" = '' ] && return 1
 
   local params="$(cat << FIN
 screen_name $screen_name
