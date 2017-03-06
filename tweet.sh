@@ -982,7 +982,11 @@ delete() {
   shift
 
   local id="$(echo "$target" | extract_tweet_id)"
-  [ "$id" = '' ] && return 1
+  if [ "$id" = '' ]
+  then
+    echo "not deletable target: \"$target\"" 1>&2
+    return 1
+  fi
 
   local result="$(call_api POST "https://api.twitter.com/1.1/statuses/destroy/$id.json")"
   echo "$result"
@@ -994,7 +998,11 @@ favorite() {
 
   local target="$1"
   local id="$(echo "$target" | extract_tweet_id)"
-  [ "$id" = '' ] && return 1
+  if [ "$id" = '' ]
+  then
+    echo "not favoritable target: \"$target\"" 1>&2
+    return 1
+  fi
 
   local params="$(cat << FIN
 id $id
@@ -1011,7 +1019,11 @@ unfavorite() {
 
   local target="$1"
   local id="$(echo "$target" | extract_tweet_id)"
-  [ "$id" = '' ] && return 1
+  if [ "$id" = '' ]
+  then
+    echo "not unfavoritable target: \"$target\"" 1>&2
+    return 1
+  fi
 
   local params="$(cat << FIN
 id $id
@@ -1030,7 +1042,11 @@ retweet() {
   shift
 
   local id="$(echo "$target" | extract_tweet_id)"
-  [ "$id" = '' ] && return 1
+  if [ "$id" = '' ]
+  then
+    echo "not retweetable target: \"$target\"" 1>&2
+    return 1
+  fi
 
   local result="$(call_api POST "https://api.twitter.com/1.1/statuses/retweet/$id.json")"
   echo "$result"
@@ -1044,7 +1060,11 @@ unretweet() {
   shift
 
   local id="$(echo "$target" | extract_tweet_id)"
-  [ "$id" = '' ] && return 1
+  if [ "$id" = '' ]
+  then
+    echo "not unretweetable target: \"$target\"" 1>&2
+    return 1
+  fi
 
   local retweet_id="$(fetch_with_my_retweet "$id" | jq -r .current_user_retweet.id_str)"
   delete "$retweet_id"
@@ -1062,7 +1082,11 @@ follow() {
   fi
   screen_name="$(echo "$target" | sed 's/^@//')"
 
-  [ "$screen_name" = '' ] && return 1
+  if [ "$screen_name" = '' ]
+  then
+    echo "not followable target: \"$target\"" 1>&2
+    return 1
+  fi
 
   local params="$(cat << FIN
 screen_name $screen_name
@@ -1087,7 +1111,11 @@ unfollow() {
   fi
   screen_name="$(echo "$target" | sed 's/^@//')"
 
-  [ "$screen_name" = '' ] && return 1
+  if [ "$screen_name" = '' ]
+  then
+    echo "not unfollowable target: \"$target\"" 1>&2
+    return 1
+  fi
 
   local params="$(cat << FIN
 screen_name $screen_name
