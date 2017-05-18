@@ -1335,14 +1335,17 @@ call_api() {
   if [ "$method" = 'POST' ]
   then
     local main_params=''
-    if [ "$params" = '' ]
-    then
-      params='""'
-    fi
     if [ "$file_params" = '' ]
     then
+      # --data parameter requries any input even if it is blank.
+      if [ "$params" = '' ]
+      then
+        params='""'
+      fi
       main_params="--data \"$params\""
-    else
+    elif [ "$params" != '' ]
+    then
+      # on the other hand, --form parameter doesn't accept blank input.
       main_params="--form \"$params\""
     fi
     curl_params="--header \"$headers\" \
