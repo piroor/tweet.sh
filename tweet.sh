@@ -309,6 +309,12 @@ Usage:
   ./tweet.sh whoami
 FIN
       ;;
+    rename )
+      cat << FIN
+Usage:
+  ./tweet.sh rename New Name, Same Me
+FIN
+      ;;
     lang|language )
       cat << FIN
 Usage:
