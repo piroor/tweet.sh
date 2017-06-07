@@ -1386,7 +1386,13 @@ call_api() {
   # quotation marks in the command line will be passed to curl as is.
   # To avoid sending of needless quotation marks, the command line must be
   # executed via "eval".
-  eval "curl $curl_params"
+  if [ "$debug_params" = '' ]
+  then
+    eval "curl $curl_params"
+  else
+    # to apply sanitize_secret_params only for stderr, swap stderr and stdout temporally.
+    (eval "curl $curl_params" 3>&2 2>&1 1>&3 | sanitize_secret_params) 3>&2 2>&1 1>&3
+  fi
 }
 
 # usage:
