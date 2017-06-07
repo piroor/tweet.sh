@@ -88,7 +88,8 @@ exist_command() {
 
 load_keys() {
   if [ "$CONSUMER_KEY" = '' -a \
-       -f "$work_dir/tweet.client.key" ]
+       -f "$work_dir/tweet.client.key" -a \
+       "$work_dir" != "$tools_dir" ]
   then
     log 'Using client key at the current directory.'
     source "$work_dir/tweet.client.key"
