@@ -94,6 +94,13 @@ sanitize_secret_params() {
         -e "s/$ACCESS_TOKEN_SECRET/<***access-token-secret***>/g"
 }
 
+if [ -t 0 ]
+then
+  IN_PIPELINE=0
+else
+  IN_PIPELINE=1
+fi
+
 exist_command() {
   type "$1" > /dev/null 2>&1
 }
@@ -559,8 +566,7 @@ watch_search_results() {
   if [ "$query" = '' ]
   then
     echo "Tracking sample tweets..." 1>&2
-    echo '' |
-      call_api GET https://stream.twitter.com/1.1/statuses/sample.json |
+    call_api GET https://stream.twitter.com/1.1/statuses/sample.json |
       handle_search_results "$user_screen_name" "$handler"
   else
     echo "Tracking tweets with the query: $query..." 1>&2
@@ -899,8 +905,7 @@ owner_screen_name() {
 # implementation of showme
 my_information() {
   ensure_available
-  echo '' |
-    call_api GET https://api.twitter.com/1.1/account/verify_credentials.json
+  call_api GET https://api.twitter.com/1.1/account/verify_credentials.json
 }
 
 # implementation of whoami
@@ -990,8 +995,7 @@ upload() {
 
   local target="$1"
 
-  local result="$(echo '' |
-                    call_api POST https://upload.twitter.com/1.1/media/upload.json media="$target")"
+  local result="$(call_api POST https://upload.twitter.com/1.1/media/upload.json media="$target")"
   echo "$result"
   check_errors "$result"
 }
@@ -1009,8 +1013,7 @@ delete() {
     return 1
   fi
 
-  local result="$(echo '' |
-                    call_api POST "https://api.twitter.com/1.1/statuses/destroy/$id.json")"
+  local result="$(call_api POST "https://api.twitter.com/1.1/statuses/destroy/$id.json")"
   echo "$result"
   check_errors "$result"
 }
@@ -1070,8 +1073,7 @@ retweet() {
     return 1
   fi
 
-  local result="$(echo '' |
-                    call_api POST "https://api.twitter.com/1.1/statuses/retweet/$id.json")"
+  local result="$(call_api POST "https://api.twitter.com/1.1/statuses/retweet/$id.json")"
   echo "$result"
   check_errors "$result"
 }
@@ -1319,7 +1321,7 @@ call_api() {
   local file=$3
 
   local params=''
-  if [ -p /dev/stdin ]
+  if [ $IN_PIPELINE -eq 1 ]
   then
     params="$(cat)"
   fi
