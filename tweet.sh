@@ -94,13 +94,6 @@ sanitize_secret_params() {
         -e "s/$ACCESS_TOKEN_SECRET/<***access-token-secret***>/g"
 }
 
-if [ -t 0 ]
-then
-  IN_PIPELINE=0
-else
-  IN_PIPELINE=1
-fi
-
 exist_command() {
   type "$1" > /dev/null 2>&1
 }
@@ -1321,7 +1314,7 @@ call_api() {
   local file=$3
 
   local params=''
-  if [ $IN_PIPELINE -eq 1 ]
+  if [ ! -t 0 ]
   then
     params="$(cat)"
   fi
