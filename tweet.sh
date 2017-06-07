@@ -74,7 +74,7 @@ FIN
 
 log() {
   [ "$DEBUG" = '' ] && return 0
-  if [ "$*" = '' ]
+  if [ $# -eq 0 ]
   then
     cat 1>&2
   else
