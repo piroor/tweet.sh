@@ -1333,8 +1333,7 @@ call_api() {
   local debug_params=''
   if [ "$DEBUG" != '' ]
   then
-    # this is a bad way I know, but I don't know how to output only headers to the stderr...
-    debug_params='--dump-header /dev/stderr  --verbose'
+    debug_params="--verbose"
   fi
 
   local curl_params
