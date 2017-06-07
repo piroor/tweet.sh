@@ -74,7 +74,12 @@ FIN
 
 log() {
   [ "$DEBUG" = '' ] && return 0
-  echo "$*" 1>&2
+  if [ "$*" = '' ]
+  then
+    cat 1>&2
+  else
+    echo "$*" 1>&2
+  fi
 }
 
 exist_command() {
