@@ -76,10 +76,22 @@ log() {
   [ "$DEBUG" = '' ] && return 0
   if [ $# -eq 0 ]
   then
-    cat 1>&2
+    cat | sanitize_secret_params 1>&2
   else
-    echo "$*" 1>&2
+    echo "$*" | sanitize_secret_params 1>&2
   fi
+}
+
+sanitize_secret_params() {
+  if [ "$CONSUMER_KEY" = '' ]
+  then
+    cat
+    return 0
+  fi
+  $esed -e "s/$CONSUMER_KEY/<***consumer-key***>/g" \
+        -e "s/$CONSUMER_SECRET/(***consumer-secret***>/g" \
+        -e "s/$ACCESS_TOKEN/<***access-token***>/g" \
+        -e "s/$ACCESS_TOKEN_SECRET/<***access-token-secret***>/g"
 }
 
 exist_command() {
