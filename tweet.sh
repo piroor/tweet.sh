@@ -1314,7 +1314,7 @@ resolve_all_urls() {
 # utilities to generate API requests with OAuth authentication
 
 # usage:
-# echo 'status つぶやき' | call_api POST https://api.twitter.com/1.1/statuses/update.json
+# echo 'status Hello!' | call_api POST https://api.twitter.com/1.1/statuses/update.json
 call_api() {
   local method=$1
   local url=$2
