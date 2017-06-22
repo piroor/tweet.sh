@@ -118,6 +118,8 @@ Some commands require URL of a tweet, and they accept shortened URLs like `http:
    * `-c`: maximum number of tweets to be responded. 10 by default. (optional)
    * `-s`: the id of the last tweet already known. (optional)
      If you specify this option, only tweets newer than the given tweet will be returned.
+   * `-t`: type of results. (optional)
+     Possible values: `recent`  (default), `popular`, or `mixed`.
    * `-h`: command line to run for each search result. (optional)
      (It will receive [tweets](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid) via the standard input.)
    * `-w`: start watching without handler. (optional)
