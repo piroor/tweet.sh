@@ -118,6 +118,8 @@ Some commands require URL of a tweet, and they accept shortened URLs like `http:
    * `-c`: maximum number of tweets to be responded. 10 by default. (optional)
    * `-s`: the id of the last tweet already known. (optional)
      If you specify this option, only tweets newer than the given tweet will be returned.
+   * `-m`: the id of the tweet you are searching tweets older than it. (optional)
+     If you specify this option, only tweets older than the given tweet will be returned.
    * `-t`: type of results. (optional)
      Possible values: `recent`  (default), `popular`, or `mixed`.
    * `-h`: command line to run for each search result. (optional)

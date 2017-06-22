@@ -503,12 +503,13 @@ search() {
   local locale='en'
   local count=10
   local since_id=''
+  local max_id=''
   local result_type=recent
   local handler=''
   local watch=0
 
   local OPTIND OPTARG OPT
-  while getopts q:l:c:s:t:h:w OPT
+  while getopts q:l:c:s:m:t:h:w OPT
   do
     case $OPT in
       q )
@@ -520,6 +521,10 @@ search() {
       s )
         since_id="$(echo "$OPTARG" | extract_tweet_id)"
         [ "$since_id" != '' ] && since_id="since_id $since_id"
+        ;;
+      m )
+        max_id="$(echo "$OPTARG" | extract_tweet_id)"
+        [ "$max_id" != '' ] && max_id="max_id $max_id"
         ;;
       t )
         result_type="$OPTARG"
@@ -544,6 +549,7 @@ locale $locale
 result_type $result_type
 count $count
 $since_id
+$max_id
 FIN
     )"
     local result="$(echo "$params" |
