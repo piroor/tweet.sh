@@ -225,6 +225,8 @@ Available commands:
   fetch(get, show)
                  : fetches a JSON string of a tweet.
   search         : searches tweets.
+  fetch-favorites(fetch-fav)
+                 : fetches favorite tweets.
   watch-mentions(watch)
                  : watches mentions, retweets, DMs, etc.
   type           : detects the type of the given input.
@@ -276,6 +278,13 @@ Usage:
   ./tweet.sh search -q "queries" -h "echo 'found!'; cat"
   ./tweet.sh search -q "Bash OR Shell Script" -w |
     while read -r tweet; do echo "found!: \${tweet}"; done
+FIN
+      ;;
+    fetch-fav|fetch-favorites )
+      cat << FIN
+Usage:
+  ./tweet.sh fetch-fav -c 10
+  ./tweet.sh fetch-favorites -c 100 -s 0123456
 FIN
       ;;
     watch|watch-mentions )
@@ -615,6 +624,47 @@ handle_search_results() {
         (cd "$work_dir"; eval "$handler")
     fi
   done
+}
+
+fetch_favorites() {
+  ensure_available
+  local count=10
+  local since_id=''
+  local max_id=''
+  local user_screen_name="$(self_screen_name)"
+
+  local OPTIND OPTARG OPT
+  while getopts c:s:m:u: OPT
+  do
+    case $OPT in
+      c )
+        count="$OPTARG"
+        ;;
+      s )
+        since_id="$(echo "$OPTARG" | extract_tweet_id)"
+        [ "$since_id" != '' ] && since_id="since_id $since_id"
+        ;;
+      m )
+        max_id="$(echo "$OPTARG" | extract_tweet_id)"
+        [ "$max_id" != '' ] && max_id="max_id $max_id"
+        ;;
+      u )
+        user_screen_name="$OPTARG"
+        ;;
+    esac
+  done
+
+  local params="$(cat << FIN
+screen_name $user_screen_name
+count $count
+$since_id
+$max_id
+FIN
+  )"
+  local result="$(echo "$params" |
+                    call_api GET https://api.twitter.com/1.1/favorites/list.json)"
+  echo "$result"
+  check_errors "$result"
 }
 
 watch_mentions() {
@@ -1499,6 +1549,9 @@ then
       ;;
     search )
       search "$@"
+      ;;
+    fetch-fav|fetch-favorites )
+      fetch_favorites "$@"
       ;;
     watch|watch-mentions )
       watch_mentions "$@"

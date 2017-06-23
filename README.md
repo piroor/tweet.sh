@@ -54,6 +54,7 @@ Available commands are:
  * Reading existing tweets (require "Read" permission)
    * `fetch` (`get`, `show`): fetches a JSON string of a tweet.
    * `search`: searches tweets with queries.
+   * `fetch-favorites` (`fetch-fav`): fetches favorite tweets.
    * `watch-mentions` (`watch`): watches mentions, retweets, DMs, etc., and executes handlers for each event.
    * `type`: detects the type of the given input.
    * `body`: extracts the body of a tweet.
@@ -135,6 +136,24 @@ Some commands require URL of a tweet, and they accept shortened URLs like `http:
    $ ./tweet.sh search -q "Bash OR Shell Script" -h 'echo "found!"; cat'
    $ ./tweet.sh search -q "Bash OR Shell Script" -w |
        while read -r tweet; do echo "found!: ${tweet}"; done
+   ~~~
+
+### `fetch-favorites` (`fetch-fav`): fetches favorite tweets.
+
+ * Parameters
+   * `-u`: the screen name of the owner favorites to be fetched from. Yourself by default.
+   * `-c`: maximum number of tweets to be fetched. 10 by default.
+   * `-s`: the id of the last tweet already known. (optional)
+     If you specify this option, only tweets newer than the given tweet will be returned.
+   * `-m`: the id of the tweet you are searching tweets older than it. (optional)
+     If you specify this option, only tweets older than the given tweet will be returned.
+ * Standard output
+   * [A JSON string of fetched favorites](https://dev.twitter.com/rest/reference/get/favorites/list).
+ * Example
+   
+   ~~~
+   $ ./tweet.sh fetch-favorites -c 20
+   $ ./tweet.sh fetch-fav -c 10 -s 0123456789
    ~~~
 
 #### Streaming
