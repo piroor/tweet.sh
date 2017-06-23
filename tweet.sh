@@ -913,9 +913,14 @@ my_information() {
 
 # implementation of whoami
 self_screen_name() {
+  if [ "$MY_SCREEN_NAME" != '' ]
+  then
+    echo "$MY_SCREEN_NAME" | tr -d '\n'
+  else
   my_information |
     jq -r .screen_name |
     tr -d '\n'
+  fi
 }
 
 # implementation of language
