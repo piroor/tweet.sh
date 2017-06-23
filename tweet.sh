@@ -917,9 +917,9 @@ self_screen_name() {
   then
     echo "$MY_SCREEN_NAME" | tr -d '\n'
   else
-  my_information |
-    jq -r .screen_name |
-    tr -d '\n'
+    my_information |
+      jq -r .screen_name |
+      tr -d '\n'
   fi
 }
 
