@@ -30,7 +30,7 @@
 #   https://dev.twitter.com/oauth/overview
 #   https://dev.twitter.com/oauth/overview/creating-signatures
 #
-# If you hope to see detailed logs, set an environment variable "DEBUG" to 1 or something.
+# If you want to see detailed logs, set an environment variable "DEBUG" to 1 or something.
 
 work_dir="$(pwd)"
 tools_dir="$(cd "$(dirname "$0")" && pwd)"
