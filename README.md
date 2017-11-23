@@ -80,7 +80,7 @@ Available commands are:
    * `resolve`: resolves a shortened URL.
    * `resolve-all`: resolve all shortened URLs in the given input.
 
-If you hope to handle DMs by the `watch-mentions` command, you have to permit the app to access direct messages.
+If you want to handle DMs by the `watch-mentions` command, you have to permit the app to access direct messages.
 
 Detailed logs can be shown with the `DEBUG` flag, like:
 
@@ -160,7 +160,7 @@ Some commands require URL of a tweet, and they accept shortened URLs like `http:
 
 Basically this command provides ability to get search result based on the given query.
 
-If you hope to observe new tweets matched to the query continuously, specify a callback command line as the handler via the `-h` option.
+If you want to observe new tweets matched to the query continuously, specify a callback command line as the handler via the `-h` option.
 
 ~~~
 $ ./tweet.sh search -q "queries" -h "echo 'FOUND'; cat"
@@ -171,7 +171,7 @@ The script doesn't exit automatically if you specify the `-h` option.
 To stop the process, you need to send the `SIGINT` signal via Ctrl-C or something.
 
 *Important note: you cannot use this feature together with `watch-mentions` command. Only one streaming API is allowed for you at once.*
-*If you hope to watch search results with mentions, use the `-k` and `-s` options of the `watch-mentions` command.*
+*If you want to watch search results with mentions, use the `-k` and `-s` options of the `watch-mentions` command.*
 
 ### `watch-mentions` (`watch`): watches mentions, retweets, DMs, etc., and executes handlers for each event.
 
@@ -214,7 +214,7 @@ In this case this script stays running.
 To stop the process, you need to send the `SIGINT` signal via Ctrl-C or something.
 
 *Important note: you cannot use this feature together with `search` command with a handler. Only one streaming API is allowed for you at once.*
-*If you hope to watch search results with mentions, use the `-k` and `-s` options instead of the `search` command.*
+*If you want to watch search results with mentions, use the `-k` and `-s` options instead of the `search` command.*
 
 ### `type`: detects the type of the given input.
 
@@ -281,7 +281,7 @@ For unknown type input, this returns an exit status `1` and reports nothing.
    $ ./tweet.sh showme
    ~~~
 
-This will be useful if you hope to get both informations `whoami` and `language` at once.
+This will be useful if you want to get both informations `whoami` and `language` at once.
 
 ### `whoami`: reports the screen name of yourself.
 
@@ -296,7 +296,7 @@ This will be useful if you hope to get both informations `whoami` and `language`
    username
    ~~~
 
-*Important note: the rate limit of the [API used by this command](https://dev.twitter.com/rest/reference/get/account/verify_credentials) is very low. If you hope to call another `language` command together, then you should use `showme` command instead.*
+*Important note: the rate limit of the [API used by this command](https://dev.twitter.com/rest/reference/get/account/verify_credentials) is very low. If you want to call another `language` command together, then you should use `showme` command instead.*
 
 ### `language` (`lang`): reports the selected language of yourself.
 
@@ -313,7 +313,7 @@ This will be useful if you hope to get both informations `whoami` and `language`
    en
    ~~~
 
-*Important note: the rate limit of the [API used by this command](https://dev.twitter.com/rest/reference/get/account/verify_credentials) is very low. If you hope to call another `whoami` command together, then you should use `showme` command instead.*
+*Important note: the rate limit of the [API used by this command](https://dev.twitter.com/rest/reference/get/account/verify_credentials) is very low. If you want to call another `whoami` command together, then you should use `showme` command instead.*
 
 
 ## Making some changes
@@ -431,7 +431,7 @@ This command does not append it automatically.
    ~~~
 
 Note, you cannot add extra comment for the retweet.
-Instead, if you hope to "quote" the tweet, then you just have to `post` with the URL of the original tweet.
+Instead, if you want to "quote" the tweet, then you just have to `post` with the URL of the original tweet.
 
 ~~~
 $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
