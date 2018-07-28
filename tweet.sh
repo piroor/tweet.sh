@@ -350,6 +350,7 @@ Usage:
   ./tweet.sh post 何らかのつぶやき
   ./tweet.sh tweet Hello
   ./tweet.sh tw Hi
+  cat body.txt | ./tweet.sh post
 FIN
       ;;
     reply )
@@ -357,6 +358,7 @@ FIN
 Usage:
   ./tweet.sh reply 012345 a reply
   ./tweet.sh reply https://twitter.com/username/status/012345 a reply
+  cat body.txt | ./tweet.sh reply 012345
 FIN
       ;;
     upload )
@@ -441,6 +443,7 @@ FIN
 Usage:
   ./tweet.sh dm frinedname Good morning.
   ./tweet.sh direct-message frinedname "How are you?"
+  cat body.txt | ./tweet.sh direct-message frinedname
 FIN
       ;;
     resolve )

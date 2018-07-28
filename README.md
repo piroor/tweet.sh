@@ -322,7 +322,7 @@ This will be useful if you want to get both informations `whoami` and `language`
 
  * Parameters
    * `-m`: comma-separated list of uploaded media IDs. See also the `upload` command.
-   * All rest arguments: the body of a new tweet to be posted.
+   * All rest arguments: the body of a new tweet to be posted. If you don't specify no extra parameters, this command reads posting body from the standard input.
  * Standard output
    * [A JSON string of the posted tweet](https://dev.twitter.com/rest/reference/post/statuses/update).
  * Example
@@ -332,6 +332,7 @@ This will be useful if you want to get both informations `whoami` and `language`
    $ ./tweet.sh post 何らかのつぶやき
    $ ./tweet.sh tweet @friend Good morning.
    $ ./tweet.sh tw -m 123,456,789 My Photos!
+   $ cat body.txt | ./tweet.sh post
    ~~~
 
 All rest arguments following to the command name are posted as a tweet.
@@ -342,7 +343,7 @@ If you include a user's screen name manually in the body, it will become a menti
  * Parameters
    * `-m`: comma-separated list of uploaded media IDs. See also the `upload` command.
    * 1st rest argument: the ID or the URL of a tweet to be replied.
-   * All other rest arguments: the body of a new reply to be posted.
+   * All other rest arguments: the body of a new reply to be posted. If you don't specify no extra parameters, this command reads posting body from the standard input.
  * Standard output
    * [A JSON string of the posted reply tweet](https://dev.twitter.com/rest/reference/post/statuses/update).
  * Example
@@ -353,6 +354,7 @@ If you include a user's screen name manually in the body, it will become a menti
    $ ./tweet.sh reply https://twitter.com/username/status/0123456789 @friend A regular reply
    $ ./tweet.sh reply https://twitter.com/username/status/0123456789 A silent reply
    $ ./tweet.sh reply 0123456789 -m 123,456,789 Photo reply
+   $ cat body.txt | ./tweet.sh reply 0123456789
    ~~~
 
 Note that you have to include the user's screen name manually if it is needed.
@@ -502,7 +504,7 @@ $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
 ### `direct-message` (`dm`): sends a DM.
 
  * Parameters
-   * All arguments: the body of a new direct message to be sent.
+   * All arguments: the body of a new direct message to be sent. If you don't specify no parameter, this command reads message body from the standard input.
  * Standard output
    * [A JSON string of the sent direct message](https://dev.twitter.com/rest/reference/post/direct_messages/new).
  * Example
@@ -512,6 +514,7 @@ $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
    $ ./tweet.sh direct-message friend Good morning.
    $ ./tweet.sh dm @friend Good morning.
    $ ./tweet.sh dm friend Good morning.
+   $ cat body.txt | ./tweet.sh direct-message @friend
    ~~~
 
 
