@@ -988,9 +988,9 @@ self_language() {
 
 posting_body() {
   if [ "$*" = '' ]; then
-    cat | $esed -e 's/\n/\\n/g'
+    cat | $esed -e 's/$/\\n/' | paste -s -d '\0' -
   else
-    echo -n -e "$*" | $esed -e 's/\n/\\n/g'
+    echo -n -e "$*" | $esed -e 's/$/\\n/' | paste -s -d '\0' -
   fi
 }
 
@@ -1277,19 +1277,26 @@ url_encode() {
   # the output string to 72 characters per a line.
   while read -r line
   do
-    echo "$line" |
-      # convert to MIME quoted printable
-      #  W8 => input encoding is UTF-8
-      #  MQ => quoted printable
-      nkf -W8MQ |
-      sed 's/=$//' |
-      tr '=' '%' |
-      # reunify broken linkes to a line
-      paste -s -d '\0' - |
-      sed -e 's/%7E/~/g' \
-          -e 's/%5F/_/g' \
-          -e 's/%2D/-/g' \
-          -e 's/%2E/./g'
+    echo -e "$line" |
+      while read -r part
+      do
+        echo "$part" |
+          # convert to MIME quoted printable
+          #  W8 => input encoding is UTF-8
+          #  MQ => quoted printable
+          nkf -W8MQ |
+          sed 's/=$//' |
+          tr '=' '%' |
+          # reunify broken linkes to a line
+          paste -s -d '\0' - |
+          sed -e 's/%7E/~/g' \
+              -e 's/%5F/_/g' \
+              -e 's/%2D/-/g' \
+              -e 's/%2E/./g'
+      done |
+        sed 's/$/%0A/g' |
+        paste -s -d '\0' - |
+        sed 's/%0A$//'
   done
 }
 
