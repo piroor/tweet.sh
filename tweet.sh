@@ -1003,8 +1003,13 @@ post() {
     esac
   done
 
+  local body="$*"
+  if [ "$body" = '' ]; then
+    body="$(cat)"
+  fi
+
   local params="$(cat << FIN
-status $*
+status $body
 $media_params
 FIN
   )"
