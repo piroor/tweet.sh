@@ -1041,8 +1041,13 @@ reply() {
 
   local id="$(echo "$target" | extract_tweet_id)"
 
+  local body="$*"
+  if [ "$body" = '' ]; then
+    body="$(cat)"
+  fi
+
   local params="$(cat << FIN
-status $*
+status $body
 in_reply_to_status_id $id
 $media_params
 FIN
@@ -1254,9 +1259,14 @@ direct_message() {
 
   target="$(echo "$target" | sed 's/^@//')"
 
+  local body="$*"
+  if [ "$body" = '' ]; then
+    body="$(cat)"
+  fi
+
   local params="$(cat << FIN
 screen_name $target
-text $*
+text $body
 FIN
   )"
   local result="$(echo "$params" |
