@@ -986,6 +986,13 @@ self_language() {
   fi
 }
 
+posting_body() {
+  if [ "$*" = '' ]; then
+    cat | $esed -e 's/\n/\\n/g'
+  else
+    echo -n -e "$*" | $esed -e 's/\n/\\n/g'
+  fi
+}
 
 post() {
   ensure_available
@@ -1003,13 +1010,8 @@ post() {
     esac
   done
 
-  local body="$*"
-  if [ "$body" = '' ]; then
-    body="$(cat)"
-  fi
-
   local params="$(cat << FIN
-status $body
+status $(posting_body $*)
 $media_params
 FIN
   )"
@@ -1041,13 +1043,8 @@ reply() {
 
   local id="$(echo "$target" | extract_tweet_id)"
 
-  local body="$*"
-  if [ "$body" = '' ]; then
-    body="$(cat)"
-  fi
-
   local params="$(cat << FIN
-status $body
+status $(posting_body $*)
 in_reply_to_status_id $id
 $media_params
 FIN
@@ -1259,14 +1256,9 @@ direct_message() {
 
   target="$(echo "$target" | sed 's/^@//')"
 
-  local body="$*"
-  if [ "$body" = '' ]; then
-    body="$(cat)"
-  fi
-
   local params="$(cat << FIN
 screen_name $target
-text $body
+text $(posting_body $*)
 FIN
   )"
   local result="$(echo "$params" |
