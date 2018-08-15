@@ -1259,7 +1259,7 @@ direct_message() {
 
   target="$(echo "$target" | sed 's/^@//')"
 
-  if echo "$target" | egrep -v '[0-9]' >/dev/null 2>&1
+  if ! echo "$target" | egrep '^[0-9]+$' >/dev/null 2>&1
   then
     target="$(get_user_id_from_screen_name "$target")"
   fi
