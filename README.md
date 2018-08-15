@@ -491,7 +491,7 @@ $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
    * `-c`: maximum number of messages to be fetched. 10 by default.
    * `-s`: the id of the last message already known. If you specify this option, only messages newer than the given id will be fetched.
  * Standard output
-   * [A JSON string of fetched direct messages](https://dev.twitter.com/rest/reference/get/direct_messages).
+   * [A JSON string of events for direct messages](https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/list-events).
  * Example
    
    ~~~
@@ -506,7 +506,7 @@ $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
  * Parameters
    * All arguments: the body of a new direct message to be sent. If you don't specify no parameter, this command reads message body from the standard input.
  * Standard output
-   * [A JSON string of the sent direct message](https://dev.twitter.com/rest/reference/post/direct_messages/new).
+   * [A JSON string of the event for the sent direct message](https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/new-event).
  * Example
    
    ~~~
