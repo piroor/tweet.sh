@@ -1235,7 +1235,7 @@ fetch_direct_messages() {
         ;;
       s )
         since_id="$(echo "$OPTARG" | extract_tweet_id)"
-        [ "$since_id" != '' ] && since_id="since_id $since_id"
+        [ "$since_id" != '' ] && since_id="cursor $since_id"
         ;;
     esac
   done
@@ -1246,7 +1246,7 @@ $since_id
 FIN
   )"
   local result="$(echo "$params" |
-                    call_api GET https://api.twitter.com/1.1/direct_messages.json)"
+                    call_api GET https://api.twitter.com/1.1/direct_messages/events/list.json)"
   echo "$result"
   check_errors "$result"
 }
@@ -1259,14 +1259,38 @@ direct_message() {
 
   target="$(echo "$target" | sed 's/^@//')"
 
-  local params="$(cat << FIN
-screen_name $target
-text $(posting_body $*)
+  if echo "$target" | egrep -v '[0-9]' >/dev/null 2>&1
+  then
+    target="$(get_user_id_from_screen_name "$target")"
+  fi
+
+  local params="$(cat << FIN | jq -c .
+{
+  "event": {
+    "type": "message_create",
+    "message_create": {
+      "target": {
+        "recipient_id": "$target"
+      },
+      "message_data": {
+        "text": "$(posting_body $*)"
+      }
+    }
+  }
+}
 FIN
   )"
   local result="$(echo "$params" |
-                    call_api POST https://api.twitter.com/1.1/direct_messages/new.json)"
+                    call_api_with_json POST https://api.twitter.com/1.1/direct_messages/events/new.json)"
   echo "$result"
+  check_errors "$result"
+}
+
+get_user_id_from_screen_name() {
+  local params="screen_name $1"
+  local result="$(echo "$params" |
+                    call_api GET https://api.twitter.com/1.1/users/show.json)"
+  echo "$result" | jq -r .id_str
   check_errors "$result"
 }
 
@@ -1388,17 +1412,31 @@ resolve_all_urls() {
 #================================================================
 # utilities to generate API requests with OAuth authentication
 
+call_api_with_json() {
+  call_api "$1" "$2" "$3" json
+}
+
 # usage:
 # echo 'status Hello!' | call_api POST https://api.twitter.com/1.1/statuses/update.json
 call_api() {
   local method=$1
   local url=$2
   local file=$3
+  local data_type=$4
 
   local params=''
+  local raw_params=''
+  local content_type_header=''
   if [ ! -t 0 ]
   then
-    params="$(cat)"
+    raw_params="$(cat)"
+    if [ "$data_type" = 'json' ]
+    then
+      content_type_header="--header 'content-type: application/json'"
+      # no params for authentication!
+    else
+      params="$raw_params"
+    fi
   fi
 
   local oauth="$(echo "$params" | generate_oauth_header "$method" "$url")"
@@ -1408,6 +1446,8 @@ call_api() {
   log "METHOD : $method"
   log "URL    : $url"
   log "HEADERS: $headers"
+  log "DATA TYPE  : $data_type"
+  log "RAW PARAMS : $raw_params"
   log "PARAMS : $params"
 
   local file_params=''
@@ -1429,20 +1469,21 @@ call_api() {
   if [ "$method" = 'POST' ]
   then
     local main_params=''
-    if [ "$file_params" = '' ]
+    if [ "$file_params" = '' -o "$data_type" = 'json' ]
     then
       # --data parameter requries any input even if it is blank.
       if [ "$params" = '' ]
       then
         params='""'
       fi
-      main_params="--data \"$params\""
+      main_params="--data \"$(echo "$raw_params" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')\""
     elif [ "$params" != '' ]
     then
       # on the other hand, --form parameter doesn't accept blank input.
       main_params="--form \"$params\""
     fi
     curl_params="--header \"$headers\" \
+         $content_type_header \
          --silent \
          $main_params \
          $file_params \
