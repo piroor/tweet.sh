@@ -255,6 +255,7 @@ Available commands:
                  : sends a DM.
 
   get-user-id    : resolves a screen name string to a user ID integer.
+  get-screen-name: resolves a user id integer to a screen name string.
 
   resolve        : resolves a shortened URL like "https://t.co/xxxx"
   resolve-all    : resolves all shortened URLs in the given input.
@@ -450,6 +451,12 @@ FIN
       cat << FIN
 Usage:
   ./tweet.sh get-user-id examplescreenname
+FIN
+      ;;
+    get-screen-name )
+      cat << FIN
+Usage:
+  ./tweet.sh get-screen-name 0000000000
 FIN
       ;;
     resolve )
@@ -1295,6 +1302,15 @@ get_user_id_from_screen_name() {
   check_errors "$result"
 }
 
+get_screen_name_from_user_id() {
+  ensure_available
+  local params="user_id $1"
+  local result="$(echo "$params" |
+                    call_api GET https://api.twitter.com/1.1/users/show.json)"
+  echo "$result" | jq -r .screen_name
+  check_errors "$result"
+}
+
 
 
 #================================================================
@@ -1674,6 +1690,10 @@ then
 
     get-user-id )
       get_user_id_from_screen_name "$1"
+      ;;
+
+    get-screen_name )
+      get_screen_name_from_user_id "$1"
       ;;
 
     resolve )
