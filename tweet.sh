@@ -1692,7 +1692,7 @@ then
       get_user_id_from_screen_name "$1"
       ;;
 
-    get-screen_name )
+    get-screen-name )
       get_screen_name_from_user_id "$1"
       ;;
 
