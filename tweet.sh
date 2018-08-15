@@ -433,9 +433,7 @@ FIN
       cat << FIN
 Usage:
   ./tweet.sh fetch-dm -c 10
-  ./tweet.sh fetch-direct-messages -c 100 -s 0123456
   ./tweet.sh get-dm -c 10
-  ./tweet.sh get-direct-messages -c 10 -s 0123456
 FIN
       ;;
     dm|direct-message )
@@ -1224,25 +1222,19 @@ FIN
 fetch_direct_messages() {
   ensure_available
   local count=10
-  local since_id=''
 
   local OPTIND OPTARG OPT
-  while getopts c:s: OPT
+  while getopts c: OPT
   do
     case $OPT in
       c )
         count="$OPTARG"
-        ;;
-      s )
-        since_id="$(echo "$OPTARG" | extract_tweet_id)"
-        [ "$since_id" != '' ] && since_id="cursor $since_id"
         ;;
     esac
   done
 
   local params="$(cat << FIN
 count $count
-$since_id
 FIN
   )"
   local result="$(echo "$params" |

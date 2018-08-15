@@ -489,16 +489,13 @@ $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
 
  * Parameters
    * `-c`: maximum number of messages to be fetched. 10 by default.
-   * `-s`: the id of the last message already known. If you specify this option, only messages newer than the given id will be fetched.
  * Standard output
    * [A JSON string of events for direct messages](https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/list-events).
  * Example
    
    ~~~
    $ ./tweet.sh fetch-direct-messages -c 20
-   $ ./tweet.sh fetch-dm -c 10 -s 0123456789
    $ ./tweet.sh get-direct-messages -c 20
-   $ ./tweet.sh get-dm -c 10 -s 0123456789
    ~~~
 
 ### `direct-message` (`dm`): sends a DM.
