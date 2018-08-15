@@ -254,6 +254,8 @@ Available commands:
   direct-message(dm)
                  : sends a DM.
 
+  get-user-id    : resolves a screen name string to a user ID integer.
+
   resolve        : resolves a shortened URL like "https://t.co/xxxx"
   resolve-all    : resolves all shortened URLs in the given input.
 
@@ -442,6 +444,12 @@ Usage:
   ./tweet.sh dm frinedname Good morning.
   ./tweet.sh direct-message frinedname "How are you?"
   cat body.txt | ./tweet.sh direct-message frinedname
+FIN
+      ;;
+    get-user-id )
+      cat << FIN
+Usage:
+  ./tweet.sh get-user-id examplescreenname
 FIN
       ;;
     resolve )
@@ -1279,6 +1287,7 @@ FIN
 }
 
 get_user_id_from_screen_name() {
+  ensure_available
   local params="screen_name $1"
   local result="$(echo "$params" |
                     call_api GET https://api.twitter.com/1.1/users/show.json)"
@@ -1661,6 +1670,10 @@ then
       ;;
     dm|direct-message )
       direct_message "$@"
+      ;;
+
+    get-user-id )
+      get_user_id_from_screen_name "$1"
       ;;
 
     resolve )
