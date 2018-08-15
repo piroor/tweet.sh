@@ -1486,15 +1486,20 @@ call_api() {
   if [ "$method" = 'POST' ]
   then
     local main_params=''
-    if [ "$file_params" = '' -o "$data_type" = 'json' ]
+    if [ "$file_params" = '' ]
     then
-      # --data parameter requries any input even if it is blank.
-      if [ "$params" = '' ]
+      if [ "$data_type" = 'json' ]
       then
-        params='""'
+        main_params="--data \"$(echo "$raw_params" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')\""
+      else
+        # --data parameter requries any input even if it is blank.
+        if [ "$params" = '' ]
+        then
+          params='""'
+        fi
+        main_params="--data \"$params\""
       fi
-      main_params="--data \"$(echo "$raw_params" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')\""
-    elif [ "$params" != '' ]
+    elif [ "$params" != '""' ]
     then
       # on the other hand, --form parameter doesn't accept blank input.
       main_params="--form \"$params\""
