@@ -1266,7 +1266,7 @@ direct_message() {
 
   target="$(echo "$target" | sed 's/^@//')"
 
-  if ! echo "$target" | egrep '^[0-9]+$' >/dev/null 2>&1
+  if ! echo -n "$target" | egrep '^[0-9]+$' >/dev/null 2>&1
   then
     target="$(get_user_id_from_screen_name "$target")"
   fi
@@ -1280,7 +1280,7 @@ direct_message() {
         "recipient_id": "$target"
       },
       "message_data": {
-        "text": "$(posting_body $*)"
+        "text": "$(posting_body "$*" | sed 's/"/\\"/g')"
       }
     }
   }
