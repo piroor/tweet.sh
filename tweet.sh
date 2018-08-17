@@ -1264,14 +1264,9 @@ direct_message() {
   local target="$1"
   shift
 
-  target="$(echo "$target" | sed 's/^@//')"
+  target="$(normalize_to_user_id "$(echo -n "$target" | sed 's/^@//')")"
 
-  if ! echo -n "$target" | egrep '^[0-9]+$' >/dev/null 2>&1
-  then
-    target="$(get_user_id_from_screen_name "$target")"
-  fi
-
-  local params="$(cat << FIN | jq -c .
+  local params="$(compact_json << FIN
 {
   "event": {
     "type": "message_create",
@@ -1280,7 +1275,7 @@ direct_message() {
         "recipient_id": "$target"
       },
       "message_data": {
-        "text": "$(posting_body "$*" | sed 's/"/\\"/g')"
+        "text": $(posting_body "$*" | to_json_string)
       }
     }
   }
@@ -1298,7 +1293,7 @@ get_user_id_from_screen_name() {
   local params="screen_name $1"
   local result="$(echo "$params" |
                     call_api GET https://api.twitter.com/1.1/users/show.json)"
-  echo "$result" | jq -r .id_str
+  echo -n "$result" | jq -r .id_str
   check_errors "$result"
 }
 
@@ -1372,6 +1367,16 @@ to_encoded_list() {
   log "to_encoded_list: $transformed"
 }
 
+compact_json() {
+  cat | jq -c .
+}
+
+to_json_string() {
+  echo "\"$(sed -e 's/"/\\"/g' -e 's/$/\\n/' |
+              paste -s -d '\0' - |
+              sed 's/\\n$//')\""
+}
+
 extract_tweet_id() {
   resolve_original_url |
     $esed -e 's;https://[^/]+/([^/]+|i/web)/status/;;' \
@@ -1380,6 +1385,16 @@ extract_tweet_id() {
 
 extract_owner() {
   jq -r .user.screen_name
+}
+
+normalize_to_user_id() {
+  local possible_screen_name="$1"
+  if ! echo -n "$possible_screen_name" | egrep '^[0-9]+$' >/dev/null 2>&1
+  then
+    get_user_id_from_screen_name "$possible_screen_name"
+  else
+    echo -n "$possible_screen_name"
+  fi
 }
 
 unicode_unescape() {
