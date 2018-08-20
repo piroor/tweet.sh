@@ -322,6 +322,7 @@ This will be useful if you want to get both informations `whoami` and `language`
 
  * Parameters
    * `-m`: comma-separated list of uploaded media IDs. See also the `upload` command.
+   * `-l`: add location to tweet. (optional)
    * All rest arguments: the body of a new tweet to be posted. If you don't specify no extra parameters, this command reads posting body from the standard input.
  * Standard output
    * [A JSON string of the posted tweet](https://dev.twitter.com/rest/reference/post/statuses/update).
@@ -332,6 +333,7 @@ This will be useful if you want to get both informations `whoami` and `language`
    $ ./tweet.sh post 何らかのつぶやき
    $ ./tweet.sh tweet @friend Good morning.
    $ ./tweet.sh tw -m 123,456,789 My Photos!
+   $ ./tweet.sh post -l A tweet with location
    $ cat body.txt | ./tweet.sh post
    ~~~
 

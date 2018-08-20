@@ -353,6 +353,7 @@ Usage:
   ./tweet.sh post 何らかのつぶやき
   ./tweet.sh tweet Hello
   ./tweet.sh tw Hi
+  ./tweet.sh post -l A tweet with location
   cat body.txt | ./tweet.sh post
 FIN
       ;;
@@ -1014,20 +1015,26 @@ post() {
   ensure_available
 
   local media_params=''
+  local location_params=''
 
   local OPTIND OPTARG OPT
-  while getopts m: OPT
+  while getopts m:l OPT
   do
     case $OPT in
       m )
         media_params="media_ids=$OPTARG"
         shift 2
         ;;
+      l )
+        location_params="$(curl --silent  http://geoip.nekudo.com/api | jq --raw-output '.location | "lat \(.latitude)\nlong \(.longitude)"')"
+        shift 1
+        ;;
     esac
   done
 
   local params="$(cat << FIN
 status $(posting_body $*)
+$location_params
 $media_params
 FIN
   )"
