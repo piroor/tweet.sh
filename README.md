@@ -55,6 +55,7 @@ Available commands are:
    * `fetch` (`get`, `show`): fetches a JSON string of a tweet.
    * `search`: searches tweets with queries.
    * `fetch-favorites` (`fetch-fav`): fetches favorite tweets.
+   * `fetch-tweets` (`fetch-posts`): fetches tweets of a user.
    * `watch-mentions` (`watch`): watches mentions, retweets, DMs, etc., and executes handlers for each event.
    * `type`: detects the type of the given input.
    * `body`: extracts the body of a tweet.
@@ -154,6 +155,26 @@ Some commands require URL of a tweet, and they accept shortened URLs like `http:
    ~~~
    $ ./tweet.sh fetch-favorites -c 20
    $ ./tweet.sh fetch-fav -c 10 -s 0123456789
+   ~~~
+
+### `fetch-tweets` (`fetch-posts`): fetches tweets of a user.
+
+ * Parameters
+   * `-u`: the screen name of the owner of tweets to be fetched from. Yourself by default.
+   * `-c`: maximum number of tweets to be fetched. 10 by default.
+   * `-s`: the id of the last tweet already known. (optional)
+     If you specify this option, only tweets newer than the given tweet will be returned.
+   * `-m`: the id of the tweet you are searching tweets older than it. (optional)
+     If you specify this option, only tweets older than the given tweet will be returned.
+   * `-a`: include replies.
+   * `-r`: include retweets.
+ * Standard output
+   * [A JSON string of a user timeline](https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-user_timeline.html).
+ * Example
+   
+   ~~~
+   $ ./tweet.sh fetch-tweets -u screen_name -c 20
+   $ ./tweet.sh fetch-posts -u screen_name -c 10 -s 0123456789
    ~~~
 
 #### Streaming

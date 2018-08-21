@@ -227,6 +227,8 @@ Available commands:
   search         : searches tweets.
   fetch-favorites(fetch-fav)
                  : fetches favorite tweets.
+  fetch-tweets(fetch-posts)
+                 : fetches tweets of a user.
   watch-mentions(watch)
                  : watches mentions, retweets, DMs, etc.
   type           : detects the type of the given input.
@@ -288,6 +290,13 @@ FIN
 Usage:
   ./tweet.sh fetch-fav -c 10
   ./tweet.sh fetch-favorites -c 100 -s 0123456
+FIN
+      ;;
+    fetch-tweet*|fetch-post* )
+      cat << FIN
+Usage:
+  ./tweet.sh fetch-tweets -u screen_name -c 10
+  ./tweet.sh fetch-posts -u screen_name -c 100 -s 0123456
 FIN
       ;;
     watch|watch-mentions )
@@ -680,6 +689,87 @@ FIN
   )"
   local result="$(echo "$params" |
                     call_api GET https://api.twitter.com/1.1/favorites/list.json)"
+  echo "$result"
+  check_errors "$result"
+}
+
+watch_mentions() {
+  ensure_available
+
+  local extra_keywords=''
+  local OPTIND OPTARG OPT
+  while getopts k:m:r:q:f:d:s: OPT
+  do
+    case $OPT in
+      k )
+        extra_keywords="$OPTARG"
+        ;;
+    esac
+  done
+
+  local user_screen_name="$(self_screen_name)"
+  local tracking_keywords="$user_screen_name"
+  [ "$extra_keywords" != '' ] && tracking_keywords="$tracking_keywords,$extra_keywords"
+
+  echo "Tracking mentions for $tracking_keywords..." 1>&2
+
+  local params="$(cat << FIN
+replies all
+track $tracking_keywords
+FIN
+  )"
+  echo "$params" |
+    call_api GET https://userstream.twitter.com/1.1/user.json |
+    handle_mentions "$user_screen_name" "$@"
+}
+
+fetch_tweets() {
+  ensure_available
+  local count=10
+  local since_id=''
+  local max_id=''
+  local user_screen_name="$(self_screen_name)"
+  local exclude_replies='exclude_replies 1'
+  local include_rts='include_rts 0'
+
+  local OPTIND OPTARG OPT
+  while getopts c:s:m:u:ar OPT
+  do
+    case $OPT in
+      c )
+        count="$OPTARG"
+        ;;
+      s )
+        since_id="$(echo "$OPTARG" | extract_tweet_id)"
+        [ "$since_id" != '' ] && since_id="since_id $since_id"
+        ;;
+      m )
+        max_id="$(echo "$OPTARG" | extract_tweet_id)"
+        [ "$max_id" != '' ] && max_id="max_id $max_id"
+        ;;
+      u )
+        user_screen_name="$OPTARG"
+        ;;
+      a )
+        exclude_replies='exclude_replies 0'
+        ;;
+      r )
+        include_rts='include_rts 1'
+        ;;
+    esac
+  done
+
+  local params="$(cat << FIN
+screen_name $user_screen_name
+count $count
+$since_id
+$max_id
+$exclude_replies
+$include_rts
+FIN
+  )"
+  local result="$(echo "$params" |
+                    call_api GET https://api.twitter.com/1.1/statuses/user_timeline.json)"
   echo "$result"
   check_errors "$result"
 }
@@ -1654,6 +1744,9 @@ then
       ;;
     fetch-fav|fetch-favorites )
       fetch_favorites "$@"
+      ;;
+    fetch-tweet*|fetch-post* )
+      fetch_tweets "$@"
       ;;
     watch|watch-mentions )
       watch_mentions "$@"
