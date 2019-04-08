@@ -1611,7 +1611,7 @@ call_api() {
         fi
         main_params="--data \"$params\""
       fi
-    elif [ "$params" != '""' ]
+    elif [ "$params" != '""' -a "$params" != '' ]
     then
       # on the other hand, --form parameter doesn't accept blank input.
       main_params="--form \"$params\""
