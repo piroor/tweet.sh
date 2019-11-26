@@ -297,6 +297,8 @@ FIN
 Usage:
   ./tweet.sh fetch-tweets -u screen_name -c 10
   ./tweet.sh fetch-posts -u screen_name -c 100 -s 0123456
+  ./tweet.sh fetch-tweets -u screen_name -c 3 -f
+  (-f returns the full tweet text ie. not truncated - tweet_mode=extended)
 FIN
       ;;
     watch|watch-mentions )
@@ -731,9 +733,10 @@ fetch_tweets() {
   local user_screen_name="$(self_screen_name)"
   local exclude_replies='exclude_replies 1'
   local include_rts='include_rts 0'
+  local tweet_mode='tweet_mode extended'
 
   local OPTIND OPTARG OPT
-  while getopts c:s:m:u:ar OPT
+  while getopts c:s:m:u:arf OPT
   do
     case $OPT in
       c )
@@ -756,6 +759,9 @@ fetch_tweets() {
       r )
         include_rts='include_rts 1'
         ;;
+      f )
+        tweet_mode='tweet_mode extended'
+        ;;
     esac
   done
 
@@ -766,6 +772,7 @@ $since_id
 $max_id
 $exclude_replies
 $include_rts
+$tweet_mode
 FIN
   )"
   local result="$(echo "$params" |
@@ -1112,7 +1119,7 @@ post() {
   do
     case $OPT in
       m )
-        media_params="media_ids=$OPTARG"
+        media_params="media_ids $OPTARG"
         shift 2
         ;;
       l )

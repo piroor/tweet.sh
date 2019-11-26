@@ -168,6 +168,7 @@ Some commands require URL of a tweet, and they accept shortened URLs like `http:
      If you specify this option, only tweets older than the given tweet will be returned.
    * `-a`: include replies.
    * `-r`: include retweets.
+   * `-f`: returns full text of the tweet (not truncated) sends `tweet_mode=extended` The json response changes the usual returned field from `text` to `full_text`.
  * Standard output
    * [A JSON string of a user timeline](https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-user_timeline.html).
  * Example
