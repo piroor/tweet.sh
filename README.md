@@ -54,6 +54,8 @@ Available commands are:
  * Reading existing tweets (require "Read" permission)
    * `fetch` (`get`, `show`): fetches a JSON string of a tweet.
    * `search`: searches tweets with queries.
+   * `fetch-favorites` (`fetch-fav`): fetches favorite tweets.
+   * `fetch-tweets` (`fetch-posts`): fetches tweets of a user.
    * `watch-mentions` (`watch`): watches mentions, retweets, DMs, etc., and executes handlers for each event.
    * `type`: detects the type of the given input.
    * `body`: extracts the body of a tweet.
@@ -79,7 +81,7 @@ Available commands are:
    * `resolve`: resolves a shortened URL.
    * `resolve-all`: resolve all shortened URLs in the given input.
 
-If you hope to handle DMs by the `watch-mentions` command, you have to permit the app to access direct messages.
+If you want to handle DMs by the `watch-mentions` command, you have to permit the app to access direct messages.
 
 Detailed logs can be shown with the `DEBUG` flag, like:
 
@@ -118,6 +120,10 @@ Some commands require URL of a tweet, and they accept shortened URLs like `http:
    * `-c`: maximum number of tweets to be responded. 10 by default. (optional)
    * `-s`: the id of the last tweet already known. (optional)
      If you specify this option, only tweets newer than the given tweet will be returned.
+   * `-m`: the id of the tweet you are searching tweets older than it. (optional)
+     If you specify this option, only tweets older than the given tweet will be returned.
+   * `-t`: type of results. (optional)
+     Possible values: `recent`  (default), `popular`, or `mixed`.
    * `-h`: command line to run for each search result. (optional)
      (It will receive [tweets](https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid) via the standard input.)
    * `-w`: start watching without handler. (optional)
@@ -133,11 +139,50 @@ Some commands require URL of a tweet, and they accept shortened URLs like `http:
        while read -r tweet; do echo "found!: ${tweet}"; done
    ~~~
 
+### `fetch-favorites` (`fetch-fav`): fetches favorite tweets.
+
+ * Parameters
+   * `-u`: the screen name of the owner favorites to be fetched from. Yourself by default.
+   * `-c`: maximum number of tweets to be fetched. 10 by default.
+   * `-s`: the id of the last tweet already known. (optional)
+     If you specify this option, only tweets newer than the given tweet will be returned.
+   * `-m`: the id of the tweet you are searching tweets older than it. (optional)
+     If you specify this option, only tweets older than the given tweet will be returned.
+ * Standard output
+   * [A JSON string of fetched favorites](https://dev.twitter.com/rest/reference/get/favorites/list).
+ * Example
+   
+   ~~~
+   $ ./tweet.sh fetch-favorites -c 20
+   $ ./tweet.sh fetch-fav -c 10 -s 0123456789
+   ~~~
+
+### `fetch-tweets` (`fetch-posts`): fetches tweets of a user.
+
+ * Parameters
+   * `-u`: the screen name of the owner of tweets to be fetched from. Yourself by default.
+   * `-c`: maximum number of tweets to be fetched. 10 by default.
+   * `-s`: the id of the last tweet already known. (optional)
+     If you specify this option, only tweets newer than the given tweet will be returned.
+   * `-m`: the id of the tweet you are searching tweets older than it. (optional)
+     If you specify this option, only tweets older than the given tweet will be returned.
+   * `-a`: include replies.
+   * `-r`: include retweets.
+   * `-f`: returns full text of the tweet (not truncated) sends `tweet_mode=extended` The json response changes the usual returned field from `text` to `full_text`.
+ * Standard output
+   * [A JSON string of a user timeline](https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-user_timeline.html).
+ * Example
+   
+   ~~~
+   $ ./tweet.sh fetch-tweets -u screen_name -c 20
+   $ ./tweet.sh fetch-posts -u screen_name -c 10 -s 0123456789
+   ~~~
+
 #### Streaming
 
 Basically this command provides ability to get search result based on the given query.
 
-If you hope to observe new tweets matched to the query continuously, specify a callback command line as the handler via the `-h` option.
+If you want to observe new tweets matched to the query continuously, specify a callback command line as the handler via the `-h` option.
 
 ~~~
 $ ./tweet.sh search -q "queries" -h "echo 'FOUND'; cat"
@@ -148,7 +193,7 @@ The script doesn't exit automatically if you specify the `-h` option.
 To stop the process, you need to send the `SIGINT` signal via Ctrl-C or something.
 
 *Important note: you cannot use this feature together with `watch-mentions` command. Only one streaming API is allowed for you at once.*
-*If you hope to watch search results with mentions, use the `-k` and `-s` options of the `watch-mentions` command.*
+*If you want to watch search results with mentions, use the `-k` and `-s` options of the `watch-mentions` command.*
 
 ### `watch-mentions` (`watch`): watches mentions, retweets, DMs, etc., and executes handlers for each event.
 
@@ -191,7 +236,7 @@ In this case this script stays running.
 To stop the process, you need to send the `SIGINT` signal via Ctrl-C or something.
 
 *Important note: you cannot use this feature together with `search` command with a handler. Only one streaming API is allowed for you at once.*
-*If you hope to watch search results with mentions, use the `-k` and `-s` options instead of the `search` command.*
+*If you want to watch search results with mentions, use the `-k` and `-s` options instead of the `search` command.*
 
 ### `type`: detects the type of the given input.
 
@@ -258,7 +303,7 @@ For unknown type input, this returns an exit status `1` and reports nothing.
    $ ./tweet.sh showme
    ~~~
 
-This will be useful if you hope to get both informations `whoami` and `language` at once.
+This will be useful if you want to get both informations `whoami` and `language` at once.
 
 ### `whoami`: reports the screen name of yourself.
 
@@ -273,7 +318,7 @@ This will be useful if you hope to get both informations `whoami` and `language`
    username
    ~~~
 
-*Important note: the rate limit of the [API used by this command](https://dev.twitter.com/rest/reference/get/account/verify_credentials) is very low. If you hope to call another `language` command together, then you should use `showme` command instead.*
+*Important note: the rate limit of the [API used by this command](https://dev.twitter.com/rest/reference/get/account/verify_credentials) is very low. If you want to call another `language` command together, then you should use `showme` command instead.*
 
 ### `language` (`lang`): reports the selected language of yourself.
 
@@ -290,7 +335,7 @@ This will be useful if you hope to get both informations `whoami` and `language`
    en
    ~~~
 
-*Important note: the rate limit of the [API used by this command](https://dev.twitter.com/rest/reference/get/account/verify_credentials) is very low. If you hope to call another `whoami` command together, then you should use `showme` command instead.*
+*Important note: the rate limit of the [API used by this command](https://dev.twitter.com/rest/reference/get/account/verify_credentials) is very low. If you want to call another `whoami` command together, then you should use `showme` command instead.*
 
 
 ## Making some changes
@@ -299,7 +344,8 @@ This will be useful if you hope to get both informations `whoami` and `language`
 
  * Parameters
    * `-m`: comma-separated list of uploaded media IDs. See also the `upload` command.
-   * All rest arguments: the body of a new tweet to be posted.
+   * `-l`: add location to tweet. (optional)
+   * All rest arguments: the body of a new tweet to be posted. If you don't specify no extra parameters, this command reads posting body from the standard input.
  * Standard output
    * [A JSON string of the posted tweet](https://dev.twitter.com/rest/reference/post/statuses/update).
  * Example
@@ -309,6 +355,8 @@ This will be useful if you hope to get both informations `whoami` and `language`
    $ ./tweet.sh post 何らかのつぶやき
    $ ./tweet.sh tweet @friend Good morning.
    $ ./tweet.sh tw -m 123,456,789 My Photos!
+   $ ./tweet.sh post -l A tweet with location
+   $ cat body.txt | ./tweet.sh post
    ~~~
 
 All rest arguments following to the command name are posted as a tweet.
@@ -319,7 +367,7 @@ If you include a user's screen name manually in the body, it will become a menti
  * Parameters
    * `-m`: comma-separated list of uploaded media IDs. See also the `upload` command.
    * 1st rest argument: the ID or the URL of a tweet to be replied.
-   * All other rest arguments: the body of a new reply to be posted.
+   * All other rest arguments: the body of a new reply to be posted. If you don't specify no extra parameters, this command reads posting body from the standard input.
  * Standard output
    * [A JSON string of the posted reply tweet](https://dev.twitter.com/rest/reference/post/statuses/update).
  * Example
@@ -330,6 +378,7 @@ If you include a user's screen name manually in the body, it will become a menti
    $ ./tweet.sh reply https://twitter.com/username/status/0123456789 @friend A regular reply
    $ ./tweet.sh reply https://twitter.com/username/status/0123456789 A silent reply
    $ ./tweet.sh reply 0123456789 -m 123,456,789 Photo reply
+   $ cat body.txt | ./tweet.sh reply 0123456789
    ~~~
 
 Note that you have to include the user's screen name manually if it is needed.
@@ -408,7 +457,7 @@ This command does not append it automatically.
    ~~~
 
 Note, you cannot add extra comment for the retweet.
-Instead, if you hope to "quote" the tweet, then you just have to `post` with the URL of the original tweet.
+Instead, if you want to "quote" the tweet, then you just have to `post` with the URL of the original tweet.
 
 ~~~
 $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
@@ -464,24 +513,21 @@ $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
 
  * Parameters
    * `-c`: maximum number of messages to be fetched. 10 by default.
-   * `-s`: the id of the last message already known. If you specify this option, only messages newer than the given id will be fetched.
  * Standard output
-   * [A JSON string of fetched direct messages](https://dev.twitter.com/rest/reference/get/direct_messages).
+   * [A JSON string of events for direct messages](https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/list-events).
  * Example
    
    ~~~
    $ ./tweet.sh fetch-direct-messages -c 20
-   $ ./tweet.sh fetch-dm -c 10 -s 0123456789
    $ ./tweet.sh get-direct-messages -c 20
-   $ ./tweet.sh get-dm -c 10 -s 0123456789
    ~~~
 
 ### `direct-message` (`dm`): sends a DM.
 
  * Parameters
-   * All arguments: the body of a new direct message to be sent.
+   * All arguments: the body of a new direct message to be sent. If you don't specify no parameter, this command reads message body from the standard input.
  * Standard output
-   * [A JSON string of the sent direct message](https://dev.twitter.com/rest/reference/post/direct_messages/new).
+   * [A JSON string of the event for the sent direct message](https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/new-event).
  * Example
    
    ~~~
@@ -489,6 +535,7 @@ $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
    $ ./tweet.sh direct-message friend Good morning.
    $ ./tweet.sh dm @friend Good morning.
    $ ./tweet.sh dm friend Good morning.
+   $ cat body.txt | ./tweet.sh direct-message @friend
    ~~~
 
 

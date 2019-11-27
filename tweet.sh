@@ -30,7 +30,7 @@
 #   https://dev.twitter.com/oauth/overview
 #   https://dev.twitter.com/oauth/overview/creating-signatures
 #
-# If you hope to see detailed logs, set an environment variable "DEBUG" to 1 or something.
+# If you want to see detailed logs, set an environment variable "DEBUG" to 1 or something.
 
 work_dir="$(pwd)"
 tools_dir="$(cd "$(dirname "$0")" && pwd)"
@@ -74,7 +74,24 @@ FIN
 
 log() {
   [ "$DEBUG" = '' ] && return 0
-  echo "$*" 1>&2
+  if [ $# -eq 0 ]
+  then
+    cat | sanitize_secret_params 1>&2
+  else
+    echo "$*" | sanitize_secret_params 1>&2
+  fi
+}
+
+sanitize_secret_params() {
+  if [ "$CONSUMER_KEY" = '' ]
+  then
+    cat
+    return 0
+  fi
+  $esed -e "s/$CONSUMER_KEY/<***consumer-key***>/g" \
+        -e "s/$CONSUMER_SECRET/(***consumer-secret***>/g" \
+        -e "s/$ACCESS_TOKEN/<***access-token***>/g" \
+        -e "s/$ACCESS_TOKEN_SECRET/<***access-token-secret***>/g"
 }
 
 exist_command() {
@@ -83,7 +100,8 @@ exist_command() {
 
 load_keys() {
   if [ "$CONSUMER_KEY" = '' -a \
-       -f "$work_dir/tweet.client.key" ]
+       -f "$work_dir/tweet.client.key" -a \
+       "$work_dir" != "$tools_dir" ]
   then
     log 'Using client key at the current directory.'
     source "$work_dir/tweet.client.key"
@@ -207,6 +225,10 @@ Available commands:
   fetch(get, show)
                  : fetches a JSON string of a tweet.
   search         : searches tweets.
+  fetch-favorites(fetch-fav)
+                 : fetches favorite tweets.
+  fetch-tweets(fetch-posts)
+                 : fetches tweets of a user.
   watch-mentions(watch)
                  : watches mentions, retweets, DMs, etc.
   type           : detects the type of the given input.
@@ -235,6 +257,9 @@ Available commands:
   direct-message(dm)
                  : sends a DM.
 
+  get-user-id    : resolves a screen name string to a user ID integer.
+  get-screen-name: resolves a user id integer to a screen name string.
+
   resolve        : resolves a shortened URL like "https://t.co/xxxx"
   resolve-all    : resolves all shortened URLs in the given input.
 
@@ -259,6 +284,22 @@ Usage:
   ./tweet.sh search -q "queries" -h "echo 'found!'; cat"
   ./tweet.sh search -q "Bash OR Shell Script" -w |
     while read -r tweet; do echo "found!: \${tweet}"; done
+FIN
+      ;;
+    fetch-fav|fetch-favorites )
+      cat << FIN
+Usage:
+  ./tweet.sh fetch-fav -c 10
+  ./tweet.sh fetch-favorites -c 100 -s 0123456
+FIN
+      ;;
+    fetch-tweet*|fetch-post* )
+      cat << FIN
+Usage:
+  ./tweet.sh fetch-tweets -u screen_name -c 10
+  ./tweet.sh fetch-posts -u screen_name -c 100 -s 0123456
+  ./tweet.sh fetch-tweets -u screen_name -c 3 -f
+  (-f returns the full tweet text ie. not truncated - tweet_mode=extended)
 FIN
       ;;
     watch|watch-mentions )
@@ -330,6 +371,8 @@ Usage:
   ./tweet.sh post 何らかのつぶやき
   ./tweet.sh tweet Hello
   ./tweet.sh tw Hi
+  ./tweet.sh post -l A tweet with location
+  cat body.txt | ./tweet.sh post
 FIN
       ;;
     reply )
@@ -337,6 +380,7 @@ FIN
 Usage:
   ./tweet.sh reply 012345 a reply
   ./tweet.sh reply https://twitter.com/username/status/012345 a reply
+  cat body.txt | ./tweet.sh reply 012345
 FIN
       ;;
     upload )
@@ -411,9 +455,7 @@ FIN
       cat << FIN
 Usage:
   ./tweet.sh fetch-dm -c 10
-  ./tweet.sh fetch-direct-messages -c 100 -s 0123456
   ./tweet.sh get-dm -c 10
-  ./tweet.sh get-direct-messages -c 10 -s 0123456
 FIN
       ;;
     dm|direct-message )
@@ -421,6 +463,19 @@ FIN
 Usage:
   ./tweet.sh dm frinedname Good morning.
   ./tweet.sh direct-message frinedname "How are you?"
+  cat body.txt | ./tweet.sh direct-message frinedname
+FIN
+      ;;
+    get-user-id )
+      cat << FIN
+Usage:
+  ./tweet.sh get-user-id examplescreenname
+FIN
+      ;;
+    get-screen-name )
+      cat << FIN
+Usage:
+  ./tweet.sh get-screen-name 0000000000
 FIN
       ;;
     resolve )
@@ -492,11 +547,13 @@ search() {
   local locale='en'
   local count=10
   local since_id=''
+  local max_id=''
+  local result_type=recent
   local handler=''
   local watch=0
 
   local OPTIND OPTARG OPT
-  while getopts q:l:c:s:h:w OPT
+  while getopts q:l:c:s:m:t:h:w OPT
   do
     case $OPT in
       q )
@@ -508,6 +565,13 @@ search() {
       s )
         since_id="$(echo "$OPTARG" | extract_tweet_id)"
         [ "$since_id" != '' ] && since_id="since_id $since_id"
+        ;;
+      m )
+        max_id="$(echo "$OPTARG" | extract_tweet_id)"
+        [ "$max_id" != '' ] && max_id="max_id $max_id"
+        ;;
+      t )
+        result_type="$OPTARG"
         ;;
       h )
         handler="$OPTARG"
@@ -526,9 +590,10 @@ search() {
 q $query
 lang $MY_LANGUAGE
 locale $locale
-result_type recent
+result_type $result_type
 count $count
 $since_id
+$max_id
 FIN
     )"
     local result="$(echo "$params" |
@@ -548,8 +613,7 @@ watch_search_results() {
   if [ "$query" = '' ]
   then
     echo "Tracking sample tweets..." 1>&2
-    echo '' |
-      call_api GET https://stream.twitter.com/1.1/statuses/sample.json |
+    call_api GET https://stream.twitter.com/1.1/statuses/sample.json |
       handle_search_results "$user_screen_name" "$handler"
   else
     echo "Tracking tweets with the query: $query..." 1>&2
@@ -595,6 +659,133 @@ handle_search_results() {
         (cd "$work_dir"; eval "$handler")
     fi
   done
+}
+
+fetch_favorites() {
+  ensure_available
+  local count=10
+  local since_id=''
+  local max_id=''
+  local user_screen_name="$(self_screen_name)"
+
+  local OPTIND OPTARG OPT
+  while getopts c:s:m:u: OPT
+  do
+    case $OPT in
+      c )
+        count="$OPTARG"
+        ;;
+      s )
+        since_id="$(echo "$OPTARG" | extract_tweet_id)"
+        [ "$since_id" != '' ] && since_id="since_id $since_id"
+        ;;
+      m )
+        max_id="$(echo "$OPTARG" | extract_tweet_id)"
+        [ "$max_id" != '' ] && max_id="max_id $max_id"
+        ;;
+      u )
+        user_screen_name="$OPTARG"
+        ;;
+    esac
+  done
+
+  local params="$(cat << FIN
+screen_name $user_screen_name
+count $count
+$since_id
+$max_id
+FIN
+  )"
+  local result="$(echo "$params" |
+                    call_api GET https://api.twitter.com/1.1/favorites/list.json)"
+  echo "$result"
+  check_errors "$result"
+}
+
+watch_mentions() {
+  ensure_available
+
+  local extra_keywords=''
+  local OPTIND OPTARG OPT
+  while getopts k:m:r:q:f:d:s: OPT
+  do
+    case $OPT in
+      k )
+        extra_keywords="$OPTARG"
+        ;;
+    esac
+  done
+
+  local user_screen_name="$(self_screen_name)"
+  local tracking_keywords="$user_screen_name"
+  [ "$extra_keywords" != '' ] && tracking_keywords="$tracking_keywords,$extra_keywords"
+
+  echo "Tracking mentions for $tracking_keywords..." 1>&2
+
+  local params="$(cat << FIN
+replies all
+track $tracking_keywords
+FIN
+  )"
+  echo "$params" |
+    call_api GET https://userstream.twitter.com/1.1/user.json |
+    handle_mentions "$user_screen_name" "$@"
+}
+
+fetch_tweets() {
+  ensure_available
+  local count=10
+  local since_id=''
+  local max_id=''
+  local user_screen_name="$(self_screen_name)"
+  local exclude_replies='exclude_replies 1'
+  local include_rts='include_rts 0'
+  local tweet_mode='tweet_mode extended'
+
+  local OPTIND OPTARG OPT
+  while getopts c:s:m:u:arf OPT
+  do
+    case $OPT in
+      c )
+        count="$OPTARG"
+        ;;
+      s )
+        since_id="$(echo "$OPTARG" | extract_tweet_id)"
+        [ "$since_id" != '' ] && since_id="since_id $since_id"
+        ;;
+      m )
+        max_id="$(echo "$OPTARG" | extract_tweet_id)"
+        [ "$max_id" != '' ] && max_id="max_id $max_id"
+        ;;
+      u )
+        user_screen_name="$OPTARG"
+        ;;
+      a )
+        exclude_replies='exclude_replies 0'
+        ;;
+      r )
+        include_rts='include_rts 1'
+        ;;
+      f )
+        tweet_mode='tweet_mode extended'
+        ;;
+    esac
+  done
+
+  local params="$(cat << FIN
+screen_name $user_screen_name
+count $count
+$since_id
+$max_id
+$exclude_replies
+$include_rts
+$tweet_mode
+FIN
+  )"
+  local result="$(echo "$params" |
+                    call_api GET https://api.twitter.com/1.1/statuses/user_timeline.json)"
+  echo "$result"
+  check_errors "$result"
 }
 
 watch_mentions() {
@@ -888,8 +1079,7 @@ owner_screen_name() {
 # implementation of showme
 my_information() {
   ensure_available
-  echo '' |
-    call_api GET https://api.twitter.com/1.1/account/verify_credentials.json
+  call_api GET https://api.twitter.com/1.1/account/verify_credentials.json
 }
 
 rename() {
@@ -907,9 +1097,14 @@ FIN
 
 # implementation of whoami
 self_screen_name() {
-  my_information |
-    jq -r .screen_name |
-    tr -d '\n'
+  if [ "$MY_SCREEN_NAME" != '' ]
+  then
+    echo "$MY_SCREEN_NAME" | tr -d '\n'
+  else
+    my_information |
+      jq -r .screen_name |
+      tr -d '\n'
+  fi
 }
 
 # implementation of language
@@ -925,25 +1120,38 @@ self_language() {
   fi
 }
 
+posting_body() {
+  if [ "$*" = '' ]; then
+    cat | $esed -e 's/$/\\n/' | paste -s -d '\0' -
+  else
+    echo -n -e "$*" | $esed -e 's/$/\\n/' | paste -s -d '\0' -
+  fi
+}
 
 post() {
   ensure_available
 
   local media_params=''
+  local location_params=''
 
   local OPTIND OPTARG OPT
-  while getopts m: OPT
+  while getopts m:l OPT
   do
     case $OPT in
       m )
-        media_params="media_ids=$OPTARG"
+        media_params="media_ids $OPTARG"
         shift 2
+        ;;
+      l )
+        location_params="$(curl --silent  http://geoip.nekudo.com/api | jq --raw-output '.location | "lat \(.latitude)\nlong \(.longitude)"')"
+        shift 1
         ;;
     esac
   done
 
   local params="$(cat << FIN
-status $*
+status $(posting_body $*)
+$location_params
 $media_params
 FIN
   )"
@@ -976,7 +1184,7 @@ reply() {
   local id="$(echo "$target" | extract_tweet_id)"
 
   local params="$(cat << FIN
-status $*
+status $(posting_body $*)
 in_reply_to_status_id $id
 $media_params
 FIN
@@ -992,8 +1200,7 @@ upload() {
 
   local target="$1"
 
-  local result="$(echo '' |
-                    call_api POST https://upload.twitter.com/1.1/media/upload.json media="$target")"
+  local result="$(call_api POST https://upload.twitter.com/1.1/media/upload.json media="$target")"
   echo "$result"
   check_errors "$result"
 }
@@ -1011,8 +1218,7 @@ delete() {
     return 1
   fi
 
-  local result="$(echo '' |
-                    call_api POST "https://api.twitter.com/1.1/statuses/destroy/$id.json")"
+  local result="$(call_api POST "https://api.twitter.com/1.1/statuses/destroy/$id.json")"
   echo "$result"
   check_errors "$result"
 }
@@ -1072,8 +1278,7 @@ retweet() {
     return 1
   fi
 
-  local result="$(echo '' |
-                    call_api POST "https://api.twitter.com/1.1/statuses/retweet/$id.json")"
+  local result="$(call_api POST "https://api.twitter.com/1.1/statuses/retweet/$id.json")"
   echo "$result"
   check_errors "$result"
 }
@@ -1156,29 +1361,23 @@ FIN
 fetch_direct_messages() {
   ensure_available
   local count=10
-  local since_id=''
 
   local OPTIND OPTARG OPT
-  while getopts c:s: OPT
+  while getopts c: OPT
   do
     case $OPT in
       c )
         count="$OPTARG"
-        ;;
-      s )
-        since_id="$(echo "$OPTARG" | extract_tweet_id)"
-        [ "$since_id" != '' ] && since_id="since_id $since_id"
         ;;
     esac
   done
 
   local params="$(cat << FIN
 count $count
-$since_id
 FIN
   )"
   local result="$(echo "$params" |
-                    call_api GET https://api.twitter.com/1.1/direct_messages.json)"
+                    call_api GET https://api.twitter.com/1.1/direct_messages/events/list.json)"
   echo "$result"
   check_errors "$result"
 }
@@ -1189,16 +1388,45 @@ direct_message() {
   local target="$1"
   shift
 
-  target="$(echo "$target" | sed 's/^@//')"
+  target="$(normalize_to_user_id "$(echo -n "$target" | sed 's/^@//')")"
 
-  local params="$(cat << FIN
-screen_name $target
-text $*
+  local params="$(compact_json << FIN
+{
+  "event": {
+    "type": "message_create",
+    "message_create": {
+      "target": {
+        "recipient_id": "$target"
+      },
+      "message_data": {
+        "text": $(posting_body "$*" | to_json_string)
+      }
+    }
+  }
+}
 FIN
   )"
   local result="$(echo "$params" |
-                    call_api POST https://api.twitter.com/1.1/direct_messages/new.json)"
+                    call_api_with_json POST https://api.twitter.com/1.1/direct_messages/events/new.json)"
   echo "$result"
+  check_errors "$result"
+}
+
+get_user_id_from_screen_name() {
+  ensure_available
+  local params="screen_name $1"
+  local result="$(echo "$params" |
+                    call_api GET https://api.twitter.com/1.1/users/show.json)"
+  echo -n "$result" | jq -r .id_str
+  check_errors "$result"
+}
+
+get_screen_name_from_user_id() {
+  ensure_available
+  local params="user_id $1"
+  local result="$(echo "$params" |
+                    call_api GET https://api.twitter.com/1.1/users/show.json)"
+  echo "$result" | jq -r .screen_name
   check_errors "$result"
 }
 
@@ -1212,19 +1440,26 @@ url_encode() {
   # the output string to 72 characters per a line.
   while read -r line
   do
-    echo "$line" |
-      # convert to MIME quoted printable
-      #  W8 => input encoding is UTF-8
-      #  MQ => quoted printable
-      nkf -W8MQ |
-      sed 's/=$//' |
-      tr '=' '%' |
-      # reunify broken linkes to a line
-      paste -s -d '\0' - |
-      sed -e 's/%7E/~/g' \
-          -e 's/%5F/_/g' \
-          -e 's/%2D/-/g' \
-          -e 's/%2E/./g'
+    echo -e "$line" |
+      while read -r part
+      do
+        echo "$part" |
+          # convert to MIME quoted printable
+          #  W8 => input encoding is UTF-8
+          #  MQ => quoted printable
+          nkf -W8MQ |
+          sed 's/=$//' |
+          tr '=' '%' |
+          # reunify broken linkes to a line
+          paste -s -d '\0' - |
+          sed -e 's/%7E/~/g' \
+              -e 's/%5F/_/g' \
+              -e 's/%2D/-/g' \
+              -e 's/%2E/./g'
+      done |
+        sed 's/$/%0A/g' |
+        paste -s -d '\0' - |
+        sed 's/%0A$//'
   done
 }
 
@@ -1256,6 +1491,16 @@ to_encoded_list() {
   log "to_encoded_list: $transformed"
 }
 
+compact_json() {
+  cat | jq -c .
+}
+
+to_json_string() {
+  echo "\"$(sed -e 's/"/\\"/g' -e 's/$/\\n/' |
+              paste -s -d '\0' - |
+              sed 's/\\n$//')\""
+}
+
 extract_tweet_id() {
   resolve_original_url |
     $esed -e 's;https://[^/]+/([^/]+|i/web)/status/;;' \
@@ -1264,6 +1509,16 @@ extract_tweet_id() {
 
 extract_owner() {
   jq -r .user.screen_name
+}
+
+normalize_to_user_id() {
+  local possible_screen_name="$1"
+  if ! echo -n "$possible_screen_name" | egrep '^[0-9]+$' >/dev/null 2>&1
+  then
+    get_user_id_from_screen_name "$possible_screen_name"
+  else
+    echo -n "$possible_screen_name"
+  fi
 }
 
 unicode_unescape() {
@@ -1313,17 +1568,31 @@ resolve_all_urls() {
 #================================================================
 # utilities to generate API requests with OAuth authentication
 
+call_api_with_json() {
+  call_api "$1" "$2" "$3" json
+}
+
 # usage:
-# echo 'status つぶやき' | call_api POST https://api.twitter.com/1.1/statuses/update.json
+# echo 'status Hello!' | call_api POST https://api.twitter.com/1.1/statuses/update.json
 call_api() {
   local method=$1
   local url=$2
   local file=$3
+  local data_type=$4
 
   local params=''
-  if [ -p /dev/stdin ]
+  local raw_params=''
+  local content_type_header=''
+  if [ ! -t 0 ]
   then
-    params="$(cat)"
+    raw_params="$(cat)"
+    if [ "$data_type" = 'json' ]
+    then
+      content_type_header="--header 'content-type: application/json'"
+      # no params for authentication!
+    else
+      params="$raw_params"
+    fi
   fi
 
   local oauth="$(echo "$params" | generate_oauth_header "$method" "$url")"
@@ -1333,6 +1602,8 @@ call_api() {
   log "METHOD : $method"
   log "URL    : $url"
   log "HEADERS: $headers"
+  log "DATA TYPE  : $data_type"
+  log "RAW PARAMS : $raw_params"
   log "PARAMS : $params"
 
   local file_params=''
@@ -1347,8 +1618,7 @@ call_api() {
   local debug_params=''
   if [ "$DEBUG" != '' ]
   then
-    # this is a bad way I know, but I don't know how to output only headers to the stderr...
-    debug_params='--dump-header /dev/stderr  --verbose'
+    debug_params="--verbose"
   fi
 
   local curl_params
@@ -1357,18 +1627,24 @@ call_api() {
     local main_params=''
     if [ "$file_params" = '' ]
     then
-      # --data parameter requries any input even if it is blank.
-      if [ "$params" = '' ]
+      if [ "$data_type" = 'json' ]
       then
-        params='""'
+        main_params="--data \"$(echo "$raw_params" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')\""
+      else
+        # --data parameter requries any input even if it is blank.
+        if [ "$params" = '' ]
+        then
+          params='""'
+        fi
+        main_params="--data \"$params\""
       fi
-      main_params="--data \"$params\""
-    elif [ "$params" != '' ]
+    elif [ "$params" != '""' -a "$params" != '' ]
     then
       # on the other hand, --form parameter doesn't accept blank input.
       main_params="--form \"$params\""
     fi
     curl_params="--header \"$headers\" \
+         $content_type_header \
          --silent \
          $main_params \
          $file_params \
@@ -1389,7 +1665,13 @@ call_api() {
   # quotation marks in the command line will be passed to curl as is.
   # To avoid sending of needless quotation marks, the command line must be
   # executed via "eval".
-  eval "curl $curl_params"
+  if [ "$debug_params" = '' ]
+  then
+    eval "curl $curl_params"
+  else
+    # to apply sanitize_secret_params only for stderr, swap stderr and stdout temporally.
+    (eval "curl $curl_params" 3>&2 2>&1 1>&3 | sanitize_secret_params) 3>&2 2>&1 1>&3
+  fi
 }
 
 # usage:
@@ -1487,6 +1769,12 @@ then
     search )
       search "$@"
       ;;
+    fetch-fav|fetch-favorites )
+      fetch_favorites "$@"
+      ;;
+    fetch-tweet*|fetch-post* )
+      fetch_tweets "$@"
+      ;;
     watch|watch-mentions )
       watch_mentions "$@"
       ;;
@@ -1550,6 +1838,14 @@ then
       direct_message "$@"
       ;;
 
+    get-user-id )
+      get_user_id_from_screen_name "$1"
+      ;;
+
+    get-screen-name )
+      get_screen_name_from_user_id "$1"
+      ;;
+
     resolve )
       echo "$1" | resolve_original_url
       ;;
@@ -1563,4 +1859,3 @@ then
       ;;
   esac
 fi
-
