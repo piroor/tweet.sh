@@ -236,6 +236,7 @@ Available commands:
   owner          : extracts the owner of a tweet.
   showme         : reports the raw information of yourself.
   whoami         : reports the screen name of yourself.
+  rename         : updates your display name.
   language(lang) : reports the selected language of yourself.
 
   post(tweet, tw): posts a new tweet.
@@ -347,6 +348,12 @@ FIN
       cat << FIN
 Usage:
   ./tweet.sh whoami
+FIN
+      ;;
+    rename )
+      cat << FIN
+Usage:
+  ./tweet.sh rename New Name, Same Me
 FIN
       ;;
     lang|language )
@@ -1075,6 +1082,19 @@ my_information() {
   call_api GET https://api.twitter.com/1.1/account/verify_credentials.json
 }
 
+rename() {
+  ensure_available
+  local params="$(cat << FIN
+name $*
+FIN
+  )"
+  local result="$(echo "$params" |
+                    call_api POST https://api.twitter.com/1.1/account/update_profile.json)"
+
+  echo "$result"
+  check_errors "$result"
+}
+
 # implementation of whoami
 self_screen_name() {
   if [ "$MY_SCREEN_NAME" != '' ]
@@ -1772,6 +1792,9 @@ then
       ;;
     whoami )
       self_screen_name
+      ;;
+    rename )
+      rename "$@"
       ;;
     lang|language )
       self_language
