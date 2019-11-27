@@ -1112,7 +1112,7 @@ post() {
   do
     case $OPT in
       m )
-        media_params="media_ids=$OPTARG"
+        media_params="media_ids $OPTARG"
         shift 2
         ;;
       l )
