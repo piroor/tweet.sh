@@ -234,6 +234,8 @@ Available commands:
   type           : detects the type of the given input.
   body           : extracts the body of a tweet.
   owner          : extracts the owner of a tweet.
+  get-list-members
+                 : returns a list's member information.
   showme         : reports the raw information of yourself.
   whoami         : reports the screen name of yourself.
   rename         : updates your display name.
@@ -336,6 +338,13 @@ Usage:
   ./tweet.sh owner 012345
   ./tweet.sh owner https://twitter.com/username/status/012345
   echo "\$tweet_json" | ./tweet.sh owner
+FIN
+      ;;
+    get-list-members )
+      cat << FIN
+Usage:
+  ./tweet.sh get-list-members 012345
+  ./tweet.sh get-list-members https://twitter.com/i/lists/012345
 FIN
       ;;
     showme )
@@ -520,6 +529,23 @@ FIN
   )"
   local result="$(echo "$params" |
                     call_api GET https://api.twitter.com/1.1/statuses/show.json)"
+  echo "$result"
+  check_errors "$result"
+}
+
+get_list_members() {
+  ensure_available
+
+  local target="$1"
+  shift
+  local id="$(echo "$target" | extract_list_id)"
+  local params="$(cat << FIN
+list_id $id
+count 5000
+FIN
+  )"
+  local result="$(echo "$params" |
+                    call_api GET https://api.twitter.com/1.1/lists/members.json)"
   echo "$result"
   check_errors "$result"
 }
@@ -1507,6 +1533,12 @@ extract_tweet_id() {
           -e 's;^([0-9]+)[^0-9].*$;\1;'
 }
 
+extract_list_id() {
+  resolve_original_url |
+    $esed -e 's;https://[^/]+/([^/]+|i/web)/lists/;;' \
+          -e 's;^([0-9]+)[^0-9].*$;\1;'
+}
+
 extract_owner() {
   jq -r .user.screen_name
 }
@@ -1765,6 +1797,9 @@ then
   case "$command" in
     fetch|get|show )
       fetch "$@"
+      ;;
+    get-list-members )
+      get_list_members "$@"
       ;;
     search )
       search "$@"
