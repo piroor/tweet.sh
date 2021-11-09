@@ -1,0 +1,4 @@
+Test tweet with RTL language text:
+שלום עולם.
+مرحبا بالعالم.
+Hello world.
