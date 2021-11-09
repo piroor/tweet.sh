@@ -1,5 +1,8 @@
 # tweet.sh, a Twitter client written in simple Bash script
 
+A one-file bash script Twitter Client (depending on some helper commands).
+This project is mainly started to demonstrating my shell scripting skills, so only limited features of Twitter APIs are supported.
+
 ## Setup
 
 You need to prepare API keys at first.
