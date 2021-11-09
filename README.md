@@ -68,7 +68,7 @@ Available commands are:
  * Making some changes (require "Write" permission)
    * `post` (`tweet`, `tw`): posts a new tweet.
    * `reply`: replies to an existing tweet.
-   * `upload`: uploads a media file.
+   * `upload`: uploads a media file. (deprecated)
    * `delete` (`del`, `remove`, `rm`): deletes a tweet.
    * `favorite` (`fav`): marks a tweet as a favorite.
    * `unfavorite` (`unfav`): removes favorited flag of a tweet.
@@ -351,7 +351,8 @@ This will be useful if you want to get both informations `whoami` and `language`
 ### `post` (`tweet`, `tw`): posts a new tweet.
 
  * Parameters
-   * `-m`: comma-separated list of uploaded media IDs. See also the `upload` command.
+   * `-i`: path to a media file. You can specify this multiple times. (optional)
+   * `-m`: comma-separated list of uploaded media IDs. See also the `upload` command. (deprecated, left for backward compatibility)
    * `-l`: add location to tweet. (optional)
    * All rest arguments: the body of a new tweet to be posted. If you don't specify no extra parameters, this command reads posting body from the standard input.
  * Standard output
@@ -362,7 +363,8 @@ This will be useful if you want to get both informations `whoami` and `language`
    $ ./tweet.sh post A tweet from command line
    $ ./tweet.sh post 何らかのつぶやき
    $ ./tweet.sh tweet @friend Good morning.
-   $ ./tweet.sh tw -m 123,456,789 My Photos!
+   $ ./tweet.sh tw -i ~/photos/1.jpg -i ~/photos/2.jpg My Photos!
+   $ ./tweet.sh tw -m 123,456,789 My Photos! (old form)
    $ ./tweet.sh post -l A tweet with location
    $ cat body.txt | ./tweet.sh post
    ~~~
@@ -373,7 +375,8 @@ If you include a user's screen name manually in the body, it will become a menti
 ### `reply`: replies to an existing tweet.
 
  * Parameters
-   * `-m`: comma-separated list of uploaded media IDs. See also the `upload` command.
+   * `-i`: path to a media file. You can specify this multiple times. (optional)
+   * `-m`: comma-separated list of uploaded media IDs. See also the `upload` command. (deprecated, left for backward compatibility)
    * 1st rest argument: the ID or the URL of a tweet to be replied.
    * All other rest arguments: the body of a new reply to be posted. If you don't specify no extra parameters, this command reads posting body from the standard input.
  * Standard output
@@ -385,14 +388,18 @@ If you include a user's screen name manually in the body, it will become a menti
    $ ./tweet.sh reply 0123456789 A silent reply
    $ ./tweet.sh reply https://twitter.com/username/status/0123456789 @friend A regular reply
    $ ./tweet.sh reply https://twitter.com/username/status/0123456789 A silent reply
-   $ ./tweet.sh reply 0123456789 -m 123,456,789 Photo reply
+   $ ./tweet.sh reply -i ~/photos/1.jpg -i ~/photos/2.jpg 0123456789 Photo reply
+   $ ./tweet.sh reply -m 123,456,789 0123456789 Photo reply (old form)
    $ cat body.txt | ./tweet.sh reply 0123456789
    ~~~
 
 Note that you have to include the user's screen name manually if it is needed.
 This command does not append it automatically.
 
-### `upload`: uploads a file.
+### `upload`: uploads a file. (deprecated)
+
+Today the `post` command supports uploading files together with the posting body, thus you don't need to upload files by your hand.
+This command is still available for backward compatibility.
 
  * Parameters
    * 1st argument: absolute path to a local file.

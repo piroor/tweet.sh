@@ -379,6 +379,8 @@ Usage:
   ./tweet.sh tweet Hello
   ./tweet.sh tw Hi
   ./tweet.sh post -l A tweet with location
+  ./tweet.sh post -i /path/to/image.jpg -i /path/to/image.png tweet with images
+  ./tweet.sh post -m media_key1,media_key2 tweet with media (old form)
   cat body.txt | ./tweet.sh post
 FIN
       ;;
@@ -387,6 +389,8 @@ FIN
 Usage:
   ./tweet.sh reply 012345 a reply
   ./tweet.sh reply https://twitter.com/username/status/012345 a reply
+  ./tweet.sh reply -i /path/to/image.jpg 012345 a reply with an image
+  ./tweet.sh reply -m media_key1 012345 a reply with a media (old form)
   cat body.txt | ./tweet.sh reply 012345
 FIN
       ;;
@@ -1138,23 +1142,33 @@ posting_body() {
 post() {
   ensure_available
 
+  local uploaded_media_id=''
+  local uploaded_media_ids=''
   local media_params=''
   local location_params=''
 
   local OPTIND OPTARG OPT
-  while getopts m:l OPT
+  while getopts i:m:l OPT
   do
     case $OPT in
+      i )
+        uploaded_media_id="$(upload_and_get_media_id "$OPTARG")"
+        if [ "$uploaded_media_ids" = '' ]; then
+          uploaded_media_ids="$uploaded_media_id"
+        else
+          uploaded_media_ids="$uploaded_media_ids,$uploaded_media_id"
+        fi
+        media_params="media_ids $uploaded_media_ids"
+        ;;
       m )
         media_params="media_ids $OPTARG"
-        shift 2
         ;;
       l )
         location_params="$(curl --silent  http://geoip.nekudo.com/api | jq --raw-output '.location | "lat \(.latitude)\nlong \(.longitude)"')"
-        shift 1
         ;;
     esac
   done
+  shift $(expr $OPTIND - 1)
 
   local params="$(cat << FIN
 status $(posting_body $*)
@@ -1175,15 +1189,24 @@ reply() {
   local media_params=''
 
   local OPTIND OPTARG OPT
-  while getopts m: OPT
+  while getopts i:m: OPT
   do
     case $OPT in
+      i )
+        uploaded_media_id="$(upload_and_get_media_id "$OPTARG")"
+        if [ "$uploaded_media_ids" = '' ]; then
+          uploaded_media_ids="$uploaded_media_id"
+        else
+          uploaded_media_ids="$uploaded_media_ids,$uploaded_media_id"
+        fi
+        media_params="media_ids $uploaded_media_ids"
+        ;;
       m )
         media_params="media_ids=$OPTARG"
-        shift 2
         ;;
     esac
   done
+  shift $(expr $OPTIND - 1)
 
   local target="$1"
   shift
@@ -1210,6 +1233,25 @@ upload() {
   local result="$(call_api POST https://upload.twitter.com/1.1/media/upload.json media="$target")"
   echo "$result"
   check_errors "$result"
+}
+
+upload_and_get_media_id() {
+  local image_path="$1"
+  local upload_result=''
+  local uploaded_media_id=''
+
+  log "Uploading image: $image_path"
+
+  upload_result="$(upload "$image_path")"
+  log "Uploaded result: $upload_result"
+
+  uploaded_media_id="$(echo "$upload_result" | jq --raw-output '.media_id_string')"
+  if [ "$uploaded_media_id" = '' ]; then
+    echo "Error: failed to upload $image_path" 1>&2
+    exit 1
+  fi
+
+  echo "$uploaded_media_id"
 }
 
 delete() {
