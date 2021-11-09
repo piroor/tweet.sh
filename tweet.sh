@@ -1160,7 +1160,7 @@ post() {
   do
     case $OPT in
       i )
-        uploaded_media_id="$(upload_and_get_media_id "$OPTARG")"
+        uploaded_media_id="$(upload_and_get_media_id "$OPTARG")" || exit $?
         if [ "$uploaded_media_ids" = '' ]; then
           uploaded_media_ids="$uploaded_media_id"
         else
@@ -1201,7 +1201,7 @@ reply() {
   do
     case $OPT in
       i )
-        uploaded_media_id="$(upload_and_get_media_id "$OPTARG")"
+        uploaded_media_id="$(upload_and_get_media_id "$OPTARG")" || exit $?
         if [ "$uploaded_media_ids" = '' ]; then
           uploaded_media_ids="$uploaded_media_id"
         else
