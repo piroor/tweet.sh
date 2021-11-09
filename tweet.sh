@@ -237,7 +237,7 @@ Available commands:
   fetch-tweets(fetch-posts)
                  : fetches tweets of a user.
   watch-mentions(watch)
-                 : watches mentions, retweets, DMs, etc.
+                 : [OBSOLETE] watches mentions, retweets, DMs, etc.
   type           : detects the type of the given input.
   body           : extracts the body of a tweet.
   owner          : extracts the owner of a tweet.

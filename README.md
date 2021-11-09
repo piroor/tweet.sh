@@ -56,7 +56,9 @@ Available commands are:
    * `search`: searches tweets with queries.
    * `fetch-favorites` (`fetch-fav`): fetches favorite tweets.
    * `fetch-tweets` (`fetch-posts`): fetches tweets of a user.
+<!--
    * `watch-mentions` (`watch`): watches mentions, retweets, DMs, etc., and executes handlers for each event.
+-->
    * `type`: detects the type of the given input.
    * `body`: extracts the body of a tweet.
    * `owner`: extracts the owner of a tweet.
@@ -81,7 +83,9 @@ Available commands are:
    * `resolve`: resolves a shortened URL.
    * `resolve-all`: resolve all shortened URLs in the given input.
 
+<!--
 If you want to handle DMs by the `watch-mentions` command, you have to permit the app to access direct messages.
+-->
 
 Detailed logs can be shown with the `DEBUG` flag, like:
 
@@ -192,9 +196,12 @@ In this case, only `-q` and `-h` options are available.
 The script doesn't exit automatically if you specify the `-h` option.
 To stop the process, you need to send the `SIGINT` signal via Ctrl-C or something.
 
+<!--
 *Important note: you cannot use this feature together with `watch-mentions` command. Only one streaming API is allowed for you at once.*
 *If you want to watch search results with mentions, use the `-k` and `-s` options of the `watch-mentions` command.*
+-->
 
+<!--
 ### `watch-mentions` (`watch`): watches mentions, retweets, DMs, etc., and executes handlers for each event.
 
  * Parameters
@@ -237,6 +244,7 @@ To stop the process, you need to send the `SIGINT` signal via Ctrl-C or somethin
 
 *Important note: you cannot use this feature together with `search` command with a handler. Only one streaming API is allowed for you at once.*
 *If you want to watch search results with mentions, use the `-k` and `-s` options instead of the `search` command.*
+-->
 
 ### `type`: detects the type of the given input.
 
