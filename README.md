@@ -16,7 +16,7 @@ ACCESS_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ACCESS_TOKEN_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ~~~
 
-If there is a key file named `tweet.client.key` in the current directory, `tweet.sh` will load it.
+If there is a key file named `tweet.client.key` or `.tweet.client.key` in the current directory, `tweet.sh` will load it.
 Otherwise, the file `~/.tweet.client.key` will be used as the default key file.
 
 Moreover, you can give those information via environment variables without a key file.
