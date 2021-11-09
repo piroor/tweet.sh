@@ -523,6 +523,10 @@ fetch() {
 
   local target="$1"
   shift
+  if [ "$target" = '' ]; then
+    echo "Error: no tweet specified to fetch." 1>&2
+    exit 1
+  fi
 
   local id="$(echo "$target" | extract_tweet_id)"
   local params="$(cat << FIN
@@ -540,6 +544,10 @@ fetch_with_my_retweet() {
 
   local target="$1"
   shift
+  if [ "$target" = '' ]; then
+    echo "Error: no tweet specified to fetch." 1>&2
+    exit 1
+  fi
 
   local id="$(echo "$target" | extract_tweet_id)"
   local params="$(cat << FIN
@@ -1229,6 +1237,10 @@ upload() {
   ensure_available
 
   local target="$1"
+  if [ "$target" = '' ]; then
+    echo "Error: no media file specified to upload." 1>&2
+    exit 1
+  fi
 
   local result="$(call_api POST https://upload.twitter.com/1.1/media/upload.json media="$target")"
   echo "$result"
@@ -1236,18 +1248,23 @@ upload() {
 }
 
 upload_and_get_media_id() {
-  local image_path="$1"
+  local target="$1"
+  if [ "$target" = '' ]; then
+    echo "Error: no media file specified to upload." 1>&2
+    exit 1
+  fi
+
+  log "Uploading image: $target"
+
   local upload_result=''
   local uploaded_media_id=''
 
-  log "Uploading image: $image_path"
-
-  upload_result="$(upload "$image_path")"
+  upload_result="$(upload "$target")"
   log "Uploaded result: $upload_result"
 
   uploaded_media_id="$(echo "$upload_result" | jq --raw-output '.media_id_string')"
   if [ "$uploaded_media_id" = '' ]; then
-    echo "Error: failed to upload $image_path" 1>&2
+    echo "Error: failed to upload $target" 1>&2
     exit 1
   fi
 
@@ -1259,6 +1276,10 @@ delete() {
 
   local target="$1"
   shift
+  if [ "$target" = '' ]; then
+    echo "Error: no tweet specified to delete." 1>&2
+    exit 1
+  fi
 
   local id="$(echo "$target" | extract_tweet_id)"
   if [ "$id" = '' ]
@@ -1276,6 +1297,11 @@ favorite() {
   ensure_available
 
   local target="$1"
+  if [ "$target" = '' ]; then
+    echo "Error: no tweet specified to favorite." 1>&2
+    exit 1
+  fi
+
   local id="$(echo "$target" | extract_tweet_id)"
   if [ "$id" = '' ]
   then
@@ -1297,6 +1323,11 @@ unfavorite() {
   ensure_available
 
   local target="$1"
+  if [ "$target" = '' ]; then
+    echo "Error: no tweet specified to unfavorite." 1>&2
+    exit 1
+  fi
+
   local id="$(echo "$target" | extract_tweet_id)"
   if [ "$id" = '' ]
   then
@@ -1319,6 +1350,10 @@ retweet() {
 
   local target="$1"
   shift
+  if [ "$target" = '' ]; then
+    echo "Error: no tweet specified to retweet." 1>&2
+    exit 1
+  fi
 
   local id="$(echo "$target" | extract_tweet_id)"
   if [ "$id" = '' ]
@@ -1337,6 +1372,10 @@ unretweet() {
 
   local target="$1"
   shift
+  if [ "$target" = '' ]; then
+    echo "Error: no tweet specified to unretweet." 1>&2
+    exit 1
+  fi
 
   local id="$(echo "$target" | extract_tweet_id)"
   if [ "$id" = '' ]
@@ -1354,6 +1393,11 @@ follow() {
 
   local target="$1"
   local screen_name
+
+  if [ "$target" = '' ]; then
+    echo "Error: no user specified to follow." 1>&2
+    exit 1
+  fi
 
   if echo "$target" | egrep '^https?:' >/dev/null 2>&1
   then
@@ -1383,6 +1427,11 @@ unfollow() {
 
   local target="$1"
   local screen_name
+
+  if [ "$target" = '' ]; then
+    echo "Error: no user specified to unfollow." 1>&2
+    exit 1
+  fi
 
   if echo "$target" | egrep '^https?:' >/dev/null 2>&1
   then
@@ -1436,6 +1485,10 @@ direct_message() {
 
   local target="$1"
   shift
+  if [ "$target" = '' ]; then
+    echo "Error: no recipient specified to send a direct message." 1>&2
+    exit 1
+  fi
 
   target="$(normalize_to_user_id "$(echo -n "$target" | sed 's/^@//')")"
 
