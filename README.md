@@ -68,7 +68,7 @@ Available commands are:
  * Making some changes (require "Write" permission)
    * `post` (`tweet`, `tw`): posts a new tweet.
    * `reply`: replies to an existing tweet.
-   * `upload`: uploads a media file. (deprecated)
+   * `upload`: uploads an image file. (deprecated)
    * `delete` (`del`, `remove`, `rm`): deletes a tweet.
    * `favorite` (`fav`): marks a tweet as a favorite.
    * `unfavorite` (`unfav`): removes favorited flag of a tweet.
@@ -351,8 +351,8 @@ This will be useful if you want to get both informations `whoami` and `language`
 ### `post` (`tweet`, `tw`): posts a new tweet.
 
  * Parameters
-   * `-i`: path to a media file. You can specify this multiple times. (optional)
-   * `-m`: comma-separated list of uploaded media IDs. See also the `upload` command. (deprecated, left for backward compatibility)
+   * `-i`: path to an image file. You can specify this multiple times. (optional)
+   * `-m`: comma-separated list of uploaded image IDs. See also the `upload` command. (deprecated, left for backward compatibility)
    * `-l`: add location to tweet. (optional)
    * All rest arguments: the body of a new tweet to be posted. If you don't specify no extra parameters, this command reads posting body from the standard input.
  * Standard output
@@ -375,8 +375,8 @@ If you include a user's screen name manually in the body, it will become a menti
 ### `reply`: replies to an existing tweet.
 
  * Parameters
-   * `-i`: path to a media file. You can specify this multiple times. (optional)
-   * `-m`: comma-separated list of uploaded media IDs. See also the `upload` command. (deprecated, left for backward compatibility)
+   * `-i`: path to an image file. You can specify this multiple times. (optional)
+   * `-m`: comma-separated list of uploaded image IDs. See also the `upload` command. (deprecated, left for backward compatibility)
    * 1st rest argument: the ID or the URL of a tweet to be replied.
    * All other rest arguments: the body of a new reply to be posted. If you don't specify no extra parameters, this command reads posting body from the standard input.
  * Standard output
@@ -396,13 +396,13 @@ If you include a user's screen name manually in the body, it will become a menti
 Note that you have to include the user's screen name manually if it is needed.
 This command does not append it automatically.
 
-### `upload`: uploads a file. (deprecated)
+### `upload`: uploads an image file. (deprecated)
 
-Today the `post` command supports uploading files together with the posting body, thus you don't need to upload files by your hand.
+Today the `post` command supports uploading image files together with the posting body, thus you don't need to upload files by your hand.
 This command is still available for backward compatibility.
 
  * Parameters
-   * 1st argument: absolute path to a local file.
+   * 1st argument: absolute path to a local image file.
  * Standard output
    * [A JSON string of the uplaod result](https://dev.twitter.com/rest/media/uploading-media).
  * Example
@@ -410,6 +410,9 @@ This command is still available for backward compatibility.
    ~~~
    $ ./tweet.sh upload /path/to/file.png
    ~~~
+
+This command accepts only image files and cannot upload other type media files due to a restriction of the [depending API](https://developer.twitter.com/en/docs/twitter-api/v1/media/upload-media/api-reference/post-media-upload) itself.
+You need to use `twurl` or other helpers to upload non-image media files.
 
 ### `delete` (`del`, `remove`, `rm`): deletes a tweet.
 
