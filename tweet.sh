@@ -534,7 +534,7 @@ fetch() {
   local target="$1"
   shift
   if [ "$target" = '' ]; then
-    echo "Error: no tweet specified to fetch." 1>&2
+    echo "Error: no tweet specified to fetch. (please use \"fetch-tweets\" if you want to fetch a list of tweets.)" 1>&2
     exit 1
   fi
 
