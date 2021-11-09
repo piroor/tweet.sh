@@ -580,3 +580,14 @@ $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
    $ cat ./tweet-body.txt | ./tweet.sh resolve-all
    ~~~
 
+
+## Miscellaneous Examples
+
+### Search tweets with keywords and retweet all results
+
+```
+$ ./tweet.sh search -q "keyword" |
+     jq -c '.statuses[]' |
+     while read -r tweet; do ./tweet.sh retweet $(echo "$tweet" | jq -r .id_str); done
+```
+
