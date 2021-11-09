@@ -363,8 +363,8 @@ This will be useful if you want to get both informations `whoami` and `language`
    $ ./tweet.sh post A tweet from command line
    $ ./tweet.sh post 何らかのつぶやき
    $ ./tweet.sh tweet @friend Good morning.
-   $ ./tweet.sh tw -i ~/photos/1.jpg -i ~/photos/2.jpg My Photos!
-   $ ./tweet.sh tw -m 123,456,789 My Photos! (old form)
+   $ ./tweet.sh tw -i ~/photos/1.jpg -i ~/photos/2.jpg My Photos
+   $ ./tweet.sh tw -m 123,456,789 My Photos (old form)
    $ ./tweet.sh post -l A tweet with location
    $ cat body.txt | ./tweet.sh post
    ~~~
