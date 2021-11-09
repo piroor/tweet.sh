@@ -79,6 +79,7 @@ Available commands are:
  * Operate direct messages (require "Access direct messages" permission)
    * `fetch-direct-messages` (`fetch-dm`, `get-direct-messages`, `get-dm`): fetches recent DMs.
    * `direct-message` (`dm`): sends a DM.
+   * `delete-direct-message` (`delete-dm`, `del-dm`): deletes a DM.
  * Misc.
    * `resolve`: resolves a shortened URL.
    * `resolve-all`: resolve all shortened URLs in the given input.
@@ -554,6 +555,20 @@ $ ./tweet.sh post Good news! https://twitter.com/username/status/0123456789
    $ ./tweet.sh dm @friend Good morning.
    $ ./tweet.sh dm friend Good morning.
    $ cat body.txt | ./tweet.sh direct-message @friend
+   ~~~
+
+### `delete-direct-messages` (`delete-dm`, `del-dm`): deletes a DM.
+
+ * Parameters
+   * The only one argument: the ID of the direct message to be deleted.
+ * Standard output
+   * Nothing ([same to the response of the deletion API](https://developer.twitter.com/en/docs/twitter-api/v1/direct-messages/sending-and-receiving/api-reference/delete-message-event))
+ * Example
+   
+   ~~~
+   $ ./tweet.sh delete-direct-messages 12345
+   $ ./tweet.sh delete-dm 12345
+   $ ./tweet.sh del-dm 12345
    ~~~
 
 

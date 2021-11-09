@@ -263,6 +263,8 @@ Available commands:
                  : fetches recent DMs.
   direct-message(dm)
                  : sends a DM.
+  delete-direct-message(delete-dm, del-dm)
+                 : deletes a DM.
 
   get-user-id    : resolves a screen name string to a user ID integer.
   get-screen-name: resolves a user id integer to a screen name string.
@@ -475,6 +477,14 @@ Usage:
   ./tweet.sh dm frinedname Good morning.
   ./tweet.sh direct-message frinedname "How are you?"
   cat body.txt | ./tweet.sh direct-message frinedname
+FIN
+      ;;
+    del-dm|delete-dm|del-direct-message|delete-direct-message )
+      cat << FIN
+Usage:
+  ./tweet.sh delete-direct-message 012345
+  ./tweet.sh delete-dm 012345
+  ./tweet.sh del-dm 012345
 FIN
       ;;
     get-user-id )
@@ -1514,6 +1524,26 @@ FIN
   check_errors "$result"
 }
 
+delete_direct_message() {
+  ensure_available
+
+  local target="$1"
+  shift
+  if [ "$target" = '' ]; then
+    echo "Error: no message id specified to delete." 1>&2
+    exit 1
+  fi
+
+  local params="$(cat << FIN
+id $target
+FIN
+  )"
+  local result="$(echo "$params" |
+                    call_api DELETE https://api.twitter.com/1.1/direct_messages/events/destroy.json)"
+  echo "$result"
+  check_errors "$result"
+}
+
 get_user_id_from_screen_name() {
   ensure_available
   local params="screen_name $1"
@@ -1724,7 +1754,7 @@ call_api() {
   fi
 
   local curl_params
-  if [ "$method" = 'POST' ]
+  if [ "$method" = 'POST' -o "$method" = "DELETE" ]
   then
     local main_params=''
     if [ "$file_params" = '' ]
@@ -1746,6 +1776,7 @@ call_api() {
       main_params="--form \"$params\""
     fi
     curl_params="--header \"$headers\" \
+         $([ "$method" != 'POST' ] && echo "--request $method" || echo '') \
          $content_type_header \
          --silent \
          $main_params \
@@ -1938,6 +1969,9 @@ then
       ;;
     dm|direct-message )
       direct_message "$@"
+      ;;
+    del-dm|delete-dm|del-direct-message|delete-direct-message )
+      delete_direct_message "$@"
       ;;
 
     get-user-id )
