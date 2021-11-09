@@ -62,6 +62,7 @@ Available commands are:
    * `type`: detects the type of the given input.
    * `body`: extracts the body of a tweet.
    * `owner`: extracts the owner of a tweet.
+   * `get-list-members`: gets a list's member information.
    * `showme`: reports the raw information of yourself.
    * `whoami`: reports the screen name of yourself.
    * `language` (`lang`): reports the selected language of yourself.
@@ -299,6 +300,20 @@ For unknown type input, this returns an exit status `1` and reports nothing.
    $ ./tweet.sh owner https://twitter.com/username/status/0123456789
    $ echo "$tweet_json" | ./tweet.sh owner
    ~~~
+
+### `get-list-members`: gets a list's member information.
+
+ * Parameters
+   * 1st argument: the ID or the URL of a list.
+ * Standard output
+   * [A JSON string of the list members](https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/create-manage-lists/api-reference/get-lists-members).
+ * Example
+   
+   ~~~
+   $ ./tweet.sh get-list-members 0123456789
+   $ ./tweet.sh get-list-members https://twitter.com/i/lists/0123456789
+   ~~~
+
 
 ### `showme`: reports the raw information of yourself.
 

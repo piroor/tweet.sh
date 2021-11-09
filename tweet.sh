@@ -242,7 +242,7 @@ Available commands:
   body           : extracts the body of a tweet.
   owner          : extracts the owner of a tweet.
   get-list-members
-                 : returns a list's member information.
+                 : gets a list's member information.
   showme         : reports the raw information of yourself.
   whoami         : reports the screen name of yourself.
   rename         : updates your display name.
