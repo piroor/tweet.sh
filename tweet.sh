@@ -88,7 +88,7 @@ sanitize_secret_params() {
     cat
     return 0
   fi
-  $esed -e "s/$CONSUMER_KEY/<***consumer-key***>/g" \
+  sed -E -e "s/$CONSUMER_KEY/<***consumer-key***>/g" \
         -e "s/$CONSUMER_SECRET/(***consumer-secret***>/g" \
         -e "s/$ACCESS_TOKEN/<***access-token***>/g" \
         -e "s/$ACCESS_TOKEN_SECRET/<***access-token-secret***>/g"
@@ -135,15 +135,6 @@ load_keys() {
   export ACCESS_TOKEN
   export ACCESS_TOKEN_SECRET
 }
-
-case $(uname) in
-  Darwin|*BSD|CYGWIN*)
-    esed="sed -E"
-    ;;
-  *)
-    esed="sed -r"
-    ;;
-esac
 
 
 ensure_available() {
@@ -1177,9 +1168,9 @@ self_language() {
 
 posting_body() {
   if [ "$*" = '' ]; then
-    cat | $esed -e 's/$/\\n/' | paste -s -d '\0' -
+    cat | sed -E -e 's/$/\\n/' | paste -s -d '\0' -
   else
-    echo -n -e "$*" | $esed -e 's/$/\\n/' | paste -s -d '\0' -
+    echo -n -e "$*" | sed -E -e 's/$/\\n/' | paste -s -d '\0' -
   fi
 }
 
@@ -1661,13 +1652,13 @@ to_json_string() {
 
 extract_tweet_id() {
   resolve_original_url |
-    $esed -e 's;https://[^/]+/([^/]+|i/web)/status/;;' \
+    sed -E -e 's;https://[^/]+/([^/]+|i/web)/status/;;' \
           -e 's;^([0-9]+)[^0-9].*$;\1;'
 }
 
 extract_list_id() {
   resolve_original_url |
-    $esed -e 's;https://[^/]+/([^/]+|i/web)/lists/;;' \
+    sed -E -e 's;https://[^/]+/([^/]+|i/web)/lists/;;' \
           -e 's;^([0-9]+)[^0-9].*$;\1;'
 }
 
@@ -1690,14 +1681,14 @@ unicode_unescape() {
     nkf --numchar-input
 }
 
-URL_REDIRECTORS_MATCHER="^https?://($(echo "$URL_REDIRECTORS" | $esed 's/\./\\./g' | paste -s -d '|' - | $esed 's/^ *| *$//g'))/"
+URL_REDIRECTORS_MATCHER="^https?://($(echo "$URL_REDIRECTORS" | sed -E 's/\./\\./g' | paste -s -d '|' - | sed -E 's/^ *| *$//g'))/"
 
 resolve_original_url() {
   while read -r url
   do
     if echo "$url" | egrep -i "$URL_REDIRECTORS_MATCHER" 2>&1 >/dev/null
     then
-      curl --silent --head "$url" | egrep -i "^Location:" | $esed "s/^[^:]+: *//"
+      curl --silent --head "$url" | egrep -i "^Location:" | sed -E "s/^[^:]+: *//"
     else
       echo $url
     fi
@@ -1713,7 +1704,7 @@ resolve_all_urls() {
     while read url
     do
       resolved="$(./tweetbot.sh/tweet.sh/tweet.sh resolve "$url" |
-                    $esed -e 's/([$&])/\\\1/g' |
+                    sed -E -e 's/([$&])/\\\1/g' |
                     tr -d '\r\n')"
       if [ "$url" != "$resolved" ]
       then
@@ -1722,7 +1713,7 @@ resolve_all_urls() {
     done)"
   if [ "$url_resolvers" != '' ]
   then
-    echo -n "$input" | $esed $url_resolvers
+    echo -n "$input" | sed -E $url_resolvers
   else
     echo -n "$input"
   fi
@@ -1773,8 +1764,8 @@ call_api() {
   local file_params=''
   if [ "$file" != '' ]
   then
-    local file_param_name="$(echo "$file" | $esed 's/=.+$//')"
-    local file_path="$(echo "$file" | $esed 's/^[^=]+=//')"
+    local file_param_name="$(echo "$file" | sed -E 's/=.+$//')"
+    local file_path="$(echo "$file" | sed -E 's/^[^=]+=//')"
     file_params="--form $file_param_name=@$file_path"
     log "FILE   : $file_path (as $file_param_name)"
   fi
@@ -1824,7 +1815,7 @@ call_api() {
          $debug_params \
          $url"
   fi
-  curl_params="$(echo "$curl_params" | tr -d '\n' | $esed 's/  +/ /g')"
+  curl_params="$(echo "$curl_params" | tr -d '\n' | sed -E 's/  +/ /g')"
   log "curl $curl_params"
   # Command line string for logging couldn't be executed directly because
   # quotation marks in the command line will be passed to curl as is.
