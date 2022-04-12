@@ -603,7 +603,7 @@ search() {
   do
     case $OPT in
       q )
-        query="$OPTARG"
+        query="$(echo $OPTARG | sed -E -e 's/"/\\"/g')"
         ;;
       c )
         count="$OPTARG"
