@@ -1167,7 +1167,7 @@ self_language() {
 }
 
 posting_body() {
-  if [ "$*" = '' ]; then
+  if [ "$*" = '' -a -p /dev/fd/0 ]; then
     cat | sed -E -e 's/$/\\n/' | paste -s -d '\0' -
   else
     echo -n -e "$*" | sed -E -e 's/$/\\n/' | paste -s -d '\0' -

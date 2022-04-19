@@ -383,6 +383,7 @@ This will be useful if you want to get both informations `whoami` and `language`
    $ ./tweet.sh post 何らかのつぶやき
    $ ./tweet.sh tweet @friend Good morning.
    $ ./tweet.sh tw -i ~/photos/1.jpg -i ~/photos/2.jpg My Photos
+   $ ./tweet.sh tw -i ~/photos/1.jpg -i ~/photos/2.jpg
    $ ./tweet.sh tw -m 123,456,789 My Photos (old form)
    $ ./tweet.sh post -l A tweet with location
    $ cat body.txt | ./tweet.sh post
@@ -390,13 +391,6 @@ This will be useful if you want to get both informations `whoami` and `language`
 
 All rest arguments following to the command name are posted as a tweet.
 If you include a user's screen name manually in the body, it will become a mention (not a reply).
-
-You must give any tweet body via command line arguments or the STDIN, otherwise the script will hang up for waiting input data from the STDIN forever.
-So if you just want to tweet an image without text, you'll need to give a blank body like following:
-
-~~~
-$ echo '' | ./tweet.sh tw -i ~/photos/1.jpg
-~~~
 
 
 ### `reply`: replies to an existing tweet.
