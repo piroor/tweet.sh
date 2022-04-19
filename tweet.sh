@@ -1167,7 +1167,7 @@ self_language() {
 }
 
 posting_body() {
-  if [ "$*" = '' -a -p /dev/fd/0 ]; then
+  if [ -p /dev/fd/0 ]; then # the posting body is given via the pipeline
     cat | sed -E -e 's/$/\\n/' | paste -s -d '\0' -
   else
     echo -n -e "$*" | sed -E -e 's/$/\\n/' | paste -s -d '\0' -
