@@ -1296,7 +1296,8 @@ upload_and_get_media_id() {
   local upload_result=''
   local uploaded_media_id=''
 
-  upload_result="$(upload "$target")"
+  # "echo ''" is requried to avoid unexpected reading data from STDIN.
+  upload_result="$(echo '' | upload "$target")"
   log "Uploaded result: $upload_result"
 
   uploaded_media_id="$(echo "$upload_result" | jq --raw-output '.media_id_string')"
