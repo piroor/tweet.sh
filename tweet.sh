@@ -1174,6 +1174,16 @@ posting_body() {
   fi
 }
 
+status_param_from_posting_body() {
+  local body="$(posting_body $*)"
+  if [ "$body" != '' ]
+  then
+    echo "status $body"
+  else
+    echo ''
+  fi
+}
+
 post() {
   ensure_available
 
@@ -1206,7 +1216,7 @@ post() {
   shift $(expr $OPTIND - 1)
 
   local params="$(cat << FIN
-status $(posting_body $*)
+$(status_param_from_posting_body $*)
 $location_params
 $media_params
 FIN
@@ -1249,7 +1259,7 @@ reply() {
   local id="$(echo "$target" | extract_tweet_id)"
 
   local params="$(cat << FIN
-status $(posting_body $*)
+$(status_param_from_posting_body $*)
 in_reply_to_status_id $id
 $media_params
 FIN

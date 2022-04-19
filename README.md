@@ -391,6 +391,14 @@ This will be useful if you want to get both informations `whoami` and `language`
 All rest arguments following to the command name are posted as a tweet.
 If you include a user's screen name manually in the body, it will become a mention (not a reply).
 
+You must give any tweet body via command line arguments or the STDIN, otherwise the script will hang up for waiting input data from the STDIN forever.
+So if you just want to tweet an image without text, you'll need to give a blank body like following:
+
+~~~
+$ echo '' | ./tweet.sh tw -i ~/photos/1.jpg
+~~~
+
+
 ### `reply`: replies to an existing tweet.
 
  * Parameters
